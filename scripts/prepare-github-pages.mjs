@@ -29,8 +29,8 @@ for (const file of files) {
   let after = before
     .replaceAll(`${githubBasePath}/_next/`, './_next/')
     .replaceAll('/_next/', './_next/')
-    .replaceAll('"_next/', '"./_next/')
-    .replaceAll("'_next/", "'./_next/")
+    .replaceAll(`"_next/`, `"${githubBasePath.slice(1)}/_next/`)
+    .replaceAll(`'_next/`, `'${githubBasePath.slice(1)}/_next/`)
     .replaceAll(`"${githubBasePath}/favicon.svg"`, '"./favicon.svg"')
     .replaceAll(`'${githubBasePath}/favicon.svg'`, "'./favicon.svg'")
     .replaceAll('"/favicon.svg"', '"./favicon.svg"')
