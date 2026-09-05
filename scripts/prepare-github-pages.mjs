@@ -2,6 +2,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { extname, join, relative, resolve } from 'node:path';
 
 const outputRoot = resolve('dist/client');
+const githubBasePath = '/WMS_UIUX_HoaNamv2';
 const textExtensions = new Set(['.css', '.html', '.js', '.json', '.map', '.svg', '.txt']);
 
 async function walk(directory) {
@@ -25,10 +26,20 @@ let rewritten = 0;
 
 for (const file of files) {
   const before = await readFile(file, 'utf8');
-  const after = before
+  let after = before
+    .replaceAll(`${githubBasePath}/_next/`, './_next/')
     .replaceAll('/_next/', './_next/')
+    .replaceAll(`"${githubBasePath}/favicon.svg"`, '"./favicon.svg"')
+    .replaceAll(`'${githubBasePath}/favicon.svg'`, "'./favicon.svg'")
     .replaceAll('"/favicon.svg"', '"./favicon.svg"')
     .replaceAll("'/favicon.svg'", "'./favicon.svg'");
+
+  // Vinext's client router is emitted with an empty base path by default.
+  // GitHub Pages project sites are mounted below /<repo>, so teach the
+  // generated navigation runtime to strip that prefix from location paths.
+  if (file.endsWith('.js') && file.includes(`${join('_next', 'static', 'chunks')}${process.platform === 'win32' ? '\\' : '/'}`)) {
+    after = after.replace('Xn=``', `Xn=\`${githubBasePath}\``);
+  }
 
   if (after !== before) {
     await writeFile(file, after);
