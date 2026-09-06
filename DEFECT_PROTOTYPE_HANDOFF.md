@@ -53,3 +53,15 @@
 - Nguồn: `HOA_NAM_DEFECT_UIUX_AUDIT_06092026.md`, yêu cầu trực tiếp và xác nhận phạm vi trong task; SKU audit làm tham chiếu nhất quán, không mở rộng nghiệp vụ DEF-01.
 - Repo `Duc-Nguyen98/WMS_UIUX_HoaNamv2`, GitHub Pages từ `docs/` sau build và `scripts/prepare-github-pages.mjs`.
 - Không xuất bản lên Sites cũ. Không đổi dependency, cấu hình build hoặc các nguồn dữ liệu màn khác.
+
+## Tinh chỉnh theo bản phác thảo người dùng — 06/09/2026
+
+- Tham khảo ảnh `stitch_ui_ux_screen_redesign/screen.png` về phân cấp thông tin; giữ màu tím Vuexy và sidebar đã duyệt, không chuyển sang bộ khung xanh của ảnh.
+- Thu gọn tiêu đề, bỏ khối tiêu đề danh sách lặp, đưa Tổng / Đang dùng / Ngừng dùng lên cạnh tên màn. Các số tính từ bộ dữ liệu DEMO hiện tại, không theo bộ lọc; loading/error hiển thị dấu gạch thay vì số giả.
+- Tách Mã và Tên thành hai cột có sort/aria-sort độc lập; mã dạng chip monospace mở chi tiết. Làm mới khoảng cách hàng, nền header, trạng thái dạng pill có chữ và dấu chấm; giữ nhãn Xem/Sửa và vùng bấm 44px.
+- Đưa lựa chọn số dòng lên toolbar, mặc định 10; footer tập trung vào phạm vi bản ghi và phân trang. Không khóa chiều cao bảng hoặc thêm cuộn dọc nội bộ.
+- Không bổ sung Phân nhóm, nhập/xuất Excel, checkbox/bulk action, menu nghiệp vụ hoặc quy tắc ngừng dùng chỉ vì chúng xuất hiện trong ảnh tham khảo. Giữ nguyên fixtures và logic form.
+- Kiểm tra lại trên trình duyệt ở 768, 900, 1024, 1280, 1440, 1920px: 10 dòng mặc định, không tràn ngang trang/bảng hoặc cuộn dọc nội bộ; Mã/Tên/Hành động cùng hiển thị.
+- Kiểm tra sort Mã giảm dần từ trang 2 trả về trang 1 với DEMO-DEF-903; sort Tên chuyển aria-sort sang đúng cột. Lọc Ngừng sử dụng trả 3 dòng, tổng vẫn 18/15/3; đổi 15 dòng và reload khôi phục đúng 15 sau khi khởi tạo phía client.
+- Chi tiết mở bằng Enter trên chip mã tại 768px. Sửa tên rồi Escape có cảnh báo; tiếp tục giữ draft, bỏ thay đổi đóng form. 29 unit tests, TypeScript, lint và build/export qua.
+- Bản xuất tĩnh: trang 2 có 8 dòng bắt đầu DEMO-DEF-011, Back khôi phục trang 1; không ghi nhận console error. Đo lại 768/1024/1920px không tràn trang/bảng hoặc cuộn dọc nội bộ.

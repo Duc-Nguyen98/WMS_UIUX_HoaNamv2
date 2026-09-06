@@ -196,6 +196,8 @@ export default function DefectPrototype() {
   }
   const clear = () => update({ q: '', status: 'all', page: 1 });
   const filtered = !!query.q || query.status !== 'all';
+  const summaryRecords = scenario === 'empty' ? [] : records;
+  const activeCount = summaryRecords.filter((record) => record.active).length;
   const sortHeader = (field: 'code' | 'name', label: string) => {
     const selected = query.sort.startsWith(field),
       asc = query.sort === `${field}.asc`;
@@ -220,20 +222,49 @@ export default function DefectPrototype() {
       className="hn-sku hn-master-list hn-def content-section"
       aria-labelledby="defect-heading"
     >
-      <header className="hn-cat-heading">
-        <span className="hn-cat-heading-icon">
-          <ClipboardList />
-        </span>
-        <div>
-          <span className="hn-cat-eyebrow">PROTOTYPE / DANH MỤC / DEF-01</span>
-          <h2 id="defect-heading">Danh mục Bệnh / lỗi</h2>
-          <p>Tra cứu danh mục bệnh / lỗi dùng cho bảo hành.</p>
+      <div className="hn-def-breadcrumb" aria-label="Vị trí prototype">
+        <span>PROTOTYPE</span>
+        <ChevronRight aria-hidden="true" />
+        <span>Danh mục</span>
+        <ChevronRight aria-hidden="true" />
+        <span>Bệnh / lỗi</span>
+      </div>
+      <header className="hn-def-heading">
+        <div className="hn-def-heading-content">
+          <div className="hn-def-title-line">
+            <h2 id="defect-heading">Danh mục Bệnh / lỗi</h2>
+            <dl
+              className="hn-def-summary"
+              aria-label="Tổng hợp danh mục DEMO, không theo bộ lọc"
+            >
+              <div>
+                <dt>Tổng</dt>
+                <dd>{unavailable ? '—' : summaryRecords.length}</dd>
+              </div>
+              <div className="is-active">
+                <dt>Đang dùng</dt>
+                <dd>{unavailable ? '—' : activeCount}</dd>
+              </div>
+              <div>
+                <dt>Ngừng dùng</dt>
+                <dd>
+                  {unavailable ? '—' : summaryRecords.length - activeCount}
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <p>Tra cứu mã, mô tả và trạng thái bệnh / lỗi dùng cho bảo hành.</p>
         </div>
-        <SkuBadge tone="purple">DEMO · Tablet+</SkuBadge>
+        {!readonly && (
+          <Button className="hn-def-add" onClick={() => open('form')}>
+            <Plus /> Thêm bệnh / lỗi
+          </Button>
+        )}
       </header>
-      <div className="hn-cat-scope">
+      <div className="hn-def-scope">
         <span>
-          Dữ liệu minh họa · Không kết nối kho thật · Tải lại để khôi phục mẫu
+          <SkuBadge tone="purple">DEMO</SkuBadge> Không kết nối kho thật · Tải
+          lại để khôi phục mẫu
         </span>
         <Button variant="ghost" onClick={() => open('rules')}>
           <CircleHelp /> Phạm vi & điểm chưa chốt
@@ -241,20 +272,6 @@ export default function DefectPrototype() {
       </div>
       {message && <SkuNotice tone="success">{message}</SkuNotice>}
       <div className="hn-cat-card">
-        <div className="hn-list-heading">
-          <div>
-            <h3>
-              Danh sách bệnh / lỗi{' '}
-              <span>{scenario === 'empty' ? 0 : records.length}</span>
-            </h3>
-            <p>Toàn bộ dữ liệu DEMO</p>
-          </div>
-          {!readonly && (
-            <Button onClick={() => open('form')}>
-              <Plus /> Thêm bệnh / lỗi
-            </Button>
-          )}
-        </div>
         <div className="hn-def-toolbar">
           <MasterDataSearch
             id="defect-search"
@@ -279,6 +296,18 @@ export default function DefectPrototype() {
             options={DEFECT_SORTS}
             onChange={(sort) => update({ sort, page: 1 })}
           />
+          <div className="hn-def-page-size">
+            <SkuSelect
+              id="defect-size"
+              label="Dòng / trang bệnh / lỗi"
+              value={String(query.size)}
+              options={[10, 15, 20, 50].map((n) => ({
+                value: String(n),
+                label: String(n),
+              }))}
+              onChange={(size) => update({ size: Number(size), page: 1 })}
+            />
+          </div>
         </div>
         {filtered && (
           <div className="hn-def-chips">
@@ -382,14 +411,31 @@ export default function DefectPrototype() {
                   </TableHead>
                   <TableHead
                     scope="col"
-                    className="def-identity"
+                    className="def-code"
                     aria-sort={
-                      query.sort.endsWith('asc') ? 'ascending' : 'descending'
+                      query.sort.startsWith('code')
+                        ? query.sort.endsWith('asc')
+                          ? 'ascending'
+                          : 'descending'
+                        : undefined
                     }
                   >
                     <div className="hn-def-sort">
                       {sortHeader('code', 'Mã')}
-                      <span aria-hidden="true">/</span>
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    scope="col"
+                    className="def-identity"
+                    aria-sort={
+                      query.sort.startsWith('name')
+                        ? query.sort.endsWith('asc')
+                          ? 'ascending'
+                          : 'descending'
+                        : undefined
+                    }
+                  >
+                    <div className="hn-def-sort">
                       {sortHeader('name', 'Tên bệnh / lỗi')}
                     </div>
                   </TableHead>
@@ -406,16 +452,27 @@ export default function DefectPrototype() {
               </TableHeader>
               <TableBody>
                 {result.rows.map((record, index) => (
-                  <TableRow key={record.id}>
+                  <TableRow
+                    key={record.id}
+                    data-inactive={!record.active || undefined}
+                  >
                     <TableCell className="def-stt">
                       {(result.page - 1) * query.size + index + 1}
+                    </TableCell>
+                    <TableCell className="def-code">
+                      <button
+                        className="hn-def-code"
+                        aria-label={`Xem thông tin ${record.code}`}
+                        onClick={() => open('detail', record)}
+                      >
+                        <code>{record.code}</code>
+                      </button>
                     </TableCell>
                     <TableCell className="def-identity">
                       <button
                         className="hn-def-name"
                         onClick={() => open('detail', record)}
                       >
-                        <strong>{record.code}</strong>
                         <span>{record.name}</span>
                       </button>
                       <button
@@ -437,9 +494,15 @@ export default function DefectPrototype() {
                       </button>
                     </TableCell>
                     <TableCell className="def-status">
-                      <SkuBadge tone={record.active ? 'green' : 'muted'}>
+                      <span
+                        className={`hn-def-status ${record.active ? 'is-active' : 'is-inactive'}`}
+                      >
+                        <span
+                          className="hn-def-status-dot"
+                          aria-hidden="true"
+                        />
                         {defectStatus(record.active)}
-                      </SkuBadge>
+                      </span>
                     </TableCell>
                     <TableCell className="def-actions">
                       <fieldset
@@ -472,20 +535,11 @@ export default function DefectPrototype() {
           )}
         </div>
         <div className="hn-sku-pagination hn-def-pagination">
-          <SkuSelect
-            id="defect-size"
-            label="Dòng / trang bệnh / lỗi"
-            value={String(query.size)}
-            options={[10, 15, 20, 50].map((n) => ({
-              value: String(n),
-              label: String(n),
-            }))}
-            onChange={(size) => update({ size: Number(size), page: 1 })}
-          />
           <span>
+            Hiển thị{' '}
             {unavailable
               ? '—'
-              : `${result.total ? `${(result.page - 1) * query.size + 1}–${Math.min(result.page * query.size, result.total)}` : 0} / ${result.total}`}
+              : `${result.total ? `${(result.page - 1) * query.size + 1}–${Math.min(result.page * query.size, result.total)}` : 0} / ${result.total} bệnh / lỗi`}
           </span>
           <Pagination aria-label="Phân trang bệnh / lỗi">
             <PaginationContent>
