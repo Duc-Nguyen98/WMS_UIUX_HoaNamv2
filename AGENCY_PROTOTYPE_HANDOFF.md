@@ -33,4 +33,14 @@ Nguồn yêu cầu: báo cáo `HOA_NAM_AGENCY_RECIPIENT_UIUX_AUDIT_06092026.md` 
 - Kiểm thử bản static: lỗi lưu giữ dữ liệu, xung đột DEMO → cho thử lại → thành công; Back phục hồi trang 1 và Forward trang 2. Dropdown/combobox đã thử bằng bàn phím; không coi mô phỏng xung đột là kiểm thử hai phiên thật.
 - Build Windows hoàn tất với exit 0 khi chạy PTY (`tty:true`), chuẩn hóa Pages thành công. Lần chạy pipe trước đó gặp assertion libuv lúc đóng tiến trình sau prerender; không thay dependency/config để né lỗi. TypeScript và lint các file mới đạt; cảnh báo chunk lớn/Recharts SSR của project vẫn còn.
 
+## Sửa giao diện theo ảnh phản hồi ngày 06/09/2026
+
+- Khung ngoài các section dùng toàn bộ chiều rộng `.review-content`, không giới hạn 1440px và không cộng thêm lề ngang của `.content-section`. Giữ lề chính 24px từ tablet trở lên, sidebar desktop 260px. Màn Auth giữ giới hạn form bên trong; không kéo giãn trường nhập theo khung ngoài.
+- Agency khai báo màu viền card riêng; không phụ thuộc biến chỉ tồn tại trong section Catalog. Thanh tìm kiếm dùng class riêng, một nút kính lúp 44px, input chừa 48px bên trái; loại bỏ icon trùng và tránh kế thừa nhầm breakpoint của Catalog.
+- Toolbar chuyển thành tìm kiếm toàn hàng + hai bộ lọc bằng nhau ở 768–1400px. Header bảng phân biệt Mã/Tên, hiển thị trường sort đang chọn, có nhãn và trạng thái cho bàn phím/trình đọc màn hình.
+- Sửa dùng variant ghost + trạng thái scoped: mặc định chữ tím/nền tím nhạt; hover/focus/active chữ và icon trắng trên nền #594FC7. Không trộn variant primary với màu chữ tím của action thứ cấp; bỏ bóng nút action từng dòng.
+- Đã đo trên bản chạy local tại 768/1024/1280/1440/1920px: cạnh ngoài Auth/Dashboard/SKU/Catalog/Agency trùng nhau; document không tràn ngang; table container không có khoảng cuộn dọc. Tại 768px cuộn ngang đến cuối 651px, STT/Mã/Tên vẫn bên trái và Xem/Sửa bên phải, không chồng nhau.
+- Đã thử tìm kiếm bằng nút và Enter, xóa bộ lọc, chọn loại Khách lẻ (5 kết quả), sort mã giảm dần toàn tập, trang 2 hiển thị STT 11–20; mở/đóng Thêm và Sửa. Đo hover + focus Sửa: chữ/icon rgb(255,255,255), nền rgb(89,79,199). Form Thêm 768px không tràn ngang, header/footer trong viewport.
+- Đây là sửa trình bày và kiểm thử hồi quy có giới hạn. Không thay đổi tập DEMO, logic lưu, luật BA/PO, backend hoặc dữ liệu thật; không khẳng định đã kiểm thử mọi tổ hợp nghiệp vụ hoặc đạt chứng nhận accessibility.
+
 Đích duy nhất: repo `Duc-Nguyen98/WMS_UIUX_HoaNamv2`, GitHub Pages `/WMS_UIUX_HoaNamv2/`. Không xuất bản Sites cũ và không chỉnh hệ thống kho thật.

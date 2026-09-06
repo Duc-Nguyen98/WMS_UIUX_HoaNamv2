@@ -218,7 +218,8 @@ export default function AgencyPrototype() {
         onClick={() =>
           update({ sort: `${field}.${ascending ? 'desc' : 'asc'}`, page: 1 })
         }
-        aria-label={`Sắp xếp ${label} ${ascending ? 'Z đến A' : 'A đến Z'}`}
+        aria-pressed={selected}
+        aria-label={`${label}: ${selected ? (ascending ? 'đang tăng dần' : 'đang giảm dần') : 'chưa sắp xếp'}. Sắp ${ascending ? 'giảm' : 'tăng'} dần`}
       >
         {label}
         {selected ? ascending ? <ArrowUp /> : <ArrowDown /> : <ArrowUpDown />}
@@ -228,7 +229,7 @@ export default function AgencyPrototype() {
   return (
     <section
       id="agency-prototype"
-      className="hn-sku hn-agy review-section"
+      className="hn-sku hn-agy content-section"
       aria-labelledby="agency-heading"
     >
       <div className="hn-cat-heading">
@@ -265,7 +266,7 @@ export default function AgencyPrototype() {
         </div>
         <div className="hn-agy-toolbar">
           <form
-            className="hn-cat-search"
+            className="hn-agy-search"
             onSubmit={(e) => {
               e.preventDefault();
               update({ q: search, page: 1 });
@@ -275,7 +276,6 @@ export default function AgencyPrototype() {
               Tìm mã / tên / thị trường / khu vực
             </label>
             <div>
-              <Search aria-hidden="true" size={18} />
               <Input
                 id="agency-search"
                 value={search}
@@ -283,7 +283,7 @@ export default function AgencyPrototype() {
                 placeholder="Nhập từ khóa, nhấn Enter…"
               />
               <Button type="submit" variant="ghost" aria-label="Tìm nơi nhận">
-                <Search />
+                <Search aria-hidden="true" />
               </Button>
             </div>
           </form>
@@ -427,6 +427,7 @@ export default function AgencyPrototype() {
                   >
                     <div className="hn-agy-sort">
                       {sortHeader('code', 'Mã')}
+                      <span aria-hidden="true">/</span>
                       {sortHeader('name', 'Tên nơi nhận')}
                     </div>
                   </TableHead>
@@ -500,6 +501,7 @@ export default function AgencyPrototype() {
                           Xem
                         </Button>
                         <Button
+                          variant="ghost"
                           className="hn-sku-edit-action"
                           aria-label={`Sửa ${r.code}`}
                           onClick={() => open('form', r)}
