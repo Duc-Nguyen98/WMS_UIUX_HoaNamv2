@@ -1,4 +1,6 @@
 'use client';
+import { MasterDataSearch } from '@/components/master-data-search';
+import './master-data-list.css';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -22,7 +24,6 @@ import {
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -384,23 +385,23 @@ export default function SkuPrototype() {
   return (
     <section
       id="sku-prototype"
-      className="content-section hn-sku"
+      className="content-section hn-sku hn-master-list"
       aria-labelledby="sku-heading"
     >
-      <header className="hn-sku-heading">
-        <div className="hn-sku-heading-icon">
+      <header className="hn-cat-heading">
+        <div className="hn-cat-heading-icon">
           <Boxes />
         </div>
         <div>
-          <div className="hn-sku-eyebrow">PROTOTYPE / DANH MỤC / MST-01</div>
+          <div className="hn-cat-eyebrow">PROTOTYPE / DANH MỤC / MST-01</div>
           <h2 id="sku-heading">Danh sách SKU</h2>
+          <p>Tra cứu và quản lý thông tin SKU.</p>
         </div>
         <SkuBadge tone="purple">DEMO · Tablet+</SkuBadge>
       </header>
-      <div className="hn-sku-demo-bar">
+      <div className="hn-cat-scope">
         <span>
-          Dữ liệu giả lập · Không kết nối hệ thống kho · Tải lại sẽ đặt lại các
-          chỉnh sửa mẫu
+          Dữ liệu minh họa · Không kết nối kho thật · Tải lại để khôi phục mẫu
         </span>
         <Button variant="ghost" onClick={() => open({ kind: 'rules' })}>
           <CircleHelp /> Phạm vi & quy tắc
@@ -447,6 +448,15 @@ export default function SkuPrototype() {
               </TabsTrigger>
             </TabsList>
           </Tabs>
+        </div>
+        <div className="hn-list-heading">
+          <div>
+            <h3>
+              {query.pending ? 'SKU chờ điền thông tin' : 'Danh sách SKU'}{' '}
+              <span>{query.pending ? counts.pending : counts.all}</span>
+            </h3>
+            <p>Toàn bộ dữ liệu DEMO</p>
+          </div>
           <div className="hn-sku-page-actions">
             {!readonly && (
               <>
@@ -464,28 +474,16 @@ export default function SkuPrototype() {
           </div>
         </div>
         <div className="hn-sku-filters">
-          <div className="hn-sku-search">
-            <label htmlFor="sku-search">Tìm mã / tên SKU</label>
-            <div>
-              <Search />
-              <Input
-                id="sku-search"
-                placeholder="Nhập mã hoặc tên SKU…"
-                maxLength={160}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              {search && (
-                <Button
-                  variant="ghost"
-                  aria-label="Xóa tìm kiếm"
-                  onClick={() => updateQuery({ q: '', page: 1 })}
-                >
-                  <X />
-                </Button>
-              )}
-            </div>
-          </div>
+          <MasterDataSearch
+            id="sku-search"
+            label="Tìm mã / tên SKU"
+            placeholder="Nhập mã hoặc tên SKU…"
+            maxLength={160}
+            value={search}
+            onChange={setSearch}
+            onSubmit={() => updateQuery({ q: search.trim(), page: 1 })}
+            onClear={() => updateQuery({ q: '', page: 1 })}
+          />
           <SkuSelect
             id="sku-type"
             label="Loại"

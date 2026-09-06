@@ -1,4 +1,6 @@
 'use client';
+import { MasterDataSearch } from '@/components/master-data-search';
+import './master-data-list.css';
 
 import {
   useEffect,
@@ -631,7 +633,7 @@ export default function CatalogPrototype() {
   const Icon = icons[query.type];
   return (
     <section
-      className="hn-sku hn-cat content-section"
+      className="hn-sku hn-cat hn-master-list content-section"
       id="catalog-prototype"
       aria-labelledby="catalog-heading"
     >
@@ -703,12 +705,12 @@ export default function CatalogPrototype() {
           </TabsList>
           {CATALOG_TYPES.map((type) => (
             <TabsContent key={type} value={type} className="hn-cat-panel">
-              <div className="hn-cat-panel-heading">
+              <div className="hn-list-heading">
                 <div>
-                  <span className={`hn-cat-type-icon ${type}`}>
-                    <Icon />
-                  </span>
-                  <h3>{CATALOG_LABELS[type]}</h3>
+                  <h3>
+                    {CATALOG_LABELS[type]} <span>{result.all}</span>
+                  </h3>
+                  <p>Toàn bộ dữ liệu DEMO</p>
                 </div>
                 {!readonly && (
                   <Button
@@ -727,29 +729,15 @@ export default function CatalogPrototype() {
                 </div>
               )}
               <div className="hn-cat-toolbar">
-                <div className="hn-cat-search">
-                  <label htmlFor={`cat-search-${type}`}>
-                    Tìm mã / tên {CATALOG_LABELS[type].toLocaleLowerCase('vi')}
-                  </label>
-                  <div>
-                    <Search />
-                    <Input
-                      id={`cat-search-${type}`}
-                      value={search}
-                      placeholder="Nhập mã hoặc tên…"
-                      onChange={(e) => setSearch(e.target.value)}
-                    />
-                    {search && (
-                      <Button
-                        variant="ghost"
-                        aria-label="Xóa tìm kiếm danh mục"
-                        onClick={() => update({ q: '', page: 1 })}
-                      >
-                        <X />
-                      </Button>
-                    )}
-                  </div>
-                </div>
+                <MasterDataSearch
+                  id={`cat-search-${type}`}
+                  label={`Tìm mã / tên ${CATALOG_LABELS[type].toLocaleLowerCase('vi')}`}
+                  value={search}
+                  placeholder="Nhập mã hoặc tên…"
+                  onChange={setSearch}
+                  onSubmit={() => update({ q: search, page: 1 })}
+                  onClear={() => update({ q: '', page: 1 })}
+                />
                 <SkuSelect
                   id={`cat-status-${type}`}
                   label="Trạng thái danh mục"
@@ -977,21 +965,32 @@ export default function CatalogPrototype() {
                               </SkuBadge>
                             </TableCell>
                             <TableCell className="hn-cat-action-col">
-                              <Button
-                                variant="ghost"
-                                className="hn-cat-edit"
-                                aria-label={`${readonly ? 'Xem' : 'Sửa'} ${r.code}`}
-                                onClick={() =>
-                                  open({
-                                    kind: readonly ? 'detail' : 'form',
-                                    type,
-                                    record: r,
-                                  })
-                                }
+                              <fieldset
+                                className="hn-sku-row-actions"
+                                aria-label={`Hành động ${r.code}`}
                               >
-                                {readonly ? <Eye /> : <Pencil />}
-                                {readonly ? 'Xem' : 'Sửa'}
-                              </Button>
+                                <Button
+                                  variant="outline"
+                                  aria-label={`Xem ${r.code}`}
+                                  onClick={() =>
+                                    open({ kind: 'detail', type, record: r })
+                                  }
+                                >
+                                  <Eye /> Xem
+                                </Button>
+                                {!readonly && (
+                                  <Button
+                                    variant="ghost"
+                                    className="hn-sku-edit-action"
+                                    aria-label={`Sửa ${r.code}`}
+                                    onClick={() =>
+                                      open({ kind: 'form', type, record: r })
+                                    }
+                                  >
+                                    <Pencil /> Sửa
+                                  </Button>
+                                )}
+                              </fieldset>
                             </TableCell>
                           </TableRow>
                         );
