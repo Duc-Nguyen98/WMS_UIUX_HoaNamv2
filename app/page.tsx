@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import DashboardPrototype from '@/components/dashboard-prototype';
 import SkuPrototype from '@/components/sku-prototype';
+import CatalogPrototype from '@/components/catalog-prototype';
+import { MasterDataDemoProvider } from '@/components/master-data-demo';
 import {
   AlertCircle, ArrowLeft, ArrowRight, Boxes, Check, CheckCircle2,
   ClipboardCheck, Eye, EyeOff, LayoutDashboard, LoaderCircle,
@@ -154,7 +156,7 @@ export default function Home() {
           <span className="nav-label">PROTOTYPE</span>
           <a href="#login-prototype"><LockKeyhole /> Đăng nhập</a><a href="#forgot-prototype"><Mail /> Quên mật khẩu</a>
           <a href="#dashboard-prototype"><LayoutDashboard /> Tổng quan vận hành</a>
-          <details className="hn-sku-nav" open><summary><Boxes /> Danh mục</summary><a href="#sku-prototype"><span aria-hidden="true">•</span> Danh sách SKU</a></details>
+          <details className="hn-sku-nav" open><summary><Boxes /> Danh mục</summary><a href="#sku-prototype"><span aria-hidden="true">•</span> Danh sách SKU</a><a href="#catalog-prototype"><span aria-hidden="true">•</span> Danh mục sản phẩm</a></details>
           <span className="nav-label">HANDOFF</span>
           <a href="#dev-spec"><Boxes /> DEV Specification</a><a href="#acceptance"><CheckCircle2 /> Acceptance Criteria</a>
         </nav>
@@ -203,7 +205,10 @@ export default function Home() {
         </section>
 
         <DashboardPrototype />
-        <SkuPrototype />
+        <MasterDataDemoProvider>
+          <SkuPrototype />
+          <CatalogPrototype />
+        </MasterDataDemoProvider>
 
         <section id="dev-spec" className="content-section">
           <SectionHeading number="04" eyebrow="HANDOFF" title="DEV Specification" note="P0 → P1 → P2" />

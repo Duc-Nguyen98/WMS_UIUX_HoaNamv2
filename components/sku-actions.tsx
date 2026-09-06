@@ -32,17 +32,15 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  SKU_BRANDS,
-  brandName,
   checkImportFile,
   emptySku,
   missingReferences,
-  modelsFor,
   typeName,
   validateSku,
   type Sku,
 } from '@/lib/sku-demo';
 import { SkuBadge, SkuNotice, SkuSelect } from './sku-primitives';
+import { useMasterDataDemo } from './master-data-demo';
 
 const pause = () =>
   new Promise<void>((resolve) => window.setTimeout(resolve, 600));
@@ -89,6 +87,7 @@ export function SkuDetail({
   onPublish: () => void;
   onClose: () => void;
 }) {
+  const { brandName, referenceLabel } = useMasterDataDemo();
   const missing = missingReferences(s);
   return (
     <>
@@ -130,10 +129,10 @@ export function SkuDetail({
             title="02 · Phân loại"
             rows={[
               ['Hãng', s.brand ? brandName(s.brand) : ''],
-              ['Nhóm hàng', s.group],
-              ['Model', s.model],
+              ['Nhóm hàng', referenceLabel('group', s.group)],
+              ['Model', referenceLabel('model', s.model)],
               ['Công suất', s.power],
-              ['Quy cách', s.packaging],
+              ['Quy cách', referenceLabel('packaging', s.packaging)],
             ]}
           />
           <DataGroup
@@ -208,6 +207,14 @@ export function SkuForm({
   onSaved: (s: Sku) => void;
   onClose: () => void;
 }) {
+  const {
+    brands,
+    models,
+    modelsFor,
+    brandName,
+    referenceLabel,
+    referenceValue,
+  } = useMasterDataDemo();
   const [draft, setDraft] = useState<Sku>(() =>
     sku ? { ...sku } : emptySku(),
   );
@@ -261,7 +268,11 @@ export function SkuForm({
     type = 'text',
     disabled = false,
   ) {
-    const value = draft[key];
+    const referenceType =
+      key === 'group' ? 'group' : key === 'packaging' ? 'packaging' : null;
+    const value = referenceType
+      ? referenceLabel(referenceType, String(draft[key]))
+      : draft[key];
     return (
       <div className="hn-sku-field">
         <label htmlFor={`sku-form-${key}`}>
@@ -285,7 +296,9 @@ export function SkuForm({
                   ? e.target.value === ''
                     ? null
                     : Number(e.target.value)
-                  : e.target.value,
+                  : referenceType
+                    ? referenceValue(referenceType, e.target.value)
+                    : e.target.value,
             })
           }
         />
@@ -303,7 +316,7 @@ export function SkuForm({
   async function submit(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     if (guard.current || conflict) return;
-    const issues = validateSku(draft, rows);
+    const issues = validateSku(draft, rows, models);
     setErrors(issues);
     if (Object.keys(issues).length) {
       window.requestAnimationFrame(() =>
@@ -424,7 +437,7 @@ export function SkuForm({
               value={draft.brand || 'unset'}
               options={[
                 { value: 'unset', label: 'Chưa chọn Hãng' },
-                ...SKU_BRANDS,
+                ...brands.filter((b) => b.active || b.value === draft.brand),
               ]}
               onChange={(v) => brandChange(v === 'unset' ? '' : v)}
               disabled={busy}
@@ -440,7 +453,7 @@ export function SkuForm({
                 },
                 ...modelsFor(draft.brand).map((m) => ({
                   value: m.value,
-                  label: `${m.value} · ${brandName(m.brand)}`,
+                  label: `${m.label} · ${brandName(m.brand)}`,
                 })),
               ]}
               onChange={(v) => changed({ model: v === 'unset' ? '' : v })}

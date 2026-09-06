@@ -12,6 +12,19 @@ import {
   checkImportFile,
 } from '../lib/sku-demo.ts';
 
+test('fresh/invalid URLs default to ten rows; explicit page sizes remain shareable', () => {
+  assert.equal(SKU_DEFAULT_QUERY.size, 10);
+  for (const search of ['', '?skuSize=999', '?skuSize=bogus']) {
+    assert.equal(parseSkuQuery(search).size, 10);
+    assert.equal(
+      querySkus(SKU_FIXTURES, parseSkuQuery(search)).rows.length,
+      10,
+    );
+  }
+  assert.equal(parseSkuQuery('?skuSize=15').size, 15);
+  const last = querySkus(SKU_FIXTURES, { ...SKU_DEFAULT_QUERY, page: 8 });
+  assert.equal(last.rows.length, 2);
+});
 test('global sorting precedes slicing across every page, all supported sorts/sizes', () => {
   const original = SKU_FIXTURES.map((s) => s.id);
   for (const size of [10, 15, 20, 50])
@@ -105,7 +118,7 @@ test('invalid URL values recover safely and pages are clamped to dataset', () =>
   );
   assert.equal(
     querySkus(SKU_FIXTURES, { ...SKU_DEFAULT_QUERY, page: 999 }).page,
-    5,
+    8,
   );
   assert.equal(querySkus([], { ...SKU_DEFAULT_QUERY, page: 99 }).page, 1);
 });

@@ -107,7 +107,7 @@ export const SKU_DEFAULT_QUERY: SkuQuery = {
   pending: false,
   sort: 'code.asc',
   page: 1,
-  size: 15,
+  size: 10,
 };
 const sorts: SkuSort[] = [
   'code.asc',
@@ -126,14 +126,14 @@ export function parseSkuQuery(search: string): SkuQuery {
   return {
     q: (p.get('skuQ') || '').slice(0, 160).trim(),
     type: choice('skuType', ['all', 'product', 'component'], 'all'),
-    brand: choice('skuBrand', ['all', 'a', 'b', 'c'], 'all'),
+    brand: (p.get('skuBrand') || 'all').slice(0, 80),
     status: choice('skuStatus', ['all', 'active', 'inactive'], 'all'),
     pending: p.get('skuPending') === '1',
     sort: choice('skuSort', sorts, 'code.asc') as SkuSort,
     page: Math.max(1, Math.min(100000, Number(p.get('skuPage')) || 1)) | 0,
     size: [10, 15, 20, 50].includes(Number(p.get('skuSize')))
       ? Number(p.get('skuSize'))
-      : 15,
+      : 10,
   };
 }
 export function skuUrl(href: string, q: SkuQuery) {
@@ -219,7 +219,11 @@ export function emptySku(): Sku {
     revision: 1,
   };
 }
-export function validateSku(s: Sku, rows: Sku[]) {
+export function validateSku(
+  s: Sku,
+  rows: Sku[],
+  models: { value: string; brand: string }[] = SKU_MODELS,
+) {
   const errors: Record<string, string> = {};
   if (!s.code.trim()) errors.code = 'Nhập mã SKU mẫu.';
   else if (
@@ -231,7 +235,10 @@ export function validateSku(s: Sku, rows: Sku[]) {
   )
     errors.code = 'Mã đã có trong danh sách DEMO. Hãy dùng mã khác.';
   if (!s.name.trim()) errors.name = 'Nhập tên SKU mẫu.';
-  if (s.model && !modelsFor(s.brand).some((m) => m.value === s.model))
+  if (
+    s.model &&
+    !models.some((m) => m.brand === s.brand && m.value === s.model)
+  )
     errors.model = 'Model không thuộc Hãng đã chọn.';
   if (s.min !== null && (!Number.isFinite(s.min) || s.min < 0))
     errors.min = 'Tối thiểu phải từ 0 trở lên hoặc để trống.';

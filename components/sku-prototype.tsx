@@ -11,6 +11,7 @@ import {
   ChevronRight,
   CircleHelp,
   Eye,
+  Ellipsis,
   FileSpreadsheet,
   FilterX,
   ListFilter,
@@ -22,6 +23,14 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -54,10 +63,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
-  SKU_BRANDS,
   SKU_DEFAULT_QUERY,
-  SKU_FIXTURES,
-  brandName,
   missingReferences,
   parseSkuQuery,
   querySkus,
@@ -77,15 +83,98 @@ import {
 import './sku-prototype.css';
 
 import { SkuBadge, SkuNotice, SkuSelect } from './sku-primitives';
+import { useMasterDataDemo } from './master-data-demo';
 type Action = {
   kind: 'detail' | 'edit' | 'add' | 'publish' | 'import' | 'rules';
   id?: string;
 };
 
-export default function SkuPrototype() {
-  const [rows, setRows] = useState<Sku[]>(() =>
-    SKU_FIXTURES.map((s) => ({ ...s })),
+function SkuRowActions({
+  sku,
+  readonly,
+  onOpen,
+}: {
+  sku: Sku;
+  readonly: boolean;
+  onOpen: (action: Action, origin?: HTMLElement | null) => void;
+}) {
+  const trigger = useRef<HTMLButtonElement | null>(null);
+  const openingDialog = useRef(false);
+  return (
+    <fieldset
+      className="hn-sku-row-actions"
+      aria-label={`Hành động ${sku.code}`}
+    >
+      <Button
+        variant="outline"
+        aria-label={`Xem ${sku.code}`}
+        onClick={() => onOpen({ kind: 'detail', id: sku.id })}
+      >
+        <Eye /> Xem
+      </Button>
+      {!readonly && (
+        <>
+          <Button
+            variant="ghost"
+            className="hn-sku-edit-action"
+            aria-label={`${sku.pending ? 'Hoàn thiện' : 'Sửa'} ${sku.code}`}
+            onClick={() => onOpen({ kind: 'edit', id: sku.id })}
+          >
+            <Pencil /> {sku.pending ? 'Điền' : 'Sửa'}
+          </Button>
+          <DropdownMenu
+            onOpenChange={(value) => {
+              if (value) openingDialog.current = false;
+            }}
+          >
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  ref={trigger}
+                  variant="outline"
+                  className="hn-sku-more-action"
+                  aria-label={`Tác vụ khác — ${sku.code}`}
+                  title="Tác vụ ứng dụng"
+                />
+              }
+            >
+              <Ellipsis />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="hn-sku-action-menu"
+              align="end"
+              sideOffset={6}
+              finalFocus={() =>
+                openingDialog.current ? false : trigger.current
+              }
+            >
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>{sku.code} · DEMO</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => {
+                    openingDialog.current = true;
+                    onOpen({ kind: 'publish', id: sku.id }, trigger.current);
+                  }}
+                >
+                  {sku.published ? 'Gỡ khỏi ứng dụng' : 'Đưa lên ứng dụng'}
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </>
+      )}
+    </fieldset>
   );
+}
+
+export default function SkuPrototype() {
+  const {
+    skus: rows,
+    setSkus: setRows,
+    brands,
+    brandName,
+    referenceLabel,
+  } = useMasterDataDemo();
   const [query, setQuery] = useState<SkuQuery>(SKU_DEFAULT_QUERY);
   const [search, setSearch] = useState('');
   const [hydrated, setHydrated] = useState(false);
@@ -209,8 +298,16 @@ export default function SkuPrototype() {
       updateQuery({ page: result.page }, true);
   }, [hydrated, query.page, result.page, scene]);
 
-  function open(next: Action) {
-    returnFocus.current = document.activeElement as HTMLElement;
+  function changePage(page: number) {
+    updateQuery({ page });
+    requestAnimationFrame(() => {
+      const table = document.getElementById('sku-results-table');
+      table?.focus({ preventScroll: true });
+      table?.scrollIntoView({ block: 'start' });
+    });
+  }
+  function open(next: Action, origin?: HTMLElement | null) {
+    returnFocus.current = origin || (document.activeElement as HTMLElement);
     setAction(next);
     setDirty(false);
     setBusy(false);
@@ -404,7 +501,7 @@ export default function SkuPrototype() {
             id="sku-brand"
             label="Hãng"
             value={query.brand}
-            options={[{ value: 'all', label: 'Tất cả hãng' }, ...SKU_BRANDS]}
+            options={[{ value: 'all', label: 'Tất cả hãng' }, ...brands]}
             onChange={(brand) => updateQuery({ brand, page: 1 })}
           />
           <SkuSelect
@@ -520,7 +617,12 @@ export default function SkuPrototype() {
             </Button>
           </div>
         ) : (
-          <div className="hn-sku-table-wrap">
+          <div
+            className="hn-sku-table-wrap"
+            id="sku-results-table"
+            tabIndex={-1}
+            aria-label="Kết quả SKU"
+          >
             <Table className="hn-sku-table">
               <TableCaption className="sr-only">
                 Danh sách SKU mẫu. Cột SKU và Hành động cố định khi cuộn ngang.
@@ -528,6 +630,9 @@ export default function SkuPrototype() {
               </TableCaption>
               <TableHeader>
                 <TableRow>
+                  <TableHead scope="col" className="hn-sku-stt">
+                    STT
+                  </TableHead>
                   {sortHeader('SKU / Tên', 'code', 'hn-sku-identity')}
                   <TableHead scope="col">Loại / Hãng</TableHead>
                   <TableHead scope="col">Nhóm hàng / Model</TableHead>
@@ -541,8 +646,11 @@ export default function SkuPrototype() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {result.rows.map((s) => (
+                {result.rows.map((s, index) => (
                   <TableRow key={s.id} data-highlight={highlight === s.id}>
+                    <TableCell className="hn-sku-stt">
+                      {(result.page - 1) * query.size + index + 1}
+                    </TableCell>
                     <TableCell className="hn-sku-identity">
                       <button
                         className="hn-sku-name"
@@ -569,7 +677,7 @@ export default function SkuPrototype() {
                     </TableCell>
                     <TableCell>
                       <strong className="hn-sku-cell-title">
-                        {s.group || 'Chưa có'}
+                        {referenceLabel('group', s.group) || 'Chưa có'}
                       </strong>
                       <span className="hn-sku-cell-sub">
                         {s.model || 'Model: chưa có'}
@@ -593,37 +701,11 @@ export default function SkuPrototype() {
                       <span className="hn-sku-cell-sub">Trạng thái mẫu</span>
                     </TableCell>
                     <TableCell className="hn-sku-actions-cell">
-                      <div className="hn-sku-row-actions">
-                        <Button
-                          variant="ghost"
-                          aria-label={`Xem ${s.code}`}
-                          onClick={() => open({ kind: 'detail', id: s.id })}
-                        >
-                          <Eye /> Xem
-                        </Button>
-                        {!readonly && (
-                          <Button
-                            variant="ghost"
-                            aria-label={`${s.pending ? 'Hoàn thiện' : 'Sửa'} ${s.code}`}
-                            onClick={() => open({ kind: 'edit', id: s.id })}
-                          >
-                            <Pencil /> {s.pending ? 'Điền' : 'Sửa'}
-                          </Button>
-                        )}
-                      </div>
-                      {!readonly && (
-                        <Button
-                          variant="ghost"
-                          className="hn-sku-app-action"
-                          aria-label={`${s.published ? 'Gỡ khỏi' : 'Đưa lên'} ứng dụng — ${s.code} — DEMO`}
-                          onClick={() => open({ kind: 'publish', id: s.id })}
-                        >
-                          {s.published
-                            ? 'Gỡ khỏi ứng dụng'
-                            : 'Đưa lên ứng dụng'}{' '}
-                          <ChevronRight />
-                        </Button>
-                      )}
+                      <SkuRowActions
+                        sku={s}
+                        readonly={readonly}
+                        onOpen={open}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -655,7 +737,7 @@ export default function SkuPrototype() {
                   variant="outline"
                   aria-label="Trang trước"
                   disabled={result.page === 1 || scene === 'loading'}
-                  onClick={() => updateQuery({ page: result.page - 1 })}
+                  onClick={() => changePage(result.page - 1)}
                 >
                   <ChevronLeft />
                 </Button>
@@ -676,7 +758,7 @@ export default function SkuPrototype() {
                       variant={p === result.page ? 'default' : 'ghost'}
                       aria-label={`Trang ${p}`}
                       aria-current={p === result.page ? 'page' : undefined}
-                      onClick={() => updateQuery({ page: p })}
+                      onClick={() => changePage(p)}
                     >
                       {p}
                     </Button>
@@ -687,7 +769,7 @@ export default function SkuPrototype() {
                   variant="outline"
                   aria-label="Trang sau"
                   disabled={result.page === result.pages || scene === 'loading'}
-                  onClick={() => updateQuery({ page: result.page + 1 })}
+                  onClick={() => changePage(result.page + 1)}
                 >
                   <ChevronRight />
                 </Button>
