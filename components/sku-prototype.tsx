@@ -261,12 +261,12 @@ export default function SkuPrototype() {
         setConfirmLeave(true);
       }
     };
-    window.addEventListener('popstate', pop);
+    window.addEventListener('hn:prototype-history', pop);
     window.addEventListener('beforeunload', unload);
     document.addEventListener('click', link, true);
     return () => {
       mounted = false;
-      window.removeEventListener('popstate', pop);
+      window.removeEventListener('hn:prototype-history', pop);
       window.removeEventListener('beforeunload', unload);
       document.removeEventListener('click', link, true);
     };

@@ -281,10 +281,10 @@ export default function DashboardPrototype() {
       setPendingRoute(null);
       readLocation();
     };
-    window.addEventListener('popstate', pop);
+    window.addEventListener('hn:prototype-history', pop);
     return () => {
       cancelAnimationFrame(initialRead);
-      window.removeEventListener('popstate', pop);
+      window.removeEventListener('hn:prototype-history', pop);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);

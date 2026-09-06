@@ -537,11 +537,11 @@ export default function CatalogPrototype() {
     const unload = (e: BeforeUnloadEvent) => {
       if (dirtyRef.current || busyRef.current) e.preventDefault();
     };
-    window.addEventListener('popstate', pop);
+    window.addEventListener('hn:prototype-history', pop);
     window.addEventListener('beforeunload', unload);
     return () => {
       mounted = false;
-      window.removeEventListener('popstate', pop);
+      window.removeEventListener('hn:prototype-history', pop);
       window.removeEventListener('beforeunload', unload);
     };
   }, []);

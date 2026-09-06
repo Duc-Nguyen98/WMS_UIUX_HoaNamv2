@@ -31,3 +31,9 @@ Repo: https://github.com/Duc-Nguyen98/WMS_UIUX_HoaNamv2
 Preview: https://duc-nguyen98.github.io/WMS_UIUX_HoaNamv2/
 
 Không xuất bản lên Sites cũ. Sau mỗi build cần chuẩn hóa asset/base path bằng script hiện có, kiểm tra bản static và chỉ báo hoàn tất sau khi GitHub Pages triển khai đúng commit thành công.
+
+Base path của client được cấu hình ở `environments.client.define` trong `vite.config.ts` khi build; prerender vẫn ở `/` theo trình xuất static hiện tại. Không sửa một tên biến trong bundle minify: hằng base path còn bị inline vào các controller, gây lỗi lặp điều hướng khi bấm menu. Chỉ bật `next.config.basePath` ở phiên bản exporter hiện tại sẽ làm prerender `/` bị bỏ qua, thiếu `index.html`.
+
+`PrototypeHistory` chuyển popstate cùng tài liệu thành sự kiện `hn:prototype-history` cho Dashboard/SKU/Catalog tự phục hồi bộ lọc. Đây là review board một trang, query/hash là state DEMO, không phải route server. Không yêu cầu tải lại RSC từ GitHub Pages khi đổi hash hoặc Back/Forward. Dashboard chỉ đổi tên sự kiện đăng ký/huỷ đăng ký, không đổi UI hoặc nghiệp vụ.
+
+Khi xuất static, `prepare-github-pages.mjs` chèn bootstrap history đồng bộ từ `scripts/prototype-history-bootstrap.js` vào đầu `<head>`: cần đăng ký trước module router, không chỉ dựa vào React effect chạy sau hydration. Bootstrap không đọc/gửi dữ liệu ra ngoài.

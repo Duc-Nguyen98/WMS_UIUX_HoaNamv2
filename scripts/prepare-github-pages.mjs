@@ -22,25 +22,31 @@ async function walk(directory) {
 }
 
 const files = await walk(outputRoot);
+const historyBootstrap = await readFile(resolve('scripts/prototype-history-bootstrap.js'), 'utf8');
 let rewritten = 0;
 
 for (const file of files) {
   const before = await readFile(file, 'utf8');
+  // Protect already-prefixed assets before normalizing root-relative ones.
+  // Using absolute project paths also works after a query/hash navigation.
   let after = before
-    .replaceAll(`${githubBasePath}/_next/`, './_next/')
-    .replaceAll('/_next/', './_next/')
+    .replaceAll(`${githubBasePath.slice(1)}${githubBasePath}/`, `${githubBasePath.slice(1)}/`)
+    .replaceAll(`${githubBasePath.slice(1)}/_next/`, '__HN_PAGES_ASSET__/')
+    .replaceAll('/_next/', `${githubBasePath}/_next/`)
+    .replaceAll('__HN_PAGES_ASSET__/', `${githubBasePath.slice(1)}/_next/`)
     .replaceAll(`"_next/`, `"${githubBasePath.slice(1)}/_next/`)
     .replaceAll(`'_next/`, `'${githubBasePath.slice(1)}/_next/`)
-    .replaceAll(`"${githubBasePath}/favicon.svg"`, '"./favicon.svg"')
-    .replaceAll(`'${githubBasePath}/favicon.svg'`, "'./favicon.svg'")
-    .replaceAll('"/favicon.svg"', '"./favicon.svg"')
-    .replaceAll("'/favicon.svg'", "'./favicon.svg'");
+    .replaceAll('"/favicon.svg"', `"${githubBasePath}/favicon.svg"`)
+    .replaceAll("'/favicon.svg'", `'${githubBasePath}/favicon.svg'`);
 
-  // Vinext's client router is emitted with an empty base path by default.
-  // GitHub Pages project sites are mounted below /<repo>, so teach the
-  // generated navigation runtime to strip that prefix from location paths.
-  if (file.endsWith('.js') && file.includes(`${join('_next', 'static', 'chunks')}${process.platform === 'win32' ? '\\' : '/'}`)) {
-    after = after.replace('Xn=``', `Xn=\`${githubBasePath}\``);
+  // Router basePath is compiled by the client environment in vite.config.ts.
+  // Never patch one minified
+  // variable: the optimizer also inlines it into navigation controllers.
+
+  // Register the one-document history owner before the RSC module registers
+  // its popstate listener. A React effect is too late at window event target.
+  if (file === join(outputRoot, 'index.html') && !after.includes('id="hn-prototype-history"')) {
+    after = after.replace('<head>', `<head><script id="hn-prototype-history">${historyBootstrap}</script>`);
   }
 
   if (after !== before) {

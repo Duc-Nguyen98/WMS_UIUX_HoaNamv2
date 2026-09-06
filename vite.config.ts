@@ -34,7 +34,7 @@ const localBindingConfig = {
     : [],
 };
 
-export default defineConfig(async () => {
+export default defineConfig(async ({ command }) => {
   // Keep Wrangler and Miniflare state project-local. These are non-secret tool
   // settings; application environment belongs in ignored `.env*` files.
   process.env.WRANGLER_WRITE_LOGS ??= 'false';
@@ -46,6 +46,15 @@ export default defineConfig(async () => {
 
   return {
     css: { postcss: { plugins: [tailwindcss()] } },
+    // Prerender at /, but compile every client navigation path for the Pages
+    // project mount. A minified-variable rewrite misses inlined constants.
+    environments: command === 'build' ? {
+      client: {
+        define: {
+          'process.env.__NEXT_ROUTER_BASEPATH': JSON.stringify('/WMS_UIUX_HoaNamv2'),
+        },
+      },
+    } : undefined,
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,

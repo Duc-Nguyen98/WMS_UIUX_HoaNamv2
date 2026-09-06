@@ -5,6 +5,7 @@ import DashboardPrototype from '@/components/dashboard-prototype';
 import SkuPrototype from '@/components/sku-prototype';
 import CatalogPrototype from '@/components/catalog-prototype';
 import { MasterDataDemoProvider } from '@/components/master-data-demo';
+import PrototypeHistory from '@/components/prototype-history';
 import {
   AlertCircle, ArrowLeft, ArrowRight, Boxes, Check, CheckCircle2,
   ClipboardCheck, Eye, EyeOff, LayoutDashboard, LoaderCircle,
@@ -205,6 +206,7 @@ export default function Home() {
         </section>
 
         <DashboardPrototype />
+        <PrototypeHistory />
         <MasterDataDemoProvider>
           <SkuPrototype />
           <CatalogPrototype />
