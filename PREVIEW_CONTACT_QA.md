@@ -1,5 +1,7 @@
 # Contact — triển khai và kiểm tra mobile
 
+> Cập nhật theo xác nhận mới nhất của người dùng: giữ bố cục và interaction vừa nâng cấp, khôi phục bảng màu Hoa Nam `#0C6286`, `#0C5D7D`, `#5E93A7`, `#FAFCFC`. Các mô tả màu tím và phép đo tương phản tím ở bên dưới là lịch sử lượt kiểm tra trước, không còn là chỉ dẫn màu cho DEV. Chỉ thay token màu `.pv-theme`; spacing, radius, typography, cấu trúc JSX và hành vi được giữ nguyên. Không chèn logo từ ảnh bảng màu.
+
 Phạm vi: yêu cầu `pasted-text.txt` người dùng cung cấp ngày 07/09/2026. Màn chính `/preview/#view=contact`, cùng primitive và token Preview cần thiết. Yêu cầu mới thay bảng màu Hoa Nam cũ bằng Vuexy tím; giữ giao diện sáng, không logo, không đăng nhập. Không chỉnh nội dung hoặc bố cục WMS.
 
 ## Source đã đối chiếu
@@ -76,3 +78,7 @@ Build tĩnh Preview riêng đạt bằng Node 24.19. TypeScript của bản buil
 - Safe area được nối bằng CSS `env(safe-area-inset-top/bottom)` và viewport-fit cover; trình duyệt QA trả inset 0. Chưa kiểm tra notch/Home Indicator và bàn phím ảo trên thiết bị iOS/Android thật. Ma trận ở trên xác nhận viewport, focus và layout trong trình duyệt, không thay thế kiểm tra thiết bị.
 - Reduced motion có rule tắt animation/transition và đã xác nhận stylesheet chứa nhánh này; chưa đổi tùy chọn trợ năng hệ điều hành để kiểm tra trên thiết bị thật.
 - Không tuyên bố toàn bộ nghiệm thu vận hành DONE/PASS cho các phần chưa có hệ thống hoặc thiết bị kiểm chứng. Phần UI được triển khai và bàn giao riêng với các giới hạn này.
+
+## Xác nhận sau xuất bản
+
+GitHub Pages báo `built` cho commit `2edace1239e6ebbecc739c87f843de43f167c6ac`. URL HTTPS trả 200, HTML khớp bản build cuối, 31 tài nguyên hiện tại trả 200. Màn Contact trên HTTPS hiển thị “Liên hệ & tư vấn”, nút solid đúng `rgb(103,93,216)`; 390×844 không overflow ngang, console không có error/warning mới. Đã giữ tab public tại `https://duc-nguyen98.github.io/WMS_UIUX_HoaNamv2/preview/#view=contact` để audit.

@@ -1,6 +1,6 @@
 {
   "../../node_modules/vinext/dist/shims/internal/app-route-prefetch-policy.js": {
-    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/app-route-prefetch-policy-Da-fGICG.js",
+    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/app-route-prefetch-policy-CQPjcPG-.js",
     "name": "app-route-prefetch-policy",
     "src": "../../node_modules/vinext/dist/shims/internal/app-route-prefetch-policy.js",
     "isDynamicEntry": true,
@@ -9,7 +9,7 @@
     ]
   },
   "../../node_modules/vinext/dist/shims/layout-segment-context.js": {
-    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/layout-segment-context-CN4ihjTh.js",
+    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/layout-segment-context-D-1Tej22.js",
     "name": "layout-segment-context",
     "src": "../../node_modules/vinext/dist/shims/layout-segment-context.js",
     "isDynamicEntry": true,
@@ -29,11 +29,11 @@
       "_framework-D_rUT4EX.js"
     ]
   },
-  "_chevron-right-BH4v5ISY.js": {
-    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/chevron-right-BH4v5ISY.js",
+  "_chevron-right-DU7y_v8y.js": {
+    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/chevron-right-DU7y_v8y.js",
     "name": "chevron-right",
     "imports": [
-      "_preview-catalog-DsJQ683J.js"
+      "_preview-catalog-DuDCNW0K.js"
     ]
   },
   "_framework-D_rUT4EX.js": {
@@ -43,8 +43,8 @@
       "_rolldown-runtime-C60lm6uB.js"
     ]
   },
-  "_preview-catalog-DsJQ683J.js": {
-    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/preview-catalog-DsJQ683J.js",
+  "_preview-catalog-DuDCNW0K.js": {
+    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/preview-catalog-DuDCNW0K.js",
     "name": "preview-catalog",
     "imports": [
       "_rolldown-runtime-C60lm6uB.js",
@@ -52,12 +52,12 @@
       "_framework-D_rUT4EX.js"
     ]
   },
-  "_preview-contact-D6J8g1nB.js": {
-    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/preview-contact-D6J8g1nB.js",
+  "_preview-contact-hXl3sNDz.js": {
+    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/preview-contact-hXl3sNDz.js",
     "name": "preview-contact",
     "imports": [
       "_rolldown-runtime-C60lm6uB.js",
-      "_preview-catalog-DsJQ683J.js",
+      "_preview-catalog-DuDCNW0K.js",
       "_framework-D_rUT4EX.js"
     ]
   },
@@ -66,45 +66,45 @@
     "name": "rolldown-runtime"
   },
   "components/preview-detail.tsx": {
-    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/preview-detail-DKf1Ky3P.js",
+    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/preview-detail-CsRz3Wat.js",
     "name": "preview-detail",
     "src": "components/preview-detail.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-C60lm6uB.js",
-      "_preview-catalog-DsJQ683J.js",
-      "_chevron-right-BH4v5ISY.js",
+      "_preview-catalog-DuDCNW0K.js",
+      "_chevron-right-DU7y_v8y.js",
       "_framework-D_rUT4EX.js"
     ]
   },
   "components/preview-request.tsx": {
-    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/preview-request-DAmDzNds.js",
+    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/preview-request-4hXvPRj7.js",
     "name": "preview-request",
     "src": "components/preview-request.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-C60lm6uB.js",
-      "_preview-catalog-DsJQ683J.js",
-      "_preview-contact-D6J8g1nB.js",
+      "_preview-catalog-DuDCNW0K.js",
+      "_preview-contact-hXl3sNDz.js",
       "_framework-D_rUT4EX.js"
     ]
   },
   "components/product-preview.tsx": {
-    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/product-preview-8jVIPw4L.js",
+    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/product-preview-CrhcX8Ox.js",
     "name": "product-preview",
     "src": "components/product-preview.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-C60lm6uB.js",
       "virtual:vinext-app-browser-entry",
-      "_preview-catalog-DsJQ683J.js",
-      "_preview-contact-D6J8g1nB.js",
-      "_chevron-right-BH4v5ISY.js",
+      "_preview-catalog-DuDCNW0K.js",
+      "_preview-contact-hXl3sNDz.js",
+      "_chevron-right-DU7y_v8y.js",
       "_framework-D_rUT4EX.js"
     ],
     "dynamicImports": [
       "components/preview-detail.tsx",
-      "_preview-contact-D6J8g1nB.js",
+      "_preview-contact-hXl3sNDz.js",
       "components/preview-request.tsx"
     ],
     "css": [
@@ -112,7 +112,7 @@
     ]
   },
   "virtual:vinext-app-browser-entry": {
-    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/index-DtkVR7iH.js",
+    "file": "WMS_UIUX_HoaNamv2/preview/_next/static/chunks/index-DddjQIrd.js",
     "name": "index",
     "src": "virtual:vinext-app-browser-entry",
     "isEntry": true,
