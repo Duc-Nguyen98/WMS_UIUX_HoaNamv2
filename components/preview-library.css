@@ -1,8 +1,8 @@
 .pv-theme .pv-library-menu-button {
   flex: 0 0 44px;
-  color: var(--pv-primary, #0c6286);
-  border: 1px solid #dce8ed;
-  border-radius: 10px;
+  color: var(--pv-primary, var(--primary-text));
+  border: 1px solid var(--border);
+  border-radius: var(--pv-radius);
   background: white;
 }
 .pv-theme .pv-library-menu {
@@ -16,9 +16,9 @@
   gap: 14px;
   padding: 16px;
   min-height: 58px;
-  border: 1px solid #deeaee;
+  border: 1px solid var(--border);
   border-radius: 12px;
-  color: #214552;
+  color: var(--foreground);
   background: #fff;
   text-align: left;
 }
@@ -29,25 +29,25 @@
   width: 21px;
   height: 21px;
   flex-shrink: 0;
-  color: #0c6286;
+  color: var(--primary-text);
 }
 .pv-library-menu button small {
   padding: 3px 8px;
-  background: #eaf4f8;
+  background: var(--secondary);
   border-radius: 6px;
 }
 .pv-library-menu button[aria-current='page'],
 .pv-library-menu button:hover {
-  border-color: #5e93a7;
-  background: #f0f8fa;
+  border-color: var(--primary-text);
+  background: var(--pv-surface-tint);
 }
 .pv-library-notice {
   display: flex;
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
-  background: #edf7fa;
-  border: 1px solid #cfe3eb;
+  background: var(--secondary);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 10px 14px;
   margin-bottom: 18px;
@@ -63,7 +63,7 @@
 .pv-product-tools {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-top: 1px solid #e6eff2;
+  border-top: 1px solid var(--border);
   padding: 5px 8px;
   gap: 4px;
 }
@@ -74,7 +74,7 @@
   gap: 6px;
   min-height: 44px;
   padding: 6px 4px;
-  color: #426572;
+  color: var(--muted-foreground);
   font-size: 14px;
   border-radius: 8px;
   background: transparent;
@@ -86,11 +86,11 @@
   flex-shrink: 0;
 }
 .pv-product-tools button[aria-pressed='true'] {
-  color: #0c6286;
-  background: #eaf5f9;
+  color: var(--primary-text);
+  background: var(--secondary);
 }
 .pv-product-tools button:hover {
-  background: #f0f7f9;
+  background: var(--pv-surface-tint);
 }
 .pv-product-tools button:disabled {
   opacity: 0.55;
@@ -98,7 +98,7 @@
 .pv-detail-summary .pv-product-tools {
   max-width: 290px;
   margin: 12px 0;
-  border: 1px solid #dce9ee;
+  border: 1px solid var(--border);
   border-radius: 12px;
 }
 .pv-library-shortcuts {
@@ -113,12 +113,12 @@
   gap: 10px;
   min-height: 64px;
   padding: 16px;
-  border: 1px solid #dce9ee;
+  border: 1px solid var(--border);
   border-radius: 12px;
   background: white;
   text-align: left;
   font-size: 15px;
-  color: #254654;
+  color: var(--foreground);
 }
 .pv-library-shortcuts button > span {
   flex: 1;
@@ -126,7 +126,7 @@
 .pv-library-shortcuts svg {
   width: 20px;
   height: 20px;
-  color: #0c6286;
+  color: var(--primary-text);
   flex-shrink: 0;
 }
 .pv-library-heading {
@@ -138,11 +138,11 @@
   line-height: 1.25;
   font-weight: 700;
   letter-spacing: -0.03em;
-  color: #214552;
+  color: var(--foreground);
 }
 .pv-library-heading p {
   max-width: 750px;
-  color: #5e7883;
+  color: var(--muted-foreground);
   font-size: 16px;
   line-height: 1.65;
 }
@@ -154,8 +154,8 @@
 .pv-device-note {
   font-size: 14px;
   line-height: 1.6;
-  color: #516f7d;
-  background: #f0f7f9;
+  color: var(--muted-foreground);
+  background: var(--pv-surface-tint);
   padding: 14px 16px;
   border-radius: 10px;
   margin-bottom: 18px;
@@ -169,7 +169,7 @@
   margin: 20px 0;
 }
 .pv-library-toolbar > span {
-  color: #5c7782;
+  color: var(--muted-foreground);
   font-size: 14px;
 }
 .pv-library-actions {
@@ -182,7 +182,7 @@
 .pv-library-screen .pv-empty {
   padding: 44px 20px;
   background: #fff;
-  border: 1px solid #e0ebef;
+  border: 1px solid var(--border);
   border-radius: 16px;
 }
 .pv-selection-layout {
@@ -196,18 +196,18 @@
   gap: 10px;
   align-items: center;
   background: #fff;
-  border: 1px solid #ccdee6;
+  border: 1px solid var(--border);
   padding: 10px 14px;
   border-radius: 12px;
 }
 .pv-library-search:focus-within {
-  outline: 2px solid #0c6286;
+  outline: 2px solid var(--primary-text);
   outline-offset: 2px;
 }
 .pv-library-search > svg {
   width: 20px;
   flex-shrink: 0;
-  color: #5e93a7;
+  color: var(--primary-text);
 }
 .pv-library-search input {
   min-width: 0;
@@ -217,27 +217,27 @@
   outline: 0;
   font-size: 16px;
   background: transparent;
-  color: #254654;
+  color: var(--foreground);
 }
 .pv-choice-chip {
   display: inline-flex;
   gap: 6px;
   align-items: center;
   border-radius: 10px;
-  border: 1px solid #d5e4e9;
+  border: 1px solid var(--border);
   min-height: 44px;
   padding: 8px 12px;
   background: white;
   font-size: 14px;
-  color: #0c6286;
+  color: var(--primary-text);
 }
 .pv-choice-chip > svg {
   width: 16px;
   height: 16px;
 }
 .pv-choice-chip[aria-pressed='true'] {
-  border-color: #0c6286;
-  background: #eaf5f9;
+  border-color: var(--primary-text);
+  background: var(--secondary);
 }
 .pv-pick-list {
   display: grid;
@@ -250,14 +250,14 @@
   padding: 12px;
   min-width: 0;
   background: #fff;
-  border: 1px solid #dce8ed;
+  border: 1px solid var(--border);
   border-radius: 12px;
   cursor: pointer;
 }
 .pv-pick-row.is-selected {
-  background: #f1f9fb;
-  border-color: #5e93a7;
-  box-shadow: inset 3px 0 #0c6286;
+  background: var(--pv-surface-tint);
+  border-color: var(--primary-text);
+  box-shadow: inset 3px 0 var(--primary-text);
 }
 .pv-pick-row > .pv-photo {
   width: 84px;
@@ -272,7 +272,7 @@
   gap: 4px;
 }
 .pv-pick-copy > strong {
-  color: #0c6286;
+  color: var(--primary-text);
   font-size: 14px;
 }
 .pv-pick-copy > span:not(.pv-stock) {
@@ -288,12 +288,12 @@
   width: 22px;
   height: 22px;
   flex: 0 0 22px;
-  accent-color: #0c6286;
+  accent-color: var(--primary-text);
   cursor: pointer;
 }
 .pv-selection-summary {
   background: #fff;
-  border: 1px solid #dce8ed;
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 22px;
   position: sticky;
@@ -306,16 +306,16 @@
   gap: 10px;
 }
 .pv-selection-summary > h2 > span {
-  background: #eaf5f9;
+  background: var(--secondary);
   border-radius: 8px;
   min-width: 30px;
   padding: 4px;
   font-size: 15px;
   text-align: center;
-  color: #0c6286;
+  color: var(--primary-text);
 }
 .pv-selection-summary > p {
-  color: #5c7782;
+  color: var(--muted-foreground);
   font-size: 14px;
   margin: 10px 0;
   line-height: 1.6;
@@ -330,7 +330,7 @@
   align-items: center;
   padding: 12px 0;
   gap: 8px;
-  border-top: 1px solid #e7eff2;
+  border-top: 1px solid var(--border);
   font-size: 14px;
 }
 .pv-selection-summary li > span {
@@ -340,7 +340,7 @@
 }
 .pv-selection-summary li strong {
   font-size: 14px;
-  color: #0c6286;
+  color: var(--primary-text);
 }
 .pv-selection-summary .pv-button {
   width: 100%;
@@ -350,7 +350,7 @@
   font-size: 13px;
   text-align: center;
   margin-top: 12px;
-  color: #5c7782;
+  color: var(--muted-foreground);
 }
 .pv-theme button:disabled {
   cursor: not-allowed;
@@ -367,17 +367,17 @@
   font-weight: 600;
 }
 .pv-compare-category select {
-  border: 1px solid #cbdfe7;
+  border: 1px solid var(--border);
   border-radius: 10px;
   min-height: 48px;
   background: white;
-  color: #214552;
+  color: var(--foreground);
   padding: 10px;
   font-size: 16px;
   width: 100%;
 }
 .pv-compare-picker {
-  border: 1px solid #dce8ed;
+  border: 1px solid var(--border);
   background: #fff;
   border-radius: 14px;
   padding: 20px;
@@ -396,11 +396,11 @@
   align-items: center;
   gap: 12px;
   text-align: left;
-  border: 1px solid #dce8ed;
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px;
   min-width: 0;
-  background: #fafcfc;
+  background: var(--background);
 }
 .pv-compare-options .pv-photo {
   flex: 0 0 64px;
@@ -414,22 +414,22 @@
   font-size: 14px;
 }
 .pv-compare-options strong {
-  color: #0c6286;
+  color: var(--primary-text);
 }
 .pv-compare-options > button > svg {
   width: 20px;
   flex-shrink: 0;
-  color: #0c6286;
+  color: var(--primary-text);
 }
 .pv-table-hint {
   font-size: 14px;
-  color: #5c7782;
+  color: var(--muted-foreground);
   margin: 12px 0;
 }
 .pv-comparison-scroll {
   overflow-x: auto;
   max-width: 100%;
-  border: 1px solid #dce8ed;
+  border: 1px solid var(--border);
   border-radius: 14px;
   background: white;
 }
@@ -438,13 +438,13 @@
   min-width: 670px;
   border-collapse: separate;
   border-spacing: 0;
-  color: #254654;
+  color: var(--foreground);
 }
 .pv-comparison-table th,
 .pv-comparison-table td {
   padding: 18px;
-  border-bottom: 1px solid #e0ebef;
-  border-right: 1px solid #e0ebef;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
   text-align: left;
   vertical-align: top;
   font-size: 14px;
@@ -454,7 +454,7 @@
 .pv-comparison-table th:first-child {
   width: 160px;
   min-width: 140px;
-  background: #f0f7f9;
+  background: var(--pv-surface-tint);
   position: sticky;
   left: 0;
   z-index: 1;
@@ -482,7 +482,7 @@
   font-weight: 400;
 }
 .pv-compare-open strong {
-  color: #0c6286;
+  color: var(--primary-text);
 }
 .pv-compare-open .pv-photo {
   height: 140px;
@@ -507,8 +507,8 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  background: #edf7fa;
-  border: 1px solid #d9eaf0;
+  background: var(--secondary);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 16px;
   font-size: 15px;
@@ -520,7 +520,7 @@
   display: grid;
   place-content: center;
   background: white;
-  color: #0c6286;
+  color: var(--primary-text);
   border-radius: 9px;
   font-weight: 700;
 }
@@ -529,7 +529,7 @@
   gap: 10px;
 }
 .pv-faq details {
-  border: 1px solid #dae7ec;
+  border: 1px solid var(--border);
   border-radius: 12px;
   background: white;
 }
@@ -552,33 +552,33 @@
   width: 20px;
   height: 20px;
   flex: 0 0 20px;
-  color: #0c6286;
+  color: var(--primary-text);
 }
 .pv-faq details[open] summary {
-  color: #0c6286;
+  color: var(--primary-text);
 }
 .pv-faq details[open] summary svg {
   transform: rotate(90deg);
 }
 .pv-faq details p {
   font-size: 16px;
-  color: #526e7a;
+  color: var(--muted-foreground);
   line-height: 1.75;
   padding: 0 20px 20px;
 }
 .pv-help-contact {
   margin-top: 24px;
   padding: 24px;
-  border: 1px solid #dae7ec;
+  border: 1px solid var(--border);
   border-radius: 16px;
-  background: #f0f8fa;
+  background: var(--pv-surface-tint);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 18px;
 }
 .pv-help-contact > svg {
-  color: #0c6286;
+  color: var(--primary-text);
   width: 28px;
   height: 28px;
 }
@@ -587,7 +587,7 @@
 }
 .pv-help-contact p {
   margin-top: 6px;
-  color: #5c7782;
+  color: var(--muted-foreground);
   font-size: 15px;
 }
 .pv-sent-screen {
@@ -603,7 +603,7 @@
   align-items: center;
   gap: 18px;
   padding: 20px;
-  border: 1px solid #d9e7ec;
+  border: 1px solid var(--border);
   border-radius: 14px;
   background: white;
   text-align: left;
@@ -616,11 +616,11 @@
   overflow-wrap: anywhere;
 }
 .pv-sent-list strong {
-  color: #0c6286;
+  color: var(--primary-text);
   font-size: 17px;
 }
 .pv-sent-list small {
-  color: #536f7c;
+  color: var(--muted-foreground);
   font-size: 14px;
 }
 .pv-sent-icon {
@@ -644,7 +644,7 @@
 }
 .pv-sent-detail [role='status'] {
   margin: 12px 0;
-  color: #0c6286;
+  color: var(--primary-text);
   font-size: 14px;
 }
 .pv-request-product-picker {
@@ -660,11 +660,11 @@
 }
 .pv-request-product-picker li {
   padding: 10px 0;
-  border-bottom: 1px solid #e6eef1;
+  border-bottom: 1px solid var(--border);
   font-size: 15px;
 }
 .pv-request-product-picker strong {
-  color: #0c6286;
+  color: var(--primary-text);
 }
 .pv-request-product-picker .pv-field-error {
   display: block;
@@ -682,7 +682,7 @@
   gap: 12px;
   align-items: center;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e6eef1;
+  border-bottom: 1px solid var(--border);
 }
 .pv-request-summary-products article > .pv-photo {
   flex: 0 0 84px;
@@ -708,7 +708,7 @@
 .pv-theme
   :is(.pv-library-screen, .pv-library-menu, .pv-product-tools)
   :is(button, input, select, summary):focus-visible {
-  outline: 2px solid #0c6286;
+  outline: 2px solid var(--primary-text);
   outline-offset: 3px;
 }
 @media (max-width: 767px) {

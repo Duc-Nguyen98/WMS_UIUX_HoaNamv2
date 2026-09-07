@@ -13,7 +13,7 @@ import {
   ArrowRight,
   Home,
   LayoutGrid,
-  MessageCircle,
+  Send,
   Phone,
   Search,
   X,
@@ -59,6 +59,7 @@ import { knownProductIds } from '@/lib/preview-library';
 import './product-preview.css';
 import './preview-screens.css';
 import './preview-library.css';
+import './preview-contact.css';
 
 const PreviewDetail = lazy(() => import('@/components/preview-detail'));
 const PreviewContact = lazy(() => import('@/components/preview-contact'));
@@ -318,14 +319,15 @@ function PreviewApp() {
           </button>
           <a
             className="pv-header-support"
-            href="#view=contact"
+            href="#view=request"
+            aria-current={view === 'request' ? 'page' : undefined}
             onClick={(event) => {
               event.preventDefault();
-              navigate('contact', DEFAULT_PREVIEW_FILTERS);
+              if (view !== 'request') openRequest();
             }}
           >
-            <MessageCircle aria-hidden="true" />
-            <span>Tư vấn</span>
+            <Send aria-hidden="true" />
+            <span>Gửi yêu cầu</span>
           </a>
         </div>
       </header>

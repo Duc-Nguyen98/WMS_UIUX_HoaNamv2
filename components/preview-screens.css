@@ -26,10 +26,10 @@ html:has(.pv-app) {
   border: 1px solid var(--border);
   border-radius: 0.65rem;
   background: white;
-  color: var(--primary);
+  color: var(--primary-text);
 }
 .pv-theme .pv-icon-button:hover {
-  background: #edf6fa;
+  background: var(--secondary);
 }
 .pv-theme .pv-icon-button:disabled {
   opacity: 0.4;
@@ -51,7 +51,7 @@ html:has(.pv-app) {
 }
 .pv-search:focus-within {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px #0c628612;
+  box-shadow: 0 0 0 3px var(--pv-focus-halo);
 }
 .pv-search input::-webkit-search-cancel-button {
   display: none;
@@ -103,10 +103,10 @@ html:has(.pv-app) {
   align-items: center;
   min-height: 44px;
   padding: 0.4rem 0.75rem;
-  border: 1px solid #dce9ef;
+  border: 1px solid var(--border);
   border-radius: 0.5rem;
   background: white;
-  color: #416575;
+  color: var(--muted-foreground);
   font-size: 0.8125rem;
 }
 .pv-applied-filters button > svg {
@@ -114,7 +114,7 @@ html:has(.pv-app) {
   height: 1rem;
 }
 .pv-applied-filters .pv-clear-filter {
-  color: var(--primary);
+  color: var(--primary-text);
   border-color: transparent;
   background: transparent;
 }
@@ -130,7 +130,7 @@ html:has(.pv-app) {
 }
 .pv-skeleton {
   display: block;
-  background: linear-gradient(100deg, #eef3f5 20%, #f8fafb 40%, #eef3f5 60%);
+  background: linear-gradient(100deg, var(--muted) 20%, var(--pv-surface-tint) 40%, var(--muted) 60%);
   background-size: 200% 100%;
   animation: pv-shimmer 1.6s ease-in-out infinite;
   border-radius: 0.6rem;
@@ -208,10 +208,10 @@ html:has(.pv-app) {
   color: var(--foreground);
 }
 .pv-suggestion-list > button + button {
-  border-top: 1px solid #edf2f5;
+  border-top: 1px solid var(--border);
 }
 .pv-suggestion-list > button:hover {
-  background: #f6fafc;
+  background: var(--pv-surface-tint);
 }
 .pv-suggestion-list .pv-photo {
   width: 88px;
@@ -230,19 +230,19 @@ html:has(.pv-app) {
 }
 .pv-suggestion-copy > span {
   display: block;
-  color: #597580;
+  color: var(--muted-foreground);
   font-size: 0.8125rem;
   margin-top: 0.4rem;
 }
 .pv-suggestion-list > button > svg {
   width: 1rem;
-  color: var(--primary);
+  color: var(--primary-text);
 }
 .pv-modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 80;
-  background: #16394938;
+  background: var(--pv-overlay);
   backdrop-filter: blur(3px);
 }
 .pv-theme.pv-modal {
@@ -258,9 +258,9 @@ html:has(.pv-app) {
   overscroll-behavior: contain;
   background: #fff;
   color: var(--foreground);
-  border: 1px solid #e1e9ed;
+  border: 1px solid var(--border);
   border-radius: 1.1rem;
-  box-shadow: 0 20px 70px #15384924;
+  box-shadow: 0 20px 70px var(--pv-shadow-color);
   font-family: var(--font-public-sans), 'Segoe UI', sans-serif;
   outline: none;
   line-height: 1.6;
@@ -291,7 +291,7 @@ html:has(.pv-app) {
 .pv-filter-fields label,
 .pv-field-title {
   display: block;
-  color: #304f5d;
+  color: var(--foreground);
   font-size: 0.9375rem;
   font-weight: 600;
 }
@@ -307,7 +307,7 @@ html:has(.pv-app) {
   margin-top: 0.55rem;
   padding: 0.75rem 0.875rem;
   min-height: 48px;
-  border: 1px solid #cddde4;
+  border: 1px solid var(--input);
   border-radius: 0.625rem;
   background: #fff;
   color: var(--foreground);
@@ -356,7 +356,7 @@ html:has(.pv-app) {
   padding: 2rem;
   background: transparent;
   border: 0;
-  color: var(--primary);
+  color: var(--primary-text);
 }
 .pv-detail-photo-button .pv-photo {
   width: 100%;
@@ -369,7 +369,7 @@ html:has(.pv-app) {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.6rem 0.875rem;
-  background: #eef6fa;
+  background: var(--secondary);
   border-radius: 0.55rem;
   font-size: 0.875rem;
 }
@@ -379,7 +379,7 @@ html:has(.pv-app) {
 .pv-detail-model {
   display: block;
   margin: 1.15rem 0 0.55rem;
-  color: var(--primary);
+  color: var(--primary-text);
   font-size: 0.9375rem;
   font-weight: 650;
   letter-spacing: 0.025em;
@@ -402,23 +402,23 @@ html:has(.pv-app) {
 .pv-benefits ul {
   margin: 0.75rem 0 0;
   padding-left: 1.2rem;
-  color: #506975;
+  color: var(--muted-foreground);
   font-size: 0.9375rem;
 }
 .pv-benefits li + li {
   margin-top: 0.5rem;
 }
 .pv-benefits li::marker {
-  color: #5e93a7;
+  color: var(--primary-text);
 }
 .pv-detail-request-hint {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1rem;
-  background: #eef7fa;
+  background: var(--secondary);
   border-radius: 0.75rem;
-  color: #436676;
+  color: var(--muted-foreground);
   font-size: 0.875rem;
   margin: 1.5rem 0 1rem;
 }
@@ -453,7 +453,7 @@ html:has(.pv-app) {
   gap: 1rem;
   padding: 0.85rem 0;
   font-size: 0.9375rem;
-  border-bottom: 1px solid #edf2f5;
+  border-bottom: 1px solid var(--border);
 }
 .pv-info-table > div:last-child {
   border-bottom: 0;
@@ -470,7 +470,7 @@ html:has(.pv-app) {
   display: block;
   margin-top: 0.35rem;
   font-size: 0.8125rem;
-  color: var(--primary);
+  color: var(--primary-text);
 }
 .pv-spec-help {
   color: var(--muted-foreground);
@@ -496,7 +496,7 @@ html:has(.pv-app) {
     calc(1rem + env(safe-area-inset-bottom));
   background: white;
   border-top: 1px solid var(--border);
-  box-shadow: 0 -6px 22px #1c465807;
+  box-shadow: 0 -6px 22px var(--pv-shadow-color);
 }
 .pv-detail-cta > div {
   flex: 1;
@@ -504,7 +504,7 @@ html:has(.pv-app) {
 }
 .pv-detail-cta > div > strong {
   display: block;
-  color: var(--primary);
+  color: var(--primary-text);
 }
 .pv-detail-cta > div > span {
   font-size: 0.875rem;
@@ -541,69 +541,6 @@ html:has(.pv-app) {
   min-width: 45px;
   text-align: center;
   font-size: 0.875rem;
-  color: #54717f;
-}
-.pv-contact-screen .pv-contact-intro {
-  padding: 2.5rem 1.5rem;
-  background: linear-gradient(120deg, #edf7fb, #f9fcfd);
-  border: 1px solid #dcebf1;
-}
-.pv-contact-screen .pv-contact-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.65rem;
-}
-.pv-contact-screen .pv-contact-card h2 {
-  font-size: 1.125rem;
-  margin: 0.4rem 0 0;
-}
-.pv-contact-screen .pv-contact-card p {
-  margin: 0 0 0.5rem;
-}
-.pv-contact-screen .pv-contact-card > .pv-button {
-  margin-top: auto;
-  width: 100%;
-}
-.pv-contact-screen .pv-contact-card > .pv-text-button {
-  align-self: center;
-  margin-bottom: -0.5rem;
-}
-.pv-contact-primary {
-  border-color: #bcd7e4;
-}
-.pv-contact-screen .pv-phone-number {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary);
-}
-.pv-support-hours {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1.2rem;
-  border: 1px solid var(--border);
-  border-radius: 0.875rem;
-  background: white;
-  margin: 1.5rem 0;
-  padding: 1.25rem 1.5rem;
-}
-.pv-support-hours h2 {
-  font-size: 1rem;
-  margin-right: auto;
-}
-.pv-support-hours > svg {
-  color: var(--primary);
-}
-.pv-support-hours > div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  font-size: 0.875rem;
-  padding-left: 1.5rem;
-  border-left: 1px solid var(--border);
-}
-.pv-support-hours > div > span {
   color: var(--muted-foreground);
 }
 .pv-contact-shortcuts {
@@ -618,7 +555,7 @@ html:has(.pv-app) {
   min-height: 44px;
   font-weight: 600;
   font-size: 0.875rem;
-  color: var(--primary);
+  color: var(--primary-text);
 }
 .pv-request-screen {
   max-width: 1030px;
@@ -654,14 +591,14 @@ html:has(.pv-app) {
 }
 .pv-required-note {
   font-size: 0.8125rem;
-  color: #637b85;
+  color: var(--muted-foreground);
   margin-top: 0.5rem !important;
 }
 .pv-request-fields > label {
   display: block;
   margin-top: 1.3rem;
   font-weight: 600;
-  color: #355462;
+  color: var(--foreground);
   font-size: 0.9375rem;
 }
 .pv-request-fields textarea {
@@ -676,7 +613,7 @@ html:has(.pv-app) {
 .pv-input-counter {
   display: block;
   text-align: right;
-  color: #667e88;
+  color: var(--muted-foreground);
   font-weight: 400;
   font-size: 0.75rem;
   margin-top: 0.4rem;
@@ -695,7 +632,7 @@ html:has(.pv-app) {
   display: flex;
   gap: 0.625rem;
   margin: 1.5rem 0;
-  color: #5d7681;
+  color: var(--muted-foreground);
   font-size: 0.8125rem;
   line-height: 1.65;
 }
@@ -709,7 +646,7 @@ html:has(.pv-app) {
   text-align: left;
   background: transparent;
   border: 0;
-  color: var(--primary);
+  color: var(--primary-text);
   padding: 0;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -756,7 +693,7 @@ html:has(.pv-app) {
 .pv-privacy-content {
   padding: 1.5rem;
   border-top: 1px solid var(--border);
-  color: #4d6774;
+  color: var(--muted-foreground);
   font-size: 0.9375rem;
 }
 .pv-privacy-content > p + p {
@@ -996,37 +933,6 @@ html:has(.pv-app) {
   }
   .pv-image-stage > div {
     padding: 1rem;
-  }
-  .pv-contact-screen .pv-contact-intro {
-    padding: 1.75rem 1.1rem;
-  }
-  .pv-contact-screen .pv-contact-intro h1 {
-    font-size: 1.5rem;
-  }
-  .pv-contact-screen .pv-contact-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .pv-contact-screen .pv-contact-card {
-    padding: 1.25rem;
-    gap: 0.6rem;
-  }
-  .pv-contact-screen .pv-contact-card > .pv-button {
-    margin-top: 0.35rem;
-  }
-  .pv-support-hours {
-    display: grid;
-    grid-template-columns: 24px 1fr;
-    gap: 0.875rem 0.7rem;
-    padding: 1.25rem;
-  }
-  .pv-support-hours > div {
-    grid-column: span 2;
-    flex-direction: row;
-    justify-content: space-between;
-    border-left: 0;
-    border-top: 1px solid var(--border);
-    padding: 0.75rem 0 0;
-    gap: 0.5rem;
   }
   .pv-request-heading {
     margin: 0.25rem 0 1.25rem;

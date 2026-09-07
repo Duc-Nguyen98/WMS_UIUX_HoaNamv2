@@ -8,6 +8,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
 // Public prototype: deliberately independent of the WMS review/auth screens.
 export default function PreviewPage() {
   return <ProductPreview />;

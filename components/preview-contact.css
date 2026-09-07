@@ -1,0 +1,255 @@
+/* Contact stays a single mobile reading flow at every width. */
+.pv-main:has(.pv-contact-screen) {
+  padding: var(--pv-space-4) var(--pv-space-4) var(--pv-space-6);
+}
+.pv-contact-screen {
+  display: grid;
+  gap: var(--pv-space-4);
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.pv-contact-intro {
+  padding-bottom: var(--pv-space-1);
+}
+.pv-contact-kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--pv-space-2);
+  color: var(--primary-text);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+.pv-contact-kicker svg {
+  width: 18px;
+  height: 18px;
+}
+.pv-contact-intro h1 {
+  margin-top: var(--pv-space-1);
+  font-size: 26px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+.pv-contact-intro p {
+  margin-top: var(--pv-space-1);
+  color: var(--muted-foreground);
+}
+.pv-contact-methods {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--pv-space-4);
+}
+.pv-contact-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pv-space-3);
+  min-width: 0;
+  padding: var(--pv-space-4);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--pv-radius);
+  box-shadow: var(--pv-card-shadow);
+}
+.pv-contact-primary {
+  border-color: var(--pv-accent-border);
+}
+.pv-contact-card-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--pv-space-3);
+  min-width: 0;
+}
+.pv-contact-card h2 {
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
+.pv-contact-card p {
+  color: var(--muted-foreground);
+}
+.pv-contact-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: var(--pv-radius);
+  background: var(--secondary);
+  color: var(--primary-text);
+}
+.pv-contact-icon svg {
+  width: 22px;
+  height: 22px;
+}
+.pv-contact-icon-neutral {
+  color: var(--muted-foreground);
+  background: var(--muted);
+}
+.pv-contact-heading-icon { color: var(--muted-foreground); }
+.pv-contact-screen .pv-button {
+  min-height: var(--pv-control-height);
+  width: 100%;
+  padding: var(--pv-space-3) var(--pv-space-4);
+  gap: var(--pv-space-2);
+  border-radius: var(--pv-radius);
+  font-size: 15px;
+  line-height: 1.4;
+  transition: background var(--pv-motion);
+}
+.pv-contact-screen .pv-button:active {
+  background: var(--primary-pressed);
+}
+.pv-contact-screen .pv-button-outline:active {
+  background: var(--secondary);
+}
+.pv-contact-phone-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pv-space-2);
+}
+.pv-contact-screen .pv-phone-number {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--pv-touch);
+  min-width: 0;
+  font-size: 23px;
+  line-height: 1.3;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+.pv-theme .pv-copy-phone {
+  flex: 0 0 var(--pv-touch);
+  width: var(--pv-touch);
+  height: var(--pv-touch);
+  border-color: var(--border);
+  border-radius: var(--pv-radius);
+  background: var(--card);
+  color: var(--primary-text);
+}
+.pv-contact-screen .pv-contact-tonal {
+  color: var(--primary-text);
+  background: var(--secondary);
+  box-shadow: none;
+}
+.pv-contact-screen .pv-contact-tonal:active {
+  background: var(--muted);
+}
+.pv-contact-badge {
+  align-self: flex-start;
+  padding: var(--pv-space-1) var(--pv-space-2);
+  border-radius: var(--pv-space-1);
+  color: var(--muted-foreground);
+  background: var(--muted);
+  font-size: 12px;
+  font-weight: 550;
+}
+.pv-support-hours {
+  gap: var(--pv-space-3);
+}
+.pv-support-hours .pv-contact-card-heading {
+  gap: var(--pv-space-2);
+}
+.pv-support-hours .pv-contact-card-heading > svg {
+  color: var(--muted-foreground);
+}
+.pv-support-hours h2 {
+  font-size: 15px;
+}
+.pv-support-hours dl {
+  margin: 0;
+  display: grid;
+  gap: var(--pv-space-2);
+}
+.pv-support-hours dl > div {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--pv-space-1) var(--pv-space-2);
+}
+.pv-support-hours dt {
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+.pv-support-hours dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 550;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pv-contact-screen .pv-contact-back {
+  width: 100%;
+  min-height: var(--pv-touch);
+  font-size: 14px;
+}
+.pv-contact-feedback {
+  position: fixed;
+  left: var(--pv-space-4);
+  right: var(--pv-space-4);
+  bottom: calc(var(--pv-nav-clearance) + var(--pv-space-3));
+  z-index: 40;
+  pointer-events: none;
+}
+.pv-contact-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--pv-space-2);
+  padding: var(--pv-space-3) var(--pv-space-4);
+  border: 1px solid var(--pv-accent-border);
+  border-radius: var(--pv-radius);
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: var(--pv-card-shadow);
+  font-size: 14px;
+  animation: pv-contact-feedback-in var(--pv-motion) ease-out;
+}
+.pv-contact-toast svg {
+  color: var(--primary-text);
+}
+@keyframes pv-contact-feedback-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.pv-theme.pv-contact-copy-dialog {
+  border-radius: var(--pv-radius);
+}
+.pv-contact-copy-content {
+  display: grid;
+  gap: var(--pv-space-3);
+  padding: var(--pv-space-4);
+  padding-bottom: calc(var(--pv-space-4) + var(--pv-safe-bottom));
+  border-top: 1px solid var(--border);
+}
+.pv-contact-copy-content label {
+  font-size: 14px;
+  font-weight: 550;
+}
+.pv-contact-copy-content input {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--pv-control-height);
+  padding: var(--pv-space-3);
+  border: 1px solid var(--input);
+  border-radius: var(--pv-radius);
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 20px;
+  user-select: all;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pv-contact-toast {
+    animation: none;
+  }
+}

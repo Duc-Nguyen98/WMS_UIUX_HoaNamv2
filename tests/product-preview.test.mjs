@@ -1,5 +1,29 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { copyPreviewText } from '../lib/preview-clipboard.ts';
+
+test('phone copy confirms only a completed clipboard write and exposes failure for manual fallback', async () => {
+  const writes = [];
+  assert.equal(
+    await copyPreviewText('0986366675', async (text) => {
+      writes.push(text);
+    }),
+    true,
+  );
+  assert.deepEqual(writes, ['0986366675']);
+  assert.equal(
+    await copyPreviewText('0986366675', async () => {
+      throw new Error('permission denied');
+    }),
+    false,
+  );
+  assert.equal(
+    await copyPreviewText('0986366675', () => {
+      throw new TypeError('clipboard unavailable');
+    }),
+    false,
+  );
+});
 import {
   DEFAULT_PREVIEW_FILTERS,
   PREVIEW_PRODUCTS,

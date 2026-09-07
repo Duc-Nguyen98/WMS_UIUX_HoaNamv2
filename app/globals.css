@@ -26,25 +26,49 @@
 * { box-sizing: border-box; }
 .pv-theme {
   color-scheme: light;
-  --background: #fafcfc;
-  --foreground: #213b47;
+  --background: #f8f7fa;
+  --foreground: rgba(47, 43, 61, .9);
   --card: #ffffff;
-  --card-foreground: #213b47;
+  --card-foreground: rgba(47, 43, 61, .9);
   --popover: #ffffff;
-  --popover-foreground: #213b47;
-  --primary: #0c6286;
+  --popover-foreground: rgba(47, 43, 61, .9);
+  --primary: #7367f0;
+  --primary-hover: #675dd8;
+  /* The deeper violet keeps normal-sized white CTA text above 4.5:1. */
+  --primary-solid: #675dd8;
+  --primary-pressed: #5e50c6;
+  --primary-text: #6255cf;
   --primary-foreground: #ffffff;
-  --secondary: #edf5f8;
-  --secondary-foreground: #0c5d7d;
-  --muted: #f0f5f7;
-  --muted-foreground: #5b6e78;
-  --accent: #edf5f8;
-  --accent-foreground: #0c5d7d;
-  --border: #e1e9ed;
-  --input: #c6d7df;
-  --ring: #0c6286;
-  --pv-support: #5e93a7;
-  --radius: .75rem;
+  --secondary: #eeecfd;
+  --secondary-foreground: #6255cf;
+  --muted: #f1f0f2;
+  --muted-foreground: rgba(47, 43, 61, .7);
+  --accent: #eeecfd;
+  --accent-foreground: #6255cf;
+  --border: rgba(47, 43, 61, .12);
+  --input: rgba(47, 43, 61, .3);
+  --ring: #7367f0;
+  --pv-support: #6255cf;
+  --pv-accent-border: rgba(115, 103, 240, .36);
+  --pv-surface-tint: #f5f4fe;
+  --pv-shadow-color: rgba(47, 43, 61, .08);
+  --pv-overlay: rgba(47, 43, 61, .24);
+  --pv-focus-halo: rgba(115, 103, 240, .16);
+  --pv-card-shadow: 0 2px 8px var(--pv-shadow-color);
+  --pv-radius: 8px;
+  --pv-space-1: 4px;
+  --pv-space-2: 8px;
+  --pv-space-3: 12px;
+  --pv-space-4: 16px;
+  --pv-space-5: 20px;
+  --pv-space-6: 24px;
+  --pv-touch: 44px;
+  --pv-control-height: 48px;
+  --pv-motion: 180ms;
+  --pv-safe-top: env(safe-area-inset-top, 0px);
+  --pv-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --pv-nav-clearance: calc(76px + var(--pv-safe-bottom));
+  --radius: .5rem;
 }
 html { scroll-behavior: smooth; }
 body { margin: 0; color: rgba(47,43,61,.78); background: #f8f7fa; font-family: var(--font-public-sans), "Segoe UI", sans-serif; font-size: 15px; }
