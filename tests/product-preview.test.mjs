@@ -1,6 +1,51 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { copyPreviewText } from '../lib/preview-clipboard.ts';
+import {
+  previewPageLimit,
+  previewListKey,
+  relatedPreviewProducts,
+} from '../lib/preview-progressive.ts';
+
+test('progressive batches stop at available records including empty and partial final pages', () => {
+  assert.equal(previewPageLimit(7), 4);
+  assert.equal(previewPageLimit(7, 4), 7);
+  assert.equal(previewPageLimit(7, 7), 7);
+  assert.equal(previewPageLimit(0), 0);
+  assert.equal(previewPageLimit(5, 2, 2), 4);
+});
+test('paging memory distinguishes filtered order and scope without persisting customer data', () => {
+  assert.notEqual(
+    previewListKey('catalog', ['a', 'b']),
+    previewListKey('catalog', ['b', 'a']),
+  );
+  assert.notEqual(
+    previewListKey('home', ['a']),
+    previewListKey('related:a', ['a']),
+  );
+  assert.equal(
+    previewListKey('catalog', ['a']),
+    previewListKey('catalog', ['a']),
+  );
+});
+test('related products prefer category, fall back to same group and never repeat the current product', () => {
+  const current = { id: 'a', category: 'drill', group: 'machine' };
+  const peer = { id: 'b', category: 'drill', group: 'machine' };
+  const groupPeer = { id: 'c', category: 'construction', group: 'machine' };
+  const other = { id: 'd', category: 'hand', group: 'hand' };
+  assert.deepEqual(
+    relatedPreviewProducts(current, [current, peer, groupPeer, other]),
+    { products: [peer], sameCategory: true },
+  );
+  assert.deepEqual(
+    relatedPreviewProducts(current, [current, groupPeer, other]),
+    { products: [groupPeer], sameCategory: false },
+  );
+  assert.deepEqual(relatedPreviewProducts(current, [current, other]), {
+    products: [],
+    sameCategory: false,
+  });
+});
 
 test('phone copy confirms only a completed clipboard write and exposes failure for manual fallback', async () => {
   const writes = [];

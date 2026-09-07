@@ -3,7 +3,7 @@
 import {
   lazy,
   Suspense,
-  useDeferredValue,
+  startTransition,
   useEffect,
   useRef,
   useState,
@@ -56,10 +56,18 @@ import {
   SentRequestsScreen,
 } from '@/components/preview-library-screens';
 import { knownProductIds } from '@/lib/preview-library';
+import { PREVIEW_SEARCH_DELAY } from '@/lib/preview-progressive';
+import { PreviewPagingProvider } from '@/components/preview-progressive';
+import {
+  PreviewMotionProvider,
+  PreviewScreenMotion,
+  PreviewScrollController,
+} from '@/components/preview-motion';
 import './product-preview.css';
 import './preview-screens.css';
 import './preview-library.css';
 import './preview-contact.css';
+import './preview-motion.css';
 
 const PreviewDetail = lazy(() => import('@/components/preview-detail'));
 const PreviewContact = lazy(() => import('@/components/preview-contact'));
@@ -74,7 +82,11 @@ type Location = ReturnType<typeof parsePreviewLocation>;
 export default function ProductPreview() {
   return (
     <PreviewLibraryProvider>
-      <PreviewApp />
+      <PreviewMotionProvider>
+        <PreviewPagingProvider>
+          <PreviewApp />
+        </PreviewPagingProvider>
+      </PreviewMotionProvider>
     </PreviewLibraryProvider>
   );
 }
@@ -86,6 +98,9 @@ function PreviewApp() {
     parsePreviewLocation(''),
   );
   const [searchDraft, setSearchDraft] = useState('');
+  const [composing, setComposing] = useState(false);
+  const composition = useRef(false);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [lastGroup, setLastGroup] = useState<ProductGroup>('machine');
   const [requestState, setRequestState] = useState<RequestState>(EMPTY_REQUEST);
   const [keyboard, setKeyboard] = useState(false);
@@ -108,16 +123,19 @@ function PreviewApp() {
   useEffect(() => {
     if (library.ready && view === 'detail' && selected) visit(selected.id);
   }, [library.ready, view, selected, visit]);
-  const deferredQuery = useDeferredValue(filters.query);
-  const searchPending = deferredQuery !== filters.query;
+  const searchPending =
+    view === 'search' && (composing || searchDraft !== filters.query);
   const keyOf = (state: Location) =>
     previewHash(state.view, state.filters, state.productId);
 
-  function adopt(next: Location, focus = true) {
+  function adopt(next: Location, focus = true, syncDraft = true) {
     const previous = current.current;
     current.current = next;
     setLocation(next);
-    setSearchDraft(next.filters.query);
+    if (syncDraft) {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+      setSearchDraft(next.filters.query);
+    }
     if (next.filters.group !== 'all') setLastGroup(next.filters.group);
     if (
       focus &&
@@ -131,10 +149,12 @@ function PreviewApp() {
         } else if (next.view !== 'search') {
           mainRef.current?.focus({ preventScroll: true });
         }
-        window.scrollTo({
-          top: scrollPositions.current.get(keyOf(next)) ?? 0,
-          behavior: 'instant',
-        });
+        if (next.view !== 'search')
+          window.scrollTo({
+            top: scrollPositions.current.get(keyOf(next)) ?? 0,
+            behavior: 'instant',
+          });
+        window.dispatchEvent(new Event('pv:scroll-sync'));
       });
     }
   }
@@ -177,6 +197,7 @@ function PreviewApp() {
       );
     viewport?.addEventListener('resize', onViewport);
     return () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
       window.history.scrollRestoration = originalRestoration;
       window.removeEventListener('hashchange', sync);
       viewport?.removeEventListener('resize', onViewport);
@@ -188,6 +209,7 @@ function PreviewApp() {
     nextFilters = filters,
     nextProductId: string | null = null,
     replace = false,
+    syncDraft = true,
   ) {
     scrollPositions.current.set(keyOf(current.current), window.scrollY);
     const next = {
@@ -199,7 +221,7 @@ function PreviewApp() {
     const hash = keyOf(next);
     if (replace) window.history.replaceState(null, '', hash);
     else window.history.pushState(null, '', hash);
-    adopt(next);
+    adopt(next, true, syncDraft);
   }
   function openProduct(id: string) {
     if (view !== 'detail') productOrigin.current = location;
@@ -241,22 +263,42 @@ function PreviewApp() {
     else navigate(nextView, DEFAULT_PREVIEW_FILTERS);
   }
   function changeFilters(next: PreviewFilters) {
-    navigate(view, next, null, true);
-  }
-  function beginSearch() {
-    if (view !== 'search')
-      navigate('search', { ...DEFAULT_PREVIEW_FILTERS, query: searchDraft });
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    const query = next.query === filters.query ? searchDraft : next.query;
+    navigate(view, view === 'search' ? { ...next, query } : next, null, true);
   }
   function updateQuery(query: string) {
+    if (view !== 'search')
+      navigate(
+        'search',
+        { ...DEFAULT_PREVIEW_FILTERS, query: '' },
+        null,
+        false,
+        false,
+      );
     setSearchDraft(query);
-    if (view === 'search')
-      navigate('search', { ...filters, query }, null, true);
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    if (composition.current) return;
+    searchTimer.current = setTimeout(() => {
+      searchTimer.current = null;
+      if (current.current.view !== 'search') return;
+      startTransition(() =>
+        navigate(
+          'search',
+          { ...current.current.filters, query },
+          null,
+          true,
+          false,
+        ),
+      );
+    }, PREVIEW_SEARCH_DELAY);
   }
   const showSearch = ['home', 'groups', 'catalog', 'search'].includes(view);
   return (
     <div
       className={`pv-theme pv-app${view === 'detail' ? ' pv-has-detail-cta' : ''}${keyboard ? ' pv-keyboard-open' : ''}`}
     >
+      <PreviewScrollController route={`${view}:${productId ?? ''}`} />
       <a
         className="pv-skip"
         href="#pv-main"
@@ -351,34 +393,40 @@ function PreviewApp() {
           </div>
         )}
         {showSearch && (
-          <search
-            className={view === 'search' ? 'pv-search-screen-input' : undefined}
-          >
+          <search className="pv-search-region">
             <form
               className="pv-search"
               onSubmit={(event) => {
                 event.preventDefault();
+                if (composing) return;
+                if (searchTimer.current) clearTimeout(searchTimer.current);
+                setSearchDraft(searchDraft.trim());
                 searchRef.current?.blur();
                 navigate(
                   'search',
-                  { ...DEFAULT_PREVIEW_FILTERS, query: searchDraft.trim() },
+                  {
+                    ...(view === 'search' ? filters : DEFAULT_PREVIEW_FILTERS),
+                    query: searchDraft.trim(),
+                  },
                   null,
                   view === 'search',
                 );
               }}
             >
-              {view === 'search' ? (
-                <button
-                  type="button"
-                  className="pv-icon-button"
-                  aria-label="Quay lại danh mục"
-                  onClick={() => navigate('catalog', DEFAULT_PREVIEW_FILTERS)}
-                >
-                  <ArrowLeft aria-hidden="true" />
-                </button>
-              ) : (
-                <Search aria-hidden="true" />
-              )}
+              <span className="pv-search-leading">
+                {view === 'search' ? (
+                  <button
+                    type="button"
+                    className="pv-icon-button"
+                    aria-label="Quay lại danh mục"
+                    onClick={() => navigate('catalog', DEFAULT_PREVIEW_FILTERS)}
+                  >
+                    <ArrowLeft aria-hidden="true" />
+                  </button>
+                ) : (
+                  <Search aria-hidden="true" />
+                )}
+              </span>
               <label htmlFor="pv-search" className="sr-only">
                 Tìm theo tên sản phẩm, model hoặc công dụng
               </label>
@@ -390,22 +438,38 @@ function PreviewApp() {
                 autoComplete="off"
                 placeholder="Tìm tên sản phẩm, model hoặc công dụng"
                 value={searchDraft}
-                onFocus={beginSearch}
+                onFocus={() => {
+                  // Align once before typing; shorter result sets must not clamp a deep scroll offset.
+                  if (window.scrollY > 0) {
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                    window.dispatchEvent(new Event('pv:scroll-sync'));
+                  }
+                }}
                 onChange={(event) => updateQuery(event.target.value)}
+                onCompositionStart={() => {
+                  composition.current = true;
+                  setComposing(true);
+                  if (searchTimer.current) clearTimeout(searchTimer.current);
+                }}
+                onCompositionEnd={(event) => {
+                  composition.current = false;
+                  setComposing(false);
+                  updateQuery(event.currentTarget.value);
+                }}
               />
-              {searchDraft && (
-                <button
-                  type="button"
-                  className="pv-icon-button"
-                  aria-label="Xóa từ khóa"
-                  onClick={() => {
-                    updateQuery('');
-                    searchRef.current?.focus();
-                  }}
-                >
-                  <X aria-hidden="true" />
-                </button>
-              )}
+              <button
+                type="button"
+                className="pv-icon-button pv-search-clear"
+                aria-label="Xóa từ khóa"
+                disabled={!searchDraft}
+                style={{ visibility: searchDraft ? 'visible' : 'hidden' }}
+                onClick={() => {
+                  updateQuery('');
+                  searchRef.current?.focus();
+                }}
+              >
+                <X aria-hidden="true" />
+              </button>
               <button
                 type="submit"
                 aria-label="Tìm kiếm sản phẩm"
@@ -417,153 +481,163 @@ function PreviewApp() {
             </form>
           </search>
         )}
-        <PreviewScreenBoundary key={view}>
-          <Suspense fallback={<PreviewSkeleton detail={view === 'detail'} />}>
-            {view === 'home' && (
-              <>
-                <PreviewHome
-                  navigate={navigate}
+        <PreviewScreenMotion
+          search={view === 'search'}
+          key={`${view}:${productId ?? ''}`}
+        >
+          <PreviewScreenBoundary key={view}>
+            <Suspense fallback={<PreviewSkeleton detail={view === 'detail'} />}>
+              {view === 'home' && (
+                <>
+                  <PreviewHome
+                    navigate={navigate}
+                    headingRef={headingRef}
+                    activeGroup={activeGroup}
+                  />
+                  <LibraryHome
+                    navigate={libraryNavigate}
+                    onOpen={openProduct}
+                  />
+                  <PreviewCatalog
+                    mode="home"
+                    filters={filters}
+                    onChange={changeFilters}
+                    onOpen={openProduct}
+                    onBack={() =>
+                      navigate('groups', previewGroupFilters(activeGroup))
+                    }
+                  />
+                  <div className="pv-more">
+                    <button
+                      className="pv-button pv-button-outline"
+                      onClick={() => navigate('catalog', filters)}
+                    >
+                      Xem toàn bộ danh mục
+                      <ArrowRight aria-hidden="true" />
+                    </button>
+                  </div>
+                </>
+              )}
+              {view === 'groups' && (
+                <ProductGroupBrowser
+                  group={activeGroup}
                   headingRef={headingRef}
-                  activeGroup={activeGroup}
-                />
-                <LibraryHome navigate={libraryNavigate} onOpen={openProduct} />
-                <PreviewCatalog
-                  mode="home"
-                  filters={filters}
-                  onChange={changeFilters}
-                  onOpen={openProduct}
-                  onBack={() =>
-                    navigate('groups', previewGroupFilters(activeGroup))
+                  onGroupChange={(group) =>
+                    navigate('groups', previewGroupFilters(group), null, true)
                   }
+                  onOpenCategory={(group, category) =>
+                    navigate('catalog', previewGroupFilters(group, category))
+                  }
+                  onContact={() => navigate('contact', filters)}
                 />
-                <div className="pv-more">
-                  <button
-                    className="pv-button pv-button-outline"
-                    onClick={() => navigate('catalog', filters)}
-                  >
-                    Xem toàn bộ danh mục
-                    <ArrowRight aria-hidden="true" />
-                  </button>
-                </div>
-              </>
-            )}
-            {view === 'groups' && (
-              <ProductGroupBrowser
-                group={activeGroup}
-                headingRef={headingRef}
-                onGroupChange={(group) =>
-                  navigate('groups', previewGroupFilters(group), null, true)
-                }
-                onOpenCategory={(group, category) =>
-                  navigate('catalog', previewGroupFilters(group, category))
-                }
-                onContact={() => navigate('contact', filters)}
-              />
-            )}
-            {(view === 'catalog' || view === 'search') && (
-              <div aria-busy={searchPending}>
-                {searchPending && (
-                  <output className="pv-search-progress">
-                    Đang tìm sản phẩm…
+              )}
+              {(view === 'catalog' || view === 'search') && (
+                <div
+                  className="pv-search-result-region"
+                  aria-busy={searchPending}
+                >
+                  <output className="sr-only" aria-live="polite">
+                    {searchPending ? 'Đang tìm sản phẩm…' : ''}
                   </output>
-                )}
-                <PreviewCatalog
-                  mode={view}
-                  filters={{ ...filters, query: deferredQuery }}
-                  onChange={changeFilters}
+                  <PreviewCatalog
+                    mode={view}
+                    filters={filters}
+                    pending={searchPending}
+                    onChange={changeFilters}
+                    onOpen={openProduct}
+                    onBack={() =>
+                      navigate('groups', previewGroupFilters(activeGroup))
+                    }
+                  />
+                </div>
+              )}
+              {view === 'detail' && (
+                <PreviewDetail
+                  key={productId}
+                  product={selected}
+                  onBack={backToProducts}
+                  onRequest={openRequest}
                   onOpen={openProduct}
-                  onBack={() =>
-                    navigate('groups', previewGroupFilters(activeGroup))
-                  }
+                  onContact={() => navigate('contact', filters)}
                 />
-              </div>
-            )}
-            {view === 'detail' && (
-              <PreviewDetail
-                key={productId}
-                product={selected}
-                onBack={backToProducts}
-                onRequest={openRequest}
-                onOpen={openProduct}
-                onContact={() => navigate('contact', filters)}
-              />
-            )}
-            {view === 'contact' && (
-              <PreviewContact
-                onRequest={() => openRequest()}
-                onBrowse={() => navigate('catalog', DEFAULT_PREVIEW_FILTERS)}
-              />
-            )}
-            {(view === 'recent' || view === 'saved') && (
-              <ProductCollection
-                kind={view}
-                navigate={libraryNavigate}
-                onOpen={openProduct}
-                onRequest={openSelection}
-              />
-            )}
-            {view === 'help' && <HelpScreen navigate={libraryNavigate} />}
-            {view === 'compare' && (
-              <ComparisonScreen
-                navigate={libraryNavigate}
-                onOpen={openProduct}
-                onRequest={openSelection}
-              />
-            )}
-            {view === 'selection' && (
-              <SelectionScreen
-                ids={requestState.draft.productIds}
-                onChange={(productIds) =>
-                  setRequestState((previous) => ({
-                    ...previous,
-                    draft: { ...previous.draft, productIds },
-                  }))
-                }
-                onContinue={() => openRequest()}
-                navigate={libraryNavigate}
-              />
-            )}
-            {view === 'requests' && (
-              <SentRequestsScreen
-                records={sentRequests}
-                onClear={() => {
-                  setSentRequests([]);
-                  setRequestState((previous) => ({
-                    ...previous,
-                    receipt: null,
-                    sent: null,
-                  }));
-                }}
-                navigate={libraryNavigate}
-              />
-            )}
-            {view === 'request' && (
-              <PreviewRequest
-                state={requestState}
-                onChange={setRequestState}
-                onEditProducts={() => openSelection()}
-                onAccepted={(record) =>
-                  setSentRequests((records) =>
-                    rememberAcceptedRequest(records, record),
-                  )
-                }
-                onHistory={() => libraryNavigate('requests')}
-                onBack={() => {
-                  const origin = requestOrigin.current;
-                  if (origin)
-                    navigate(
-                      origin.view,
-                      origin.filters,
-                      origin.productId,
-                      true,
-                    );
-                  else navigate('contact', filters, null, true);
-                }}
-                onBrowse={() => navigate('catalog', DEFAULT_PREVIEW_FILTERS)}
-              />
-            )}
-          </Suspense>
-        </PreviewScreenBoundary>
+              )}
+              {view === 'contact' && (
+                <PreviewContact
+                  onRequest={() => openRequest()}
+                  onBrowse={() => navigate('catalog', DEFAULT_PREVIEW_FILTERS)}
+                />
+              )}
+              {(view === 'recent' || view === 'saved') && (
+                <ProductCollection
+                  kind={view}
+                  navigate={libraryNavigate}
+                  onOpen={openProduct}
+                  onRequest={openSelection}
+                />
+              )}
+              {view === 'help' && <HelpScreen navigate={libraryNavigate} />}
+              {view === 'compare' && (
+                <ComparisonScreen
+                  navigate={libraryNavigate}
+                  onOpen={openProduct}
+                  onRequest={openSelection}
+                />
+              )}
+              {view === 'selection' && (
+                <SelectionScreen
+                  ids={requestState.draft.productIds}
+                  onChange={(productIds) =>
+                    setRequestState((previous) => ({
+                      ...previous,
+                      draft: { ...previous.draft, productIds },
+                    }))
+                  }
+                  onContinue={() => openRequest()}
+                  navigate={libraryNavigate}
+                />
+              )}
+              {view === 'requests' && (
+                <SentRequestsScreen
+                  records={sentRequests}
+                  onClear={() => {
+                    setSentRequests([]);
+                    setRequestState((previous) => ({
+                      ...previous,
+                      receipt: null,
+                      sent: null,
+                    }));
+                  }}
+                  navigate={libraryNavigate}
+                />
+              )}
+              {view === 'request' && (
+                <PreviewRequest
+                  state={requestState}
+                  onChange={setRequestState}
+                  onEditProducts={() => openSelection()}
+                  onAccepted={(record) =>
+                    setSentRequests((records) =>
+                      rememberAcceptedRequest(records, record),
+                    )
+                  }
+                  onHistory={() => libraryNavigate('requests')}
+                  onBack={() => {
+                    const origin = requestOrigin.current;
+                    if (origin)
+                      navigate(
+                        origin.view,
+                        origin.filters,
+                        origin.productId,
+                        true,
+                      );
+                    else navigate('contact', filters, null, true);
+                  }}
+                  onBrowse={() => navigate('catalog', DEFAULT_PREVIEW_FILTERS)}
+                />
+              )}
+            </Suspense>
+          </PreviewScreenBoundary>
+        </PreviewScreenMotion>
       </main>
       {menu && (
         <PreviewModal

@@ -11,11 +11,7 @@ import {
   SlidersHorizontal,
   X,
 } from 'lucide-react';
-import {
-  ProductCard,
-  ProductPhoto,
-  AvailabilityBadge,
-} from '@/components/preview-products';
+import { ProductPhoto, AvailabilityBadge } from '@/components/preview-products';
 import {
   DEFAULT_PREVIEW_FILTERS,
   PREVIEW_CATEGORIES,
@@ -25,6 +21,8 @@ import {
   previewCategoriesForGroup,
   type PreviewFilters,
 } from '@/lib/product-preview';
+import { ProgressiveProducts } from '@/components/preview-progressive';
+import { SmoothPreviewButton } from '@/components/preview-motion';
 
 export function PreviewModal({
   title,
@@ -238,16 +236,17 @@ export default function PreviewCatalog({
   onOpen,
   onBack,
   mode = 'catalog',
+  pending = false,
 }: {
   filters: PreviewFilters;
   onChange: (filters: PreviewFilters) => void;
   onOpen: (id: string) => void;
   onBack: () => void;
   mode?: 'catalog' | 'search' | 'home';
+  pending?: boolean;
 }) {
   const [filterOpen, setFilterOpen] = useState(false);
   const products = filterPreviewProducts(PREVIEW_PRODUCTS, filters);
-  const visible = mode === 'home' ? products.slice(0, 4) : products;
   const count =
     Number(filters.availability !== 'all') +
     Number(filters.group !== 'all') +
@@ -261,7 +260,9 @@ export default function PreviewCatalog({
         : 'Tất cả sản phẩm';
   const suggestions = mode === 'search' && !filters.query;
   return (
-    <section className="pv-section pv-catalog-screen">
+    <section
+      className={`pv-section pv-catalog-screen${mode === 'search' ? ' pv-catalog-search' : ''}`}
+    >
       {mode === 'catalog' && (
         <button className="pv-back-to-groups" onClick={onBack}>
           <ArrowLeft aria-hidden="true" />
@@ -278,37 +279,44 @@ export default function PreviewCatalog({
                 {mode === 'search' ? 'TÌM SẢN PHẨM' : 'KHÁM PHÁ DANH MỤC'}
               </span>
               <h1>{mode === 'search' ? 'Tìm kiếm sản phẩm' : title}</h1>
-              <p>
-                {suggestions
-                  ? 'Chọn một sản phẩm hoặc tìm theo tên, model, công dụng.'
-                  : filters.query
-                    ? `Kết quả cho “${filters.query}”`
-                    : 'Chọn sản phẩm để xem thông tin và gửi yêu cầu tư vấn.'}
+              <p
+                className={mode === 'search' ? 'pv-search-summary' : undefined}
+              >
+                {mode === 'search'
+                  ? 'Tìm theo tên, model hoặc công dụng sản phẩm.'
+                  : 'Chọn sản phẩm để xem thông tin và gửi yêu cầu tư vấn.'}
               </p>
             </>
           )}
         </div>
-        {mode !== 'home' && !suggestions && (
-          <button
-            className="pv-button pv-button-outline"
+      </div>
+      {mode !== 'home' && (
+        <div className="pv-catalog-toolbar">
+          <SmoothPreviewButton
+            className="pv-button pv-button-outline pv-filter-trigger"
+            aria-haspopup="dialog"
+            aria-expanded={filterOpen}
             onClick={() => setFilterOpen(true)}
           >
             <SlidersHorizontal aria-hidden="true" />
-            Lọc và sắp xếp{count > 0 ? ` (${count})` : ''}
-          </button>
-        )}
-      </div>
-      {!suggestions && (
-        <div className="pv-filter-bar">
-          <StatusFilters
-            value={filters.availability}
-            onChange={(availability) => onChange({ ...filters, availability })}
-          />
+            Bộ lọc & sắp xếp{count > 0 ? ` (${count})` : ''}
+          </SmoothPreviewButton>
           <output aria-live="polite" className="pv-result-count">
-            {products.length} sản phẩm
+            {pending ? 'Đang tìm…' : `${products.length} sản phẩm`}
           </output>
         </div>
       )}
+      <div className="pv-filter-bar">
+        <StatusFilters
+          value={filters.availability}
+          onChange={(availability) => onChange({ ...filters, availability })}
+        />
+        {mode === 'home' && (
+          <output aria-live="polite" className="pv-result-count">
+            {products.length} sản phẩm
+          </output>
+        )}
+      </div>
       {count > 0 && mode !== 'home' && (
         <div className="pv-applied-filters">
           {filters.group !== 'all' && (
@@ -341,12 +349,14 @@ export default function PreviewCatalog({
       )}
       {suggestions ? (
         <>
-          <div className="pv-section-heading">
-            <h2>Khám phá sản phẩm</h2>
-            <span className="pv-result-count">{products.length} sản phẩm</span>
-          </div>
-          <div className="pv-suggestion-list">
-            {products.map((product) => (
+          <h2 className="sr-only">Khám phá sản phẩm</h2>
+          <ProgressiveProducts
+            products={products}
+            scope="search-suggestions"
+            onOpen={onOpen}
+            pending={pending}
+            className="pv-suggestion-list"
+            renderProduct={(product) => (
               <button key={product.id} onClick={() => onOpen(product.id)}>
                 <ProductPhoto crop={product.image} label={product.name} />
                 <span className="pv-suggestion-copy">
@@ -356,15 +366,16 @@ export default function PreviewCatalog({
                 <AvailabilityBadge value={product.availability} />
                 <ArrowRight aria-hidden="true" />
               </button>
-            ))}
-          </div>
+            )}
+          />
         </>
-      ) : visible.length ? (
-        <div className="pv-product-grid">
-          {visible.map((product) => (
-            <ProductCard key={product.id} product={product} onOpen={onOpen} />
-          ))}
-        </div>
+      ) : products.length ? (
+        <ProgressiveProducts
+          products={products}
+          scope={`${mode}:${filters.group}:${filters.category}:${filters.availability}:${filters.sort}`}
+          onOpen={onOpen}
+          pending={pending}
+        />
       ) : (
         <div className="pv-empty">
           <span className="pv-empty-icon">

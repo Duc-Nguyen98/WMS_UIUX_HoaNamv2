@@ -20,11 +20,15 @@ import {
 import { PREVIEW_CONTACT } from '@/lib/preview-request';
 import {
   ProductPhoto,
-  ProductCard,
   AvailabilityBadge,
   ProductTools,
 } from '@/components/preview-products';
 import { PreviewModal } from '@/components/preview-catalog';
+import { relatedPreviewProducts } from '@/lib/preview-progressive';
+import {
+  DeferredPreviewSection,
+  ProgressiveProducts,
+} from '@/components/preview-progressive';
 
 function ImageViewer({
   product,
@@ -132,9 +136,10 @@ export default function PreviewDetail({
         </button>
       </section>
     );
-  const related = PREVIEW_PRODUCTS.filter(
-    (item) => item.id !== product.id && item.category === product.category,
-  ).slice(0, 4);
+  const { products: related, sameCategory } = relatedPreviewProducts(
+    product,
+    PREVIEW_PRODUCTS,
+  );
   return (
     <section className="pv-product-detail">
       <button className="pv-back-to-groups" onClick={onBack}>
@@ -205,76 +210,95 @@ export default function PreviewDetail({
           </button>
         </div>
       </div>
-      <div className="pv-detail-information">
-        <section>
-          <h2>Thông tin sản phẩm</h2>
-          <dl className="pv-info-table">
-            <div>
-              <dt>Mã sản phẩm</dt>
-              <dd>{product.model}</dd>
-            </div>
-            <div>
-              <dt>Nhóm sản phẩm</dt>
-              <dd>
-                {
-                  PREVIEW_GROUPS.find((group) => group.id === product.group)
-                    ?.title
-                }
-              </dd>
-            </div>
-            <div>
-              <dt>Danh mục</dt>
-              <dd>
-                {
-                  PREVIEW_CATEGORIES.find(
-                    (category) => category.id === product.category,
-                  )?.name
-                }
-              </dd>
-            </div>
-            <div>
-              <dt>Tình trạng</dt>
-              <dd>
-                <AvailabilityBadge value={product.availability} />
-              </dd>
-            </div>
-          </dl>
-        </section>
-        <section>
-          <h2>Thông số kỹ thuật</h2>
-          {product.specifications?.length ? (
+      <DeferredPreviewSection
+        sectionKey={`info:${product.id}`}
+        label="thông tin sản phẩm"
+      >
+        <div className="pv-detail-information">
+          <section>
+            <h2>Thông tin sản phẩm</h2>
             <dl className="pv-info-table">
-              {product.specifications.map((spec) => (
-                <div key={spec.label}>
-                  <dt>{spec.label}</dt>
-                  <dd>{spec.value}</dd>
-                </div>
-              ))}
+              <div>
+                <dt>Mã sản phẩm</dt>
+                <dd>{product.model}</dd>
+              </div>
+              <div>
+                <dt>Nhóm sản phẩm</dt>
+                <dd>
+                  {
+                    PREVIEW_GROUPS.find((group) => group.id === product.group)
+                      ?.title
+                  }
+                </dd>
+              </div>
+              <div>
+                <dt>Danh mục</dt>
+                <dd>
+                  {
+                    PREVIEW_CATEGORIES.find(
+                      (category) => category.id === product.category,
+                    )?.name
+                  }
+                </dd>
+              </div>
+              <div>
+                <dt>Tình trạng</dt>
+                <dd>
+                  <AvailabilityBadge value={product.availability} />
+                </dd>
+              </div>
             </dl>
-          ) : (
-            <div className="pv-spec-help">
-              <p>
-                Liên hệ để được tư vấn thông số phù hợp với công việc của bạn.
-              </p>
-              <button className="pv-text-button" onClick={onContact}>
-                Tư vấn thông số
-                <ArrowRight aria-hidden="true" />
-              </button>
-            </div>
-          )}
-        </section>
-      </div>
+          </section>
+          <section>
+            <h2>Thông số kỹ thuật</h2>
+            {product.specifications?.length ? (
+              <dl className="pv-info-table">
+                {product.specifications.map((spec) => (
+                  <div key={spec.label}>
+                    <dt>{spec.label}</dt>
+                    <dd>{spec.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : (
+              <div className="pv-spec-help">
+                <p>
+                  Liên hệ để được tư vấn thông số phù hợp với công việc của bạn.
+                </p>
+                <button className="pv-text-button" onClick={onContact}>
+                  Tư vấn thông số
+                  <ArrowRight aria-hidden="true" />
+                </button>
+              </div>
+            )}
+          </section>
+        </div>
+      </DeferredPreviewSection>
       {related.length > 0 && (
-        <section className="pv-section">
-          <div className="pv-section-heading">
-            <h2>Sản phẩm cùng danh mục</h2>
-          </div>
-          <div className="pv-product-grid">
-            {related.map((item) => (
-              <ProductCard key={item.id} product={item} onOpen={onOpen} />
-            ))}
-          </div>
-        </section>
+        <DeferredPreviewSection
+          sectionKey={`related:${product.id}`}
+          label="sản phẩm liên quan"
+        >
+          <section className="pv-section">
+            <div className="pv-section-heading">
+              <div>
+                <h2>Sản phẩm liên quan</h2>
+                <p className="pv-related-description">
+                  {sameCategory
+                    ? 'Khám phá thêm sản phẩm cùng danh mục.'
+                    : 'Khám phá thêm sản phẩm cùng nhóm.'}
+                </p>
+              </div>
+            </div>
+            <ProgressiveProducts
+              products={related}
+              scope={`related:${product.id}`}
+              onOpen={onOpen}
+              initial={2}
+              batch={2}
+            />
+          </section>
+        </DeferredPreviewSection>
       )}
       <div className="pv-detail-cta">
         <div>

@@ -32,6 +32,7 @@ import {
 import { ContactLinks } from '@/components/preview-contact';
 import { PreviewModal } from '@/components/preview-catalog';
 import type { SentRequest } from '@/lib/preview-request';
+import { ProgressiveProducts } from '@/components/preview-progressive';
 
 export const LIBRARY_LINKS = [
   { view: 'recent', label: 'Sản phẩm đã xem', short: 'Đã xem', icon: Clock3 },
@@ -206,11 +207,7 @@ export function ProductCollection({
       {!library.ready ? (
         <output>Đang mở danh sách…</output>
       ) : products.length ? (
-        <div className="pv-product-grid">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} onOpen={onOpen} />
-          ))}
-        </div>
+        <ProgressiveProducts products={products} scope={`library:${kind}`} onOpen={onOpen} />
       ) : (
         <EmptyCollection
           title={

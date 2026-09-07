@@ -33,7 +33,7 @@ export function ProductPhoto({
   return (
     <div
       aria-busy={!loaded && !failed}
-      className={`pv-photo${hero ? ' pv-photo-hero' : ''}`}
+      className={`pv-photo${hero ? ' pv-photo-hero' : ''}${loaded ? ' pv-photo-loaded' : ''}`}
     >
       {!loaded && !failed && (
         <span
@@ -57,6 +57,7 @@ export function ProductPhoto({
             unoptimized
             draggable={false}
             loading={hero ? 'eager' : 'lazy'}
+            decoding="async"
             onLoad={() => setLoaded(true)}
             onError={() => setFailed(true)}
             style={{
@@ -88,12 +89,14 @@ export function AvailabilityBadge({ value }: { value: Availability }) {
 export function ProductCard({
   product,
   onOpen,
+  index,
 }: {
   product: PreviewProduct;
   onOpen: (id: string) => void;
+  index?: number;
 }) {
   return (
-    <article className="pv-product-card">
+    <article className="pv-product-card" data-preview-index={index}>
       <button
         className="pv-product-link"
         onClick={() => onOpen(product.id)}
