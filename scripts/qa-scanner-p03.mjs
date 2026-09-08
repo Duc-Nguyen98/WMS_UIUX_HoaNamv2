@@ -1,6 +1,6 @@
 import {chromium} from 'file:///C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
 import {mkdir,writeFile} from 'node:fs/promises';import assert from 'node:assert/strict';
-const base=process.env.SCANNER_QA_URL||'http://127.0.0.1:3000/scanner',out='artifacts/scanner-p03/verified';await mkdir(out,{recursive:true});
+const base=process.env.SCANNER_QA_URL||'http://127.0.0.1:3000/scanner',out=process.env.SCANNER_QA_OUTPUT||'artifacts/scanner-p03/verified';await mkdir(out,{recursive:true});
 const browser=await chromium.launch();const log=[];
 try{for(const [width,height]of [[360,800],[390,844],[430,932]]){
  const ctx=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true});const p=await ctx.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));const entry={viewport:{width,height},checks:[],screenshots:[]};log.push(entry);

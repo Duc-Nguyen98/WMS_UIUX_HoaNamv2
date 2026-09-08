@@ -210,6 +210,11 @@ export default function ScannerPreview() {
   const [busy, setBusy] = useState(false);
   const lock = useRef(false);
   const [mode, setMode] = useState('normal');
+  const [connected,setConnected]=useState(true);
+  const [networkNotice,setNetworkNotice]=useState('');
+  const [storageError,setStorageError]=useState('');
+  const [deviceState,setDeviceState]=useState('normal');
+  useEffect(()=>{const update=()=>{setConnected(navigator.onLine);setNetworkNotice(navigator.onLine?'Đã kết nối lại. Kiểm tra nội dung và bấm lại thao tác cần gửi.':'Mất kết nối. Nội dung đang soạn được giữ; chưa gửi thay đổi.');};setConnected(navigator.onLine);window.addEventListener('online',update);window.addEventListener('offline',update);return()=>{window.removeEventListener('online',update);window.removeEventListener('offline',update);};},[]);
   const role = access.session?.role || 'Nhân viên kho';
   const setRole = (value:string) => access.changePreviewRole(value);
   const paused=warehouseStatus(db)==='paused';
@@ -264,19 +269,19 @@ export default function ScannerPreview() {
         ) {
           dbRef.current = saved;
           setDb(saved);
-        }
+        } else throw new Error('Invalid local store');
       }
-    } catch {}
+    } catch {setStorageError('Không thể đọc dữ liệu trên thiết bị. Vui lòng tải lại hoặc liên hệ hỗ trợ; không tạo giao dịch mới trước khi kiểm tra.');}
     setReady(true);
     });
     return () => { mounted = false; };
   }, []);
   useEffect(() => {
-    if (ready)
+    if (ready&&!storageError)
       try {
         localStorage.setItem(storageKey, JSON.stringify(db));
-      } catch {}
-  }, [db, ready]);
+      } catch {queueMicrotask(()=>setStorageError('Không thể lưu dữ liệu trên thiết bị. Vui lòng giải phóng dung lượng rồi thử lại.'));}
+  }, [db, ready,storageError]);
   useEffect(()=>{
     const receive=(event:StorageEvent)=>{
       if(event.key!==storageKey||!event.newValue)return;
@@ -347,7 +352,9 @@ export default function ScannerPreview() {
     return dbRef.current;
   };
   const save = (next: Store) => {
+    if(storageError)throw new Error(storageError);
     authorizeCommit(currentStore(),next,access.actor());
+    try{localStorage.setItem(storageKey,JSON.stringify(next));}catch{throw new Error('Không thể lưu trên thiết bị. Dữ liệu chưa được xác nhận; kiểm tra dung lượng rồi thử lại.');}
     dbRef.current = next;
     setDb(next);
   };
@@ -361,7 +368,7 @@ export default function ScannerPreview() {
     try {
       if (!access.check()) { access.expire(); return; }
       if(warehouseStatus(currentStore())==='paused')throw new Error(warehouseMessage);
-      if (mode === 'offline')
+      if (mode === 'offline'||!navigator.onLine)
         throw new Error(
           'Đang ngoại tuyến. Dữ liệu chưa được gửi; giữ nguyên nội dung để thử lại.',
         );
@@ -394,7 +401,7 @@ export default function ScannerPreview() {
     go('product');
   };
   const addCode = (raw: string, qty?: number) => {
-    if(mode==='offline'){setError('Đang ngoại tuyến. Chưa xác minh được mã; nội dung đang soạn vẫn được giữ.');return;}
+    if(mode==='offline'||!navigator.onLine){setError('Đang ngoại tuyến. Chưa xác minh được mã; nội dung đang soạn vẫn được giữ.');return;}
     try{assertWrite(currentStore(),access.actor(),documentPermission(draft.kind,'scan'));}catch(e){setError((e as Error).message);return;}
     const code = raw.trim().toUpperCase();
     const found = db.items.find((i) => i.code === code);
@@ -561,7 +568,7 @@ export default function ScannerPreview() {
     current: string,
     change: (v: string) => void,
   ) => (
-    <div className="sc-filter-region"><div className="sc-chips" aria-label="Lựa chọn bộ lọc hoặc thẻ nội dung">
+    <div className="sc-filter-region"><fieldset className="sc-chips" aria-label="Lựa chọn bộ lọc hoặc thẻ nội dung">
       {values.map((v) => (
         <button
           key={v}
@@ -572,7 +579,7 @@ export default function ScannerPreview() {
           {v}
         </button>
       ))}
-    </div>{values.includes('Tất cả')&&<button className="sc-text sc-filter-reset" onClick={()=>{change('Tất cả');setQuery('');}}>Xóa bộ lọc{current!=='Tất cả'?' (1)':''}</button>}</div>
+    </fieldset>{values.includes('Tất cả')&&<button className="sc-text sc-filter-reset" onClick={()=>{change('Tất cả');setQuery('');}}>Xóa bộ lọc{current!=='Tất cả'?' (1)':''}</button>}</div>
   );
   const scanExamples = (
     <details className="sc-code-help">
@@ -957,8 +964,7 @@ export default function ScannerPreview() {
                       <>
                         <Camera />
                         <p>
-                          Camera chưa được bật. Bạn có thể nhập mã để tiếp tục
-                          kiểm đếm.
+                          {deviceState==='denied'?'Quyền camera bị từ chối. Kiểm tra quyền của ứng dụng trong cài đặt hoặc nhập mã thủ công.':'Camera chưa khả dụng trong phiên này. Bạn có thể nhập mã thủ công để tiếp tục kiểm đếm.'}
                         </p>
                       </>
                     ),
@@ -1899,6 +1905,7 @@ export default function ScannerPreview() {
           </>
         );
       case 'nfc-bind':
+        if(deviceState!=='normal')return <Card><h2>{deviceState==='denied'?'Không có quyền truy cập NFC':'NFC chưa được hỗ trợ'}</h2><p>{deviceState==='denied'?'Kiểm tra quyền của ứng dụng và bật NFC trong cài đặt thiết bị.':'Thiết bị hoặc phiên bản ứng dụng này chưa hỗ trợ ghi thẻ NFC. Dùng thiết bị hỗ trợ để tiếp tục.'}</p>{btn('Về danh sách thẻ',()=>go('nfc'),false,true)}</Card>;
         return (
           <>
             <div className="sc-stepper">
@@ -2198,15 +2205,17 @@ export default function ScannerPreview() {
         </header>
         {paused&&<output className="sc-warehouse-banner"><AlertTriangle aria-hidden="true"/><span>{warehouseMessage}. Nội dung đang soạn được giữ trong lần mở này.</span></output>}
         {!paused&&readOnly&&<p className="sc-permission-note">Các thao tác không thuộc quyền được cấp sẽ bị khóa.</p>}
-        {mode === 'offline' && (
+        {(mode === 'offline'||!connected) && (
           <div className="sc-offline">
             <WifiOff />
             Ngoại tuyến • giữ nội dung đang soạn
           </div>
         )}
         <main className="sc-content" key={view}>
+          {networkNotice&&<output className="sc-info">{networkNotice}</output>}
+          {storageError&&<div className="sc-error" role="alert">{storageError}<button className="sc-btn secondary" onClick={()=>window.location.reload()}>Tải lại để kiểm tra</button></div>}
           {!ready ? (
-            <div className="sc-skeleton">
+            <div className="sc-skeleton" aria-busy="true" aria-label="Đang tải dữ liệu kho">
               <span />
               <span />
               <span />
@@ -2265,6 +2274,7 @@ export default function ScannerPreview() {
               <option value="duplicate">Số điện thoại trùng</option>
             </select>
           </Field>
+          <Field label="Kịch bản thiết bị"><select value={deviceState} onChange={e=>setDeviceState(e.target.value)}><option value="normal">Luồng thiết bị mô phỏng</option><option value="unsupported">Thiết bị không hỗ trợ</option><option value="denied">Quyền thiết bị bị từ chối</option></select></Field>
         </details>
       </div>
       <dialog ref={warehouseDialogRef} className="sc-warehouse-modal" aria-labelledby="sc-warehouse-title" onCancel={()=>setWarehouseTarget(null)}><div className="sc-card"><h2 id="sc-warehouse-title">{warehouseTarget==='paused'?'Tạm dừng Kho Hoa Nam?':'Kích hoạt lại Kho Hoa Nam?'}</h2><p>{warehouseTarget==='paused'?'Toàn bộ thao tác ghi sẽ bị chặn. Nhân viên vẫn xem và tra cứu được.':'Nhân viên có quyền sẽ được tiếp tục thao tác ghi.'}</p><p>Người xác nhận: {access.session?.name} • Super Admin</p><Field label="Lý do thay đổi trạng thái"><input autoFocus value={warehouseReason} onChange={e=>setWarehouseReason(e.target.value)}/></Field><button className="sc-btn" disabled={warehouseReason.trim().length<5} onClick={()=>{try{if(!warehouseTarget)return;const next=changeWarehouse(currentStore(),access.actor(),warehouseTarget,warehouseReason,true);localStorage.setItem(storageKey,JSON.stringify(next));dbRef.current=next;setDb(next);setWarehouseTarget(null);setNotice('Trạng thái kho đã được cập nhật.');}catch(e){setError((e as Error).message);setWarehouseTarget(null);}}}>Xác nhận thay đổi</button><button className="sc-btn secondary" onClick={()=>setWarehouseTarget(null)}>Hủy, giữ nguyên trạng thái</button></div></dialog>

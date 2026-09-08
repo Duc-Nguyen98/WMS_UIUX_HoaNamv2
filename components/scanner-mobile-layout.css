@@ -1,4 +1,9 @@
 /* Shared mobile geometry; heights supplied by ResizeObserver, never per-screen offsets. */
+.sc-phone fieldset.sc-chips{border:0;margin:0;min-width:0;padding-left:0;}
+.sc-phone .sc-header small,.sc-phone .sc-nav button:not(.active),.sc-phone .sc-stepper,.sc-phone .sc-progress span:not(.active){color:#526f7c;}
+.sc-phone .sc-nav button:focus-visible,.sc-phone input:focus-visible,.sc-phone textarea:focus-visible,.sc-phone select:focus-visible{outline:3px solid #0c6286;outline-offset:2px;}
+.sc-phone button{transition:background-color 180ms ease,color 180ms ease;}
+@media(prefers-reduced-motion:reduce){.sc-phone *{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
 .sc-phone{--sc-safe-bottom:env(safe-area-inset-bottom,0px);--sc-nav-height:0px;--sc-action-height:0px;--mobile-bottom-reserved-space:calc(var(--sc-nav-height) + var(--sc-action-height) + 20px);font-size:15px;line-height:1.5;}
 .sc-phone .sc-content{padding-bottom:calc(var(--mobile-bottom-reserved-space) + var(--sc-safe-bottom));min-width:0;overflow-wrap:anywhere;}
 .sc-phone .sc-content *{scroll-margin-top:110px;scroll-margin-bottom:var(--mobile-bottom-reserved-space);}
