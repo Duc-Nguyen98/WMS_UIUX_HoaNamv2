@@ -1,0 +1,796 @@
+[
+  {
+    "state": "home-top",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 359,
+      "top": 76,
+      "width": 343,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "height": 844,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 256,
+      "top": 81.796875,
+      "width": 185,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 0,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 375,
+      "top": 68,
+      "width": 375,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=home",
+    "width": 390
+  },
+  {
+    "state": "home-deep-scroll",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 359,
+      "top": 76,
+      "width": 343,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "height": 844,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 256,
+      "top": 81.796875,
+      "width": 185,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 0,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 375,
+      "top": 68,
+      "width": 375,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=home",
+    "width": 390
+  },
+  {
+    "state": "home-deep-scroll-settled",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 359,
+      "top": 76,
+      "width": 343,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "height": 844,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 256,
+      "top": 81.796875,
+      "width": 185,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 2908,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 375,
+      "top": 68,
+      "width": 375,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=home",
+    "width": 390
+  },
+  {
+    "state": "focus-after-deep-scroll",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 359,
+      "top": 76,
+      "width": 343,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "height": 844,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 256,
+      "top": 81.796875,
+      "width": 185,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 0,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 375,
+      "top": 68,
+      "width": 375,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=home",
+    "width": 390
+  },
+  {
+    "state": "search-exact-model",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 359,
+      "top": 76,
+      "width": 343,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "height": 844,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 256,
+      "top": 81.796875,
+      "width": 185,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 0,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 375,
+      "top": 68,
+      "width": 375,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=search&q=DCZC02-26",
+    "width": 390
+  },
+  {
+    "state": "single-result-scrolled",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 359,
+      "top": 76,
+      "width": 343,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "height": 844,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 256,
+      "top": 81.796875,
+      "width": 185,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 121,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 375,
+      "top": 68,
+      "width": 375,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=search&q=DCZC02-26",
+    "width": 390
+  },
+  {
+    "state": "search-return-from-detail",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 359,
+      "top": 76,
+      "width": 343,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "height": 844,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 256,
+      "top": 81.796875,
+      "width": 185,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 0,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 375,
+      "top": 68,
+      "width": 375,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=search&q=DCZC02-26",
+    "width": 390
+  },
+  {
+    "state": "empty-query-result",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 359,
+      "top": 76,
+      "width": 343,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "height": 844,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 256,
+      "top": 81.796875,
+      "width": 185,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 0,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 375,
+      "top": 68,
+      "width": 375,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=search&q=khongcosp12345",
+    "width": 390
+  },
+  {
+    "state": "narrow320-focused",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 12,
+      "right": 293,
+      "top": 76,
+      "width": 281,
+      "x": 12,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 305,
+      "top": 0,
+      "width": 305,
+      "x": 0,
+      "y": 0
+    },
+    "height": 740,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 67,
+      "right": 190,
+      "top": 81.796875,
+      "width": 123,
+      "x": 67,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 0,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 305,
+      "top": 68,
+      "width": 305,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 305,
+      "top": 0,
+      "width": 305,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=search&q=khongcosp12345",
+    "width": 320
+  },
+  {
+    "state": "final-return-restoration",
+    "beforeScroll": 121,
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 359,
+      "top": 76,
+      "width": 343,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "height": 844,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 256,
+      "top": 81.796875,
+      "width": 185,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 116,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 375,
+      "top": 68,
+      "width": 375,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=search&q=DCZC02-26",
+    "width": 390
+  },
+  {
+    "state": "short-viewport-focused",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 359,
+      "top": 76,
+      "width": 343,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "height": 480,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 256,
+      "top": 81.796875,
+      "width": 185,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 0,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 375,
+      "top": 68,
+      "width": 375,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 375,
+      "top": 0,
+      "width": 375,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=search&q=DCZC02-26",
+    "width": 390
+  },
+  {
+    "state": "wide430-focused",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 399,
+      "top": 76,
+      "width": 383,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 415,
+      "top": 0,
+      "width": 415,
+      "x": 0,
+      "y": 0
+    },
+    "height": 932,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 296,
+      "top": 81.796875,
+      "width": 225,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 0,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 415,
+      "top": 68,
+      "width": 415,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 415,
+      "top": 0,
+      "width": 415,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=search&q=DCZC02-26",
+    "width": 430
+  },
+  {
+    "state": "catalog-deep430-final",
+    "background": "rgb(255, 255, 255)",
+    "form": {
+      "bottom": 133.59375,
+      "height": 57.59375,
+      "left": 16,
+      "right": 399,
+      "top": 76,
+      "width": 383,
+      "x": 16,
+      "y": 76
+    },
+    "header": {
+      "bottom": 68,
+      "height": 68,
+      "left": 0,
+      "right": 415,
+      "top": 0,
+      "width": 415,
+      "x": 0,
+      "y": 0
+    },
+    "height": 932,
+    "input": {
+      "bottom": 127.796875,
+      "height": 46,
+      "left": 71,
+      "right": 296,
+      "top": 81.796875,
+      "width": 225,
+      "x": 71,
+      "y": 81.796875
+    },
+    "measuredHeight": "147px",
+    "overflow": false,
+    "position": "sticky",
+    "scroll": 462,
+    "search": {
+      "bottom": 145.59375,
+      "height": 77.59375,
+      "left": 0,
+      "right": 415,
+      "top": 68,
+      "width": 415,
+      "x": 0,
+      "y": 68
+    },
+    "topbar": {
+      "bottom": 146.59375,
+      "height": 146.59375,
+      "left": 0,
+      "right": 415,
+      "top": 0,
+      "width": 415,
+      "x": 0,
+      "y": 0
+    },
+    "view": "#view=catalog",
+    "width": 430
+  }
+]

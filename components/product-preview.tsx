@@ -107,6 +107,8 @@ function PreviewApp() {
   const [keyboard, setKeyboard] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const mainRef = useRef<HTMLElement>(null);
+  const appRef = useRef<HTMLDivElement>(null);
+  const topbarRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const current = useRef(location);
   const scrollPositions = useRef(new Map<string, number>());
@@ -129,6 +131,23 @@ function PreviewApp() {
   const keyOf = (state: Location) =>
     previewHash(state.view, state.filters, state.productId);
 
+  useEffect(() => {
+    const app = appRef.current;
+    const topbar = topbarRef.current;
+    if (!app || !topbar) return;
+    // One native sticky container owns both header and search. Its real height
+    // includes safe areas and wrapping, so focused content can clear it.
+    const measure = () =>
+      app.style.setProperty('--pv-topbar-height', `${topbar.offsetHeight}px`);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(topbar);
+    return () => {
+      observer.disconnect();
+      app.style.removeProperty('--pv-topbar-height');
+    };
+  }, []);
+
   function adopt(next: Location, focus = true, syncDraft = true) {
     const previous = current.current;
     current.current = next;
@@ -143,14 +162,18 @@ function PreviewApp() {
       (next.view !== previous.view || next.productId !== previous.productId)
     ) {
       requestAnimationFrame(() => {
+        // Typing into the persistent search input must keep focus and geometry;
+        // returning from a detail/other route must restore its result position.
+        const typingInSearch =
+          next.view === 'search' && document.activeElement === searchRef.current;
         const title = mainRef.current?.querySelector<HTMLElement>('h1');
-        if (title && next.view !== 'search') {
+        if (title && !typingInSearch) {
           title.tabIndex = -1;
           title.focus({ preventScroll: true });
-        } else if (next.view !== 'search') {
+        } else if (!typingInSearch) {
           mainRef.current?.focus({ preventScroll: true });
         }
-        if (next.view !== 'search')
+        if (!typingInSearch)
           window.scrollTo({
             top: scrollPositions.current.get(keyOf(next)) ?? 0,
             behavior: 'instant',
@@ -297,6 +320,7 @@ function PreviewApp() {
   const showSearch = ['home', 'groups', 'catalog', 'search'].includes(view);
   return (
     <div
+      ref={appRef}
       className={`pv-theme pv-app${view === 'detail' ? ' pv-has-detail-cta' : ''}${keyboard ? ' pv-keyboard-open' : ''}`}
     >
       <PreviewScrollController route={`${view}:${productId ?? ''}`} />
@@ -310,104 +334,86 @@ function PreviewApp() {
       >
         Đến nội dung chính
       </a>
-      <header className="pv-header">
-        <div className="pv-header-inner">
-          <button
-            className="pv-icon-button pv-library-menu-button pv-header-action"
-            aria-label="Mở tiện ích sản phẩm"
-            title="Tiện ích sản phẩm"
-            aria-expanded={menu}
-            onClick={() => setMenu(true)}
-          >
-            <Menu aria-hidden="true" />
-          </button>
-          <a
-            href="#view=home"
-            className="pv-wordmark"
-            aria-label="Hoa Nam Tools — về trang chủ"
-            onClick={(event) => {
-              event.preventDefault();
-              navigate('home', DEFAULT_PREVIEW_FILTERS);
-            }}
-          >
-            <svg
-              className="pv-brand-symbol"
-              viewBox="130 20 1188 740"
-              fill="none"
-              aria-hidden="true"
-              focusable="false"
+      <div className="pv-topbar" ref={topbarRef}>
+        <header className="pv-header">
+          <div className="pv-header-inner">
+            <button
+              className="pv-icon-button pv-library-menu-button pv-header-action"
+              aria-label="Mở tiện ích sản phẩm"
+              title="Tiện ích sản phẩm"
+              aria-expanded={menu}
+              onClick={() => setMenu(true)}
             >
-              <image
-                href={`${process.env.NEXT_PUBLIC_PREVIEW_ASSET_BASE ?? ''}/preview/hoa-nam-brand-source.jpg`}
-                width="1448"
-                height="1086"
-              />
-            </svg>
-            <span className="pv-brand-text">
-              <strong className="pv-brand-name">HOA NAM</strong>
-              <span className="pv-brand-caption">TOOLS</span>
-            </span>
-          </a>
-          <nav className="pv-desktop-nav" aria-label="Điều hướng chính">
-            {navigation.map(({ id, label, icon: Icon }) => (
-              <a
-                key={id}
-                href={previewHash(
-                  id,
-                  id === 'groups'
-                    ? previewGroupFilters(activeGroup)
-                    : DEFAULT_PREVIEW_FILTERS,
-                )}
-                aria-current={activeNav === id ? 'page' : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  navigate(
+              <Menu aria-hidden="true" />
+            </button>
+            <a
+              href="#view=home"
+              className="pv-wordmark"
+              aria-label="Hoa Nam Tools — về trang chủ"
+              onClick={(event) => {
+                event.preventDefault();
+                navigate('home', DEFAULT_PREVIEW_FILTERS);
+              }}
+            >
+              <svg
+                className="pv-brand-symbol"
+                viewBox="130 20 1188 740"
+                fill="none"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <image
+                  href={`${process.env.NEXT_PUBLIC_PREVIEW_ASSET_BASE ?? ''}/preview/hoa-nam-brand-source.jpg`}
+                  width="1448"
+                  height="1086"
+                />
+              </svg>
+              <span className="pv-brand-text">
+                <strong className="pv-brand-name">HOA NAM</strong>
+                <span className="pv-brand-caption">TOOLS</span>
+              </span>
+            </a>
+            <nav className="pv-desktop-nav" aria-label="Điều hướng chính">
+              {navigation.map(({ id, label, icon: Icon }) => (
+                <a
+                  key={id}
+                  href={previewHash(
                     id,
                     id === 'groups'
                       ? previewGroupFilters(activeGroup)
                       : DEFAULT_PREVIEW_FILTERS,
-                  );
-                }}
-              >
-                <Icon aria-hidden="true" />
-                {label}
-              </a>
-            ))}
-          </nav>
-          <a
-            className="pv-header-support pv-header-action"
-            href="#view=request"
-            aria-label="Gửi yêu cầu"
-            title="Gửi yêu cầu"
-            aria-current={view === 'request' ? 'page' : undefined}
-            onClick={(event) => {
-              event.preventDefault();
-              if (view !== 'request') openRequest();
-            }}
-          >
-            <Send aria-hidden="true" />
-          </a>
-        </div>
-      </header>
-      <main className="pv-main" id="pv-main" ref={mainRef} tabIndex={-1}>
-        {library.notice && view !== 'compare' && (
-          <div className="pv-library-notice">
-            <output>{library.notice}</output>
-            <button
-              className="pv-text-button"
-              onClick={() => libraryNavigate('compare')}
+                  )}
+                  aria-current={activeNav === id ? 'page' : undefined}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    navigate(
+                      id,
+                      id === 'groups'
+                        ? previewGroupFilters(activeGroup)
+                        : DEFAULT_PREVIEW_FILTERS,
+                    );
+                  }}
+                >
+                  <Icon aria-hidden="true" />
+                  {label}
+                </a>
+              ))}
+            </nav>
+            <a
+              className="pv-header-support pv-header-action"
+              href="#view=request"
+              aria-label="Gửi yêu cầu"
+              title="Gửi yêu cầu"
+              aria-current={view === 'request' ? 'page' : undefined}
+              onClick={(event) => {
+                event.preventDefault();
+                if (view !== 'request') openRequest();
+              }}
             >
-              Mở so sánh
-            </button>
-            <button
-              className="pv-icon-button"
-              aria-label="Đóng thông báo"
-              onClick={library.dismissNotice}
-            >
-              <X aria-hidden="true" />
-            </button>
+              <Send aria-hidden="true" />
+            </a>
           </div>
-        )}
+        </header>
         {showSearch && (
           <search className="pv-search-region">
             <form
@@ -452,7 +458,7 @@ function PreviewApp() {
                 type="search"
                 enterKeyHint="search"
                 autoComplete="off"
-                placeholder="Tìm tên sản phẩm, model hoặc công dụng"
+                placeholder="Tìm sản phẩm"
                 value={searchDraft}
                 onFocus={() => {
                   // Align once before typing; shorter result sets must not clamp a deep scroll offset.
@@ -496,6 +502,26 @@ function PreviewApp() {
               </button>
             </form>
           </search>
+        )}
+      </div>
+      <main className="pv-main" id="pv-main" ref={mainRef} tabIndex={-1}>
+        {library.notice && view !== 'compare' && (
+          <div className="pv-library-notice">
+            <output>{library.notice}</output>
+            <button
+              className="pv-text-button"
+              onClick={() => libraryNavigate('compare')}
+            >
+              Mở so sánh
+            </button>
+            <button
+              className="pv-icon-button"
+              aria-label="Đóng thông báo"
+              onClick={library.dismissNotice}
+            >
+              <X aria-hidden="true" />
+            </button>
+          </div>
         )}
         <PreviewScreenMotion
           search={view === 'search'}

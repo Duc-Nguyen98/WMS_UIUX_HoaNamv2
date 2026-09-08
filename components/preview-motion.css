@@ -5,13 +5,45 @@ html:has(.pv-app) {
 .pv-app {
   overflow-anchor: none;
 }
-.pv-search-region {
+.pv-topbar {
   position: sticky;
-  top: var(--pv-safe-top);
-  z-index: 15;
-  background: var(--background);
-  padding-block: 8px;
-  margin-block: -8px 8px;
+  top: 0;
+  z-index: 30;
+  isolation: isolate;
+  background: var(--hn-surface);
+}
+.pv-search-region {
+  position: static;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 8px 2rem 12px;
+  background: var(--hn-surface);
+}
+.pv-topbar:has(.pv-search-region) {
+  border-bottom: 1px solid var(--hn-border);
+}
+.pv-topbar:has(.pv-search-region) .pv-header {
+  border-bottom: 0;
+}
+.pv-main
+  :where(h1, h2, h3, button, a, input, textarea, select, summary, [tabindex]) {
+  scroll-margin-top: calc(var(--pv-topbar-height) + 12px);
+  scroll-margin-bottom: var(--pv-nav-clearance);
+}
+@media (max-width: 1000px) {
+  .pv-search-region {
+    padding-inline: 1.5rem;
+  }
+}
+@media (max-width: 700px) {
+  .pv-search-region {
+    padding-inline: 1rem;
+  }
+}
+@media (max-width: 359px) {
+  .pv-search-region {
+    padding-inline: 0.75rem;
+  }
 }
 .pv-search {
   gap: 4px;

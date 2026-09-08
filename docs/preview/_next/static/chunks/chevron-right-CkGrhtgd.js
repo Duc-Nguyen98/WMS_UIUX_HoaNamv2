@@ -1,0 +1,1 @@
+import{w as e}from"./preview-products-D-P5xl9i.js";var t=e(`chevron-right`,[[`path`,{d:`m9 18 6-6-6-6`,key:`mthhwq`}]]);export{t};

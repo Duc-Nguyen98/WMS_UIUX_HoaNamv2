@@ -102,8 +102,13 @@ export function PreviewScrollController({ route }: { route: string }) {
       if (!target?.isConnected || !scroll.current) return;
       event.preventDefault();
       const bounds = target.getBoundingClientRect();
-      if (bounds.top < 90 || bounds.bottom > window.innerHeight - 90)
-        scroll.current.scrollTo(window.scrollY + bounds.top - 100, {
+      const top =
+        (document.querySelector('.pv-topbar')?.getBoundingClientRect().bottom ??
+          0) + 12;
+      const navBounds = document.querySelector('.pv-mobile-nav')?.getBoundingClientRect();
+      const bottom = navBounds?.height ? navBounds.top : window.innerHeight;
+      if (bounds.top < top || bounds.bottom > bottom - 12)
+        scroll.current.scrollTo(window.scrollY + bounds.top - top, {
           duration: 0.3,
         });
     };

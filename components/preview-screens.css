@@ -59,14 +59,6 @@ html:has(.pv-app) {
 .pv-search .pv-icon-button {
   border: 0;
 }
-.pv-search-screen-input {
-  position: sticky;
-  top: 0;
-  background: var(--background);
-  padding-block: 0.5rem;
-  margin-block: -0.5rem;
-  z-index: 15;
-}
 .pv-search-progress {
   font-size: 0.875rem;
   color: var(--muted-foreground);

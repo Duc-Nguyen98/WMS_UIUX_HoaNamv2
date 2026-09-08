@@ -45,6 +45,7 @@
   --pv-safe-top: env(safe-area-inset-top, 0px);
   --pv-safe-bottom: env(safe-area-inset-bottom, 0px);
   --pv-nav-clearance: calc(76px + var(--pv-safe-bottom));
+  --pv-topbar-height: 0px;
   --radius: 0.5rem;
 }
 
