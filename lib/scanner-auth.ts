@@ -1,10 +1,11 @@
 /** Preview-only contract. Never use client-side claims as production authorization. */
-export type ScannerSession = { userId: string; name: string; role: string; expiresAt: number; shiftStarted: boolean };
+import type {Actor} from './scanner-policy';
+export type ScannerSession = Actor & { role: string };
 export const privateViews = ['home','lookup','product','create','scan','review','result','docs','doc','warranty','case','intake','nfc','nfc-bind','history','profile'] as const;
 export type PrivateView = typeof privateViews[number];
 export type ScannerView = PrivateView | 'login' | 'shift' | 'forgot';
 export type ScannerRoute = { view: ScannerView; id: string; product: string };
-export const validSession = (s: ScannerSession | null, now = Date.now()): s is ScannerSession => !!s && s.userId === 'preview-minhanh' && s.name === 'Minh Anh' && ['Nhân viên kho','Người duyệt kho','Chỉ xem'].includes(s.role) && Number.isFinite(s.expiresAt) && s.expiresAt > now && typeof s.shiftStarted === 'boolean';
+export const validSession = (s: ScannerSession | null, now = Date.now()): s is ScannerSession => !!s && s.userId === 'preview-minhanh' && s.name === 'Minh Anh' && ['Nhân viên kho','Người duyệt kho','Chỉ xem','Super Admin'].includes(s.role) && Array.isArray(s.permissions) && typeof s.roleCode==='string' && Number.isFinite(s.expiresAt) && s.expiresAt > now && typeof s.shiftStarted === 'boolean';
 export function parseRoute(hash: string): ScannerRoute {
   const [raw, search = ''] = hash.replace(/^#/, '').split('?');
   const view = [...privateViews,'login','shift','forgot'].includes(raw) ? raw as ScannerView : 'home';
@@ -37,4 +38,5 @@ export interface ScannerAuthAdapter {
   login(identifier: string, password: string, scenario: string, role: string): Promise<ScannerSession>;
   startShift(): ScannerSession;
   logout(): void;
+  changePreviewRole(role:string):void;
 }

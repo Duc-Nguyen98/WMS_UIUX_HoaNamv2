@@ -1,4 +1,5 @@
-import { authErrors, validSession, type ScannerAuthAdapter, type ScannerSession } from './scanner-auth';
+import { authErrors, validSession, type ScannerAuthAdapter, type ScannerSession } from './scanner-auth.ts';
+import {profiles} from './scanner-policy.ts';
 
 // Only imported by the Scanner preview. No credential/token is persisted.
 // sessionStorage contains synthetic UI-session claims, not authentication proof.
@@ -17,7 +18,8 @@ export function createPreviewAuth(storage: Pick<Storage,'getItem'|'setItem'|'rem
       if (authErrors[scenario]) throw new Error(authErrors[scenario]);
       // Public synthetic fixtures for design review only. Never enter real credentials.
       if (!['minhanh','minhanh@example.test','0900000000'].includes(identifier.trim().toLowerCase()) || password !== 'Scanner@2026') throw new Error(authErrors.invalid);
-      const s: ScannerSession = {userId:'preview-minhanh',name:'Minh Anh',role,expiresAt:Date.now()+30*60*1000,shiftStarted:false};
+      const profile=profiles[role];if(!profile)throw new Error('Vai trò không hợp lệ.');
+      const s: ScannerSession = {userId:'preview-minhanh',name:'Minh Anh',role,roleCode:profile.code,permissions:[...profile.permissions],expiresAt:Date.now()+30*60*1000,shiftStarted:false};
       storage.setItem(key,JSON.stringify(s));
       return s;
     },
@@ -26,5 +28,6 @@ export function createPreviewAuth(storage: Pick<Storage,'getItem'|'setItem'|'rem
       const next={...s,shiftStarted:true}; storage.setItem(key,JSON.stringify(next)); return next;
     },
     logout() { storage.removeItem(key); },
+    changePreviewRole(role) {const s=read();const p=profiles[role];if(!s||!p)throw new Error('Phiên hoặc vai trò không hợp lệ.');storage.setItem(key,JSON.stringify({...s,role,roleCode:p.code,permissions:[...p.permissions]}));},
   };
 }

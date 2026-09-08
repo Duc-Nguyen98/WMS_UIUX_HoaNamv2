@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { seedStore,validateLine,createDocument,postDocument,changeCase,canIssueParts } from '../lib/scanner-model.ts';
+import { seedStore,validateLine,createDocument as createRaw,postDocument as postRaw,changeCase as caseRaw,canIssueParts } from '../lib/scanner-model.ts';
+import {profiles} from '../lib/scanner-policy.ts';
+const actor={userId:'test',name:'QA',roleCode:'SUPER_ADMIN',permissions:profiles['Super Admin'].permissions,shiftStarted:true,expiresAt:Date.now()+3600000};
+const createDocument=(s,d)=>createRaw(s,d,actor),postDocument=(s,id)=>postRaw(s,id,actor),changeCase=(s,id,status,note)=>caseRaw(s,id,status,note,actor);
 const input=(kind,lines,more={})=>({kind,lines,name:'Ca kiểm thử',recipient:'Đại lý A',phone:'0900000000',address:'Hà Nội',group:'Đại lý',note:'',key:'test-'+kind,...more});
 test('inbound → posted → outbound → posted changes same inventory',()=>{
  let s=seedStore();s=createDocument(s,input('in',[{code:'NEW-001',qty:1}]));const id=s.docs[0].id;

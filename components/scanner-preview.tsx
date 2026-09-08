@@ -24,7 +24,6 @@ import {
   Layers,
   WifiOff,
   LoaderCircle,
-  ShieldCheck,
   AlertTriangle,
   Camera,
   ImagePlus,
@@ -46,6 +45,7 @@ import {
 } from '@/lib/scanner-model';
 import './scanner-preview.css';
 import { ScannerAuthScreen, useScannerAccess } from './scanner-auth';
+import {actionPermission,assertWrite,authorizeCommit,changeWarehouse,documentPermission,permitted,profiles,warehouseMessage,warehouseStatus,type WarehouseStatus} from '@/lib/scanner-policy';
 
 type View =
   | 'home'
@@ -197,7 +197,15 @@ export default function ScannerPreview() {
   const [busy, setBusy] = useState(false);
   const lock = useRef(false);
   const [mode, setMode] = useState('normal');
-  const [role, setRole] = useState('Nhân viên kho');
+  const role = access.session?.role || 'Nhân viên kho';
+  const setRole = (value:string) => access.changePreviewRole(value);
+  const paused=warehouseStatus(db)==='paused';
+  const routePermission=actionPermission(view,draft.kind);
+  const actionDenied=!!routePermission && (!permitted(access.session,routePermission)||paused);
+  const [warehouseTarget,setWarehouseTarget]=useState<WarehouseStatus|null>(null);
+  const [warehouseReason,setWarehouseReason]=useState('');
+  const warehouseDialogRef=useRef<HTMLDialogElement>(null);
+  useEffect(()=>{const dialog=warehouseDialogRef.current;if(!dialog)return;if(warehouseTarget&&!dialog.open)dialog.showModal();else if(!warehouseTarget&&dialog.open)dialog.close();},[warehouseTarget]);
   const [result, setResult] = useState({
     title: '',
     message: '',
@@ -256,6 +264,13 @@ export default function ScannerPreview() {
         localStorage.setItem(storageKey, JSON.stringify(db));
       } catch {}
   }, [db, ready]);
+  useEffect(()=>{
+    const receive=(event:StorageEvent)=>{
+      if(event.key!==storageKey||!event.newValue)return;
+      try{const next=JSON.parse(event.newValue) as Store;if(next.version===1&&Array.isArray(next.docs)&&Array.isArray(next.cases)&&Array.isArray(next.items)&&Array.isArray(next.tags)&&Array.isArray(next.events)){dbRef.current=next;setDb(next);setPopup(null);setInputSheet(false);setBox('');}}catch{}
+    };
+    window.addEventListener('storage',receive);return()=>window.removeEventListener('storage',receive);
+  },[]);
   const modalOpen = access.allowed && (!!popup || inputSheet || !!box);
   useEffect(() => {
     const el = dialogRef.current;
@@ -276,13 +291,15 @@ export default function ScannerPreview() {
       window.scrollTo({top:0,behavior:'instant'});
   }, [view, selectedId, productCode]);
   const go = (next: View) => {
+    const permission=actionPermission(next,draft.kind);
+    if(permission && !can(permission)){setError(paused?warehouseMessage:'Bạn chỉ được xem nội dung này; không có quyền mở thao tác ghi.');return;}
     access.navigate(next,{id:pendingContext.current.id || selectedId,product:pendingContext.current.product || productCode});
     pendingContext.current={id:'',product:''};
     setError('');
     setNotice('');
   };
   const back = () => {
-    access.navigate('home',{},true);
+    access.back();
     setError('');
   };
   const tab = (next: View) => {
@@ -303,13 +320,20 @@ export default function ScannerPreview() {
     }
   };
   const start = (kind: Kind, caseId?: string) => {
+    if(!can(documentPermission(kind,'create'))){setError(paused?warehouseMessage:'Bạn không có quyền lập phiếu.');return;}
     setDraft(fresh(kind, caseId));
     setScanCode('');
     go(kind === 'parts' ? 'scan' : 'create');
   };
-  const readOnly = role === 'Chỉ xem';
-  const approver = role === 'Người duyệt kho';
+  const can=(permission:string)=>!paused&&permitted(access.session,permission);
+  const readOnly = !can(view==='nfc'||view==='nfc-bind'?'physical_code.assign_rfid':view==='case'||view==='intake'||view==='warranty'?'warranty.manage':documentPermission(draft.kind,'create'));
+  const approver = can(documentPermission(db.docs.find(d=>d.id===selectedId)?.kind||'in','post'));
+  const currentStore=()=>{
+    try {const saved=localStorage.getItem(storageKey);if(saved){const next=JSON.parse(saved) as Store;if(next.version===1&&Array.isArray(next.docs))dbRef.current=next;}}catch{}
+    return dbRef.current;
+  };
   const save = (next: Store) => {
+    authorizeCommit(currentStore(),next,access.actor());
     dbRef.current = next;
     setDb(next);
   };
@@ -322,7 +346,7 @@ export default function ScannerPreview() {
     await new Promise((r) => setTimeout(r, 500));
     try {
       if (!access.check()) { access.expire(); return; }
-      if (readOnly) throw new Error('Tài khoản chỉ xem không được thực hiện thay đổi.');
+      if(warehouseStatus(currentStore())==='paused')throw new Error(warehouseMessage);
       if (mode === 'offline')
         throw new Error(
           'Đang ngoại tuyến. Dữ liệu chưa được gửi; giữ nguyên nội dung để thử lại.',
@@ -356,6 +380,7 @@ export default function ScannerPreview() {
     go('product');
   };
   const addCode = (raw: string, qty?: number) => {
+    try{assertWrite(currentStore(),access.actor(),documentPermission(draft.kind,'scan'));}catch(e){setError((e as Error).message);return;}
     const code = raw.trim().toUpperCase();
     const found = db.items.find((i) => i.code === code);
     setError('');
@@ -402,7 +427,7 @@ export default function ScannerPreview() {
   const submitDoc = () =>
     run(() => {
       if (readOnly) throw new Error('Tài khoản không có quyền lập phiếu.');
-      const next = createDocument(dbRef.current, {
+      const next = createDocument(currentStore(), {
         kind: draft.kind,
         name: draft.name || `${kindLabel(draft.kind)} ${stamp()}`,
         recipient: draft.recipient,
@@ -413,7 +438,7 @@ export default function ScannerPreview() {
         caseId: draft.caseId,
         lines: draft.lines,
         key: draft.key,
-      });
+      },access.actor());
       save(next);
       const created = next.docs.find((d) => d.key === draft.key)!;
       setPopup(null);
@@ -452,7 +477,7 @@ export default function ScannerPreview() {
       action: () =>
         run(() => {
           if (!approver) throw new Error('Cần quyền người duyệt kho.');
-          save(postDocument(dbRef.current, id));
+          save(postDocument(currentStore(), id,access.actor()));
           setPopup(null);
           setNotice('Đã ghi sổ. Tồn kho và lịch sử đã được cập nhật.');
         }),
@@ -605,12 +630,14 @@ export default function ScannerPreview() {
               {[
                 {
                   label: 'Nhập kho',
+                  permission: 'inbound.create',
                   sub: 'Nhận hàng và kiểm đếm',
                   icon: ArrowDownToLine,
                   fn: () => start('in'),
                 },
                 {
                   label: 'Xuất kho',
+                  permission: 'outbound.request.manual_create',
                   sub: 'Soạn hàng theo phiếu',
                   icon: ArrowUpFromLine,
                   fn: () => start('out'),
@@ -628,12 +655,12 @@ export default function ScannerPreview() {
                   fn: () => go('nfc'),
                 },
               ].map((t) => (
-                <button key={t.label} onClick={t.fn}>
+                <button key={t.label} onClick={t.fn} disabled={!!t.permission&&!can(t.permission)}>
                   <span>
                     <t.icon />
                   </span>
                   <h3>{t.label}</h3>
-                  <p>{t.sub}</p>
+                  <p>{t.permission&&!can(t.permission)?paused?'Kho đang tạm dừng':'Không có quyền lập phiếu':t.sub}</p>
                   <ChevronRight />
                 </button>
               ))}
@@ -1244,7 +1271,7 @@ export default function ScannerPreview() {
                         }),
                     });
                   },
-                  readOnly,
+                  !can(documentPermission(doc.kind,'cancel')),
                   true,
                 )}
               </>
@@ -1380,7 +1407,7 @@ export default function ScannerPreview() {
                 {canIssueParts(c.status) && (
                   <button
                     className="sc-wide-callout"
-                    disabled={readOnly}
+                    disabled={!can('warranty.component_issue')}
                     onClick={() => start('parts', c.id)}
                   >
                     <Layers />
@@ -1437,6 +1464,7 @@ export default function ScannerPreview() {
                                       c.id,
                                       status,
                                       caseNote,
+                                      access.actor(),
                                     ),
                                   );
                                   setPopup(null);
@@ -1463,7 +1491,7 @@ export default function ScannerPreview() {
             {caseTab === 'Linh kiện' && (
               <>
                 {canIssueParts(c.status) &&
-                  btn('Xuất linh kiện', () => start('parts', c.id), readOnly)}
+                  btn('Xuất linh kiện', () => start('parts', c.id), !can('warranty.component_issue'))}
                 {db.docs
                   .filter((d) => d.caseId === c.id)
                   .map((d) => (
@@ -1530,7 +1558,7 @@ export default function ScannerPreview() {
                       title: 'Thêm ảnh hồ sơ',
                       body: 'Chọn ảnh ghi nhận tình trạng máy và phụ kiện tại thời điểm xử lý.',
                       label: 'Thêm ảnh tình trạng máy',
-                      action: () => {
+                      action: () => { void run(()=>{
                         save({
                           ...db,
                           cases: db.cases.map((w) =>
@@ -1549,7 +1577,7 @@ export default function ScannerPreview() {
                           ),
                         });
                         setPopup(null);
-                      },
+                      }); },
                     }),
                   readOnly ||
                     c.media.length >= 10 ||
@@ -2080,6 +2108,11 @@ export default function ScannerPreview() {
         return (
           <>
             <Card>
+              <h3>Trạng thái Kho Hoa Nam</h3><Badge>{paused?'Tạm dừng':'Hoạt động'}</Badge>
+              {permitted(access.session,'warehouse.manage')&&access.session?.roleCode==='SUPER_ADMIN' ? <button className="sc-btn secondary" onClick={()=>{setWarehouseReason('');setWarehouseTarget(paused?'active':'paused');}}>{paused?'Kích hoạt lại kho':'Tạm dừng kho'}</button>:<p>Chỉ Super Admin được thay đổi trạng thái kho.</p>}
+              <p>Xem lịch sử thay đổi tại Lịch sử thao tác.</p>
+            </Card>
+            <Card>
               <div className="sc-profile">
                 <span className="sc-avatar">MA</span>
                 <h2>Minh Anh</h2>
@@ -2158,7 +2191,7 @@ export default function ScannerPreview() {
         </div>
         <Field label="Vai trò kiểm thử">
           <select value={role} onChange={(e) => setRole(e.target.value)}>
-            {['Nhân viên kho', 'Người duyệt kho', 'Chỉ xem'].map((v) => (
+            {Object.keys(profiles).map((v) => (
               <option key={v}>{v}</option>
             ))}
           </select>
@@ -2180,30 +2213,12 @@ export default function ScannerPreview() {
           BH-001 → Xuất linh kiện → LK-001 + BOX-001 × 3 → gửi duyệt → ghi sổ
           XLK → xem lại hồ sơ.
         </p>
-        <button
-          onClick={() =>
-            setPopup({
-              title: 'Khôi phục dữ liệu thử ban đầu?',
-              body: 'Chỉ xoá dữ liệu mock của Scanner trong trình duyệt này. Không ảnh hưởng app thật hoặc WMS web.',
-              label: 'Khôi phục dữ liệu',
-              action: () => {
-                save(seedStore());
-                setDraft(fresh('in'));
-                setMode('normal');
-                setPopup(null);
-                access.navigate('home',{},true);
-                setQuery('');
-              },
-            })
-          }
-        >
-          Khôi phục dữ liệu thử
-        </button>
+        <p>Vai trò và kịch bản bên ngoài khung điện thoại chỉ dùng cho QA. Các quyền trong app lấy từ phiên hiện tại.</p>
         <small>
           BA cần duyệt: chính sách Post, quyền xác nhận, giữ chỗ và tính nguyên
           tử của xuất linh kiện.
         </small>
-        <button onClick={access.expire}>Kiểm thử hết hạn phiên</button>
+        <button onClick={()=>access.expire()}>Kiểm thử hết hạn phiên</button>
       </aside>
       <div className="sc-phone">
         <div className="sc-preview-note">
@@ -2227,6 +2242,8 @@ export default function ScannerPreview() {
             <UserRound />
           </button>
         </header>
+        {paused&&<output className="sc-warehouse-banner"><AlertTriangle aria-hidden="true"/><span>{warehouseMessage}. Nội dung đang soạn được giữ trong lần mở này.</span></output>}
+        {!paused&&readOnly&&<p className="sc-permission-note">Các thao tác không thuộc quyền được cấp sẽ bị khóa.</p>}
         {mode === 'offline' && (
           <div className="sc-offline">
             <WifiOff />
@@ -2241,7 +2258,7 @@ export default function ScannerPreview() {
               <span />
             </div>
           ) : (
-            body()
+            actionDenied ? <Card><h2>Thao tác đang bị khóa</h2><p>{paused?warehouseMessage:'Bạn không có quyền mở thao tác tạo, sửa hoặc gửi dữ liệu.'}</p><p>Nội dung đang soạn được giữ trong lần mở này; chưa có thay đổi nào được gửi.</p><button className="sc-btn secondary" onClick={()=>access.navigate('home',{},true)}>Về trang chủ</button></Card> : body()
           )}
           {error && !modalOpen && (
             <div className="sc-error" role="alert">
@@ -2256,7 +2273,7 @@ export default function ScannerPreview() {
           </svg>
           {nav.map((v, i) => {
             const Icon = icons[i];
-            const active = view === v || (v === 'lookup' && view === 'product');
+            const active = view === v || (v === 'lookup' && view === 'product') || (v === 'docs' && ['doc','create','scan','review','result'].includes(view));
             return (
               <button
                 key={v}
@@ -2274,10 +2291,10 @@ export default function ScannerPreview() {
         <details className="sc-mobile-controls">
           <summary>Điều khiển xem thiết kế</summary>
           <p>Dữ liệu mock • không kết nối hệ thống thật.</p>
-          <button className="sc-btn secondary" onClick={access.expire}>Kiểm thử hết hạn phiên</button>
+          <button className="sc-btn secondary" onClick={()=>access.expire()}>Kiểm thử hết hạn phiên</button>
           <Field label="Vai trò">
             <select value={role} onChange={(e) => setRole(e.target.value)}>
-              {['Nhân viên kho', 'Người duyệt kho', 'Chỉ xem'].map((v) => (
+              {Object.keys(profiles).map((v) => (
                 <option key={v}>{v}</option>
               ))}
             </select>
@@ -2291,6 +2308,7 @@ export default function ScannerPreview() {
           </Field>
         </details>
       </div>
+      <dialog ref={warehouseDialogRef} className="sc-warehouse-modal" aria-labelledby="sc-warehouse-title" onCancel={()=>setWarehouseTarget(null)}><div className="sc-card"><h2 id="sc-warehouse-title">{warehouseTarget==='paused'?'Tạm dừng Kho Hoa Nam?':'Kích hoạt lại Kho Hoa Nam?'}</h2><p>{warehouseTarget==='paused'?'Toàn bộ thao tác ghi sẽ bị chặn. Nhân viên vẫn xem và tra cứu được.':'Nhân viên có quyền sẽ được tiếp tục thao tác ghi.'}</p><p>Người xác nhận: {access.session?.name} • Super Admin</p><Field label="Lý do thay đổi trạng thái"><input autoFocus value={warehouseReason} onChange={e=>setWarehouseReason(e.target.value)}/></Field><button className="sc-btn" disabled={warehouseReason.trim().length<5} onClick={()=>{try{if(!warehouseTarget)return;const next=changeWarehouse(currentStore(),access.actor(),warehouseTarget,warehouseReason,true);localStorage.setItem(storageKey,JSON.stringify(next));dbRef.current=next;setDb(next);setWarehouseTarget(null);setNotice('Trạng thái kho đã được cập nhật.');}catch(e){setError((e as Error).message);setWarehouseTarget(null);}}}>Xác nhận thay đổi</button><button className="sc-btn secondary" onClick={()=>setWarehouseTarget(null)}>Hủy, giữ nguyên trạng thái</button></div></dialog>
       <dialog
         ref={dialogRef}
         className="sc-dialog"

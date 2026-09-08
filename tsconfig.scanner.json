@@ -2,5 +2,5 @@
   "extends": "./tsconfig.json",
   "include": ["app/scanner/page.tsx", "components/scanner-preview.tsx", "components/warranty-scanner-app.tsx", "lib/scanner-model.ts"],
   "exclude": ["node_modules", "artifacts", "docs", "work"],
-  "compilerOptions": { "incremental": false }
+  "compilerOptions": { "incremental": false, "allowImportingTsExtensions": true }
 }

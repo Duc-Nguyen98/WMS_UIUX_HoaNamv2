@@ -1,4 +1,5 @@
 /** Local-only, deterministic preview domain. No production transport. */
+import {assertWrite,documentPermission,type Actor,type WarehouseStatus} from './scanner-policy.ts';
 export type Kind = 'in' | 'out' | 'parts';
 export type CaseStatus =
   | 'Tiếp nhận'
@@ -52,6 +53,7 @@ export type Tag = {
   reason: string;
 };
 export type Store = {
+  warehouseStatus?: WarehouseStatus;
   version: 1;
   items: Item[];
   docs: Doc[];
@@ -145,6 +147,7 @@ export function seedStore(): Store {
   ];
   return {
     version: 1,
+    warehouseStatus: 'active',
     items,
     docs: [
       {
@@ -223,7 +226,9 @@ export function validateLine(
 export function createDocument(
   store: Store,
   input: Omit<Doc, 'id' | 'status' | 'at'>,
+  actor?: Actor|null,
 ): Store {
+  assertWrite(store,actor,documentPermission(input.kind,'create'));
   if (store.docs.some((d) => d.key === input.key)) return store;
   if (!input.lines.length) throw new Error('Cần ít nhất một mã hợp lệ.');
   input.lines.forEach((l, i) => {
@@ -250,9 +255,10 @@ export function createDocument(
     ],
   };
 }
-export function postDocument(store: Store, id: string): Store {
+export function postDocument(store: Store, id: string, actor?:Actor|null): Store {
   const doc = store.docs.find((d) => d.id === id);
   if (!doc) throw new Error('Không tìm thấy phiếu.');
+  assertWrite(store,actor,documentPermission(doc.kind,'post'));
   if (doc.status === 'Đã ghi sổ') return store;
   if (doc.status !== 'Chờ duyệt')
     throw new Error('Phiếu không ở trạng thái chờ duyệt.');
@@ -312,7 +318,9 @@ export function changeCase(
   id: string,
   status: CaseStatus,
   note: string,
+  actor?:Actor|null,
 ): Store {
+  assertWrite(store,actor,'warranty.manage');
   const c = store.cases.find((c) => c.id === id);
   if (!c || !transitions[c.status].includes(status))
     throw new Error('Chuyển trạng thái không hợp lệ.');

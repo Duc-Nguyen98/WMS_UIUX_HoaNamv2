@@ -29,6 +29,7 @@ await copy('lib/scanner-auth.ts');
 await copy('lib/scanner-auth-preview.ts');
 await copy('components/warranty-scanner-app.tsx');
 await copy('lib/scanner-model.ts');
+await copy('lib/scanner-policy.ts');
 await copy('lib/utils.ts');
 await copy('next-env.d.ts');
 await copy('next.config.ts');

@@ -12,19 +12,23 @@ export function useScannerAccess() {
   const adapter=useRef<ScannerAuthAdapter|null>(null);
   const resume=useRef<ScannerRoute|null>(null);
   const sync=useRef<() => void>(()=>{});
+  const trail=useRef<ScannerRoute[]>([]);
+  const sessionId=useRef<string|null>(null);
   useEffect(()=>{
-    adapter.current=createPreviewAuth(window.sessionStorage);
+    try { adapter.current=createPreviewAuth(window.sessionStorage); }
+    catch { queueMicrotask(()=>{setMessage('Không thể mở phiên trên thiết bị này. Vui lòng cho phép lưu trữ phiên rồi tải lại.'); setLoaded(true);}); return; }
     const update=()=>{
       const next=adapter.current!.read();
       const requested=parseRoute(window.location.hash);
       const guarded=guardRoute(requested,next);
       if (routeHash(guarded)!==window.location.hash) window.history.replaceState(null,'',routeHash(guarded));
+      sessionId.current=next?.userId||null;
       setSession(next); setRoute(guarded); setLoaded(true);
     };
     sync.current=update;
     update();
     const check=()=>{
-      if (!adapter.current!.read() && !['login','forgot'].includes(parseRoute(window.location.hash).view)) {
+      if (sessionId.current && !adapter.current!.read() && !['login','forgot'].includes(parseRoute(window.location.hash).view)) {
         resume.current=parseRoute(window.location.hash);
         setMessage('Phiên làm việc đã hết hạn. Nội dung đang soạn được giữ trong lần mở này. Đăng nhập lại để tiếp tục; tải lại trang sẽ bỏ bản đang soạn.');
       }
@@ -38,10 +42,14 @@ export function useScannerAccess() {
   },[]);
   const navigate=(view:ScannerView, context:Partial<ScannerRoute>={},replace=false)=>{
     const next=guardRoute({view,id:context.id||'',product:context.product||''},adapter.current?.read()||null);
+    if(!replace) trail.current.push(parseRoute(window.location.hash));
     window.history[replace?'replaceState':'pushState'](null,'',routeHash(next));
     sync.current();
   };
   return {route,session,loaded,message, navigate,
+    actor:()=>adapter.current?.read()||null,
+    changePreviewRole(role:string) {adapter.current?.changePreviewRole(role);sync.current();},
+    back() { const dest=trail.current.pop(); navigate(dest?.view||'home',dest||{},true); },
     allowed:loaded && validSession(session) && session.shiftStarted && !['login','forgot','shift'].includes(route.view),
     check:()=>validSession(adapter.current?.read()||null) && !!adapter.current?.read()?.shiftStarted,
     async login(id:string,password:string,scenario:string,role:string) {
@@ -53,7 +61,7 @@ export function useScannerAccess() {
       const dest=resume.current; resume.current=null; setMessage('');
       navigate(dest?.view||'home',dest||{},true);
     },
-    logout() {adapter.current?.logout();resume.current=null;setMessage('Bạn đã đăng xuất an toàn.');navigate('login',{},true);},
+    logout() {adapter.current?.logout();resume.current=null;trail.current=[];setMessage('Bạn đã đăng xuất an toàn.');navigate('login',{},true);},
     expire() {adapter.current?.logout();resume.current=route;setMessage('Phiên làm việc đã hết hạn. Nội dung đang soạn được giữ trong lần mở này. Đăng nhập lại để tiếp tục; tải lại trang sẽ bỏ bản đang soạn.');navigate('login',{},true);},
   };
 }
@@ -73,17 +81,17 @@ export function ScannerAuthScreen({access,role}:{access:ReturnType<typeof useSca
   return <div className="sc-auth-wrap">
     <main className="sc-auth" aria-busy={busy}>
       <div className="sc-auth-brand"><span><ScanLine aria-hidden="true" /></span><strong>HOA NAM <small>SCANNER</small></strong></div>
-      {!access.loaded ? <p role="status">Đang kiểm tra phiên làm việc…</p> : view==='shift' ? <>
+      {!access.loaded ? <output>Đang kiểm tra phiên làm việc…</output> : view==='shift' ? <>
         <h1>Bắt đầu ca làm việc</h1><p>Kiểm tra thông tin của bạn trước khi vào ca.</p>
         <dl><dt>Nhân viên</dt><dd>{access.session?.name}</dd><dt>Vai trò</dt><dd>{access.session?.role}</dd><dt>Kho làm việc</dt><dd>Kho Hoa Nam</dd></dl>
         <button className="sc-btn" onClick={()=>{try{access.startShift();}catch{access.expire();}}}>Bắt đầu ca làm việc</button>
-        <button className="sc-btn secondary" onClick={access.logout}>Đăng xuất</button>
+        <button className="sc-btn secondary" onClick={()=>access.logout()}>Đăng xuất</button>
       </> : view==='forgot' ? <>
         <h1>Quên mật khẩu</h1><p>Vui lòng liên hệ quản trị viên đã cấp tài khoản để được hỗ trợ khôi phục quyền truy cập.</p><p>Không chia sẻ mật khẩu hoặc mã xác thực với người khác.</p>
         <button className="sc-btn" onClick={()=>access.navigate('login',{},true)}>Quay lại đăng nhập</button>
       </> : <>
         <h1>Đăng nhập Hoa Nam Scanner</h1><p>Đăng nhập bằng tài khoản được cấp để làm việc tại Kho Hoa Nam.</p>
-        {access.message && <p className="sc-auth-message" role="status">{access.message}</p>}
+        {access.message && <output><p className="sc-auth-message">{access.message}</p></output>}
         <form noValidate onSubmit={async e=>{
           e.preventDefault();if(lock.current)return;
           const next={identifier:identifier.trim()?'':'Vui lòng nhập tên đăng nhập, email hoặc số điện thoại.',password:password?'':'Vui lòng nhập mật khẩu.'};setErrors(next);setError('');

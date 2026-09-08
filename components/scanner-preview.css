@@ -1,4 +1,10 @@
 .sc-auth-wrap { width: 430px; max-width: 100%; }
+.sc-warehouse-banner { display:flex; align-items:flex-start; gap:10px; background:#eaf1f4; border-block:1px solid #9ebac6; padding:12px 16px; font-size:14px; line-height:1.5; }
+.sc-warehouse-banner svg { width:22px; flex-shrink:0; }
+.sc-permission-note { margin:0; padding:12px 16px; font-size:14px; background:#fafcfc; }
+.sc-warehouse-modal { width:calc(100% - 32px); max-width:410px; border:0; border-radius:12px; padding:0; color:#193b49; max-height:85dvh; overflow:auto; }
+.sc-warehouse-modal::backdrop { background:rgba(25,59,73,.5); }
+.sc-warehouse-modal .sc-btn { margin-top:12px; width:100%; min-height:48px; }
 .sc-auth { min-height: 680px; background: #fafcfc; padding: 32px 24px; border-radius: 16px; }
 .sc-auth-brand { display:flex; align-items:center; gap:12px; margin-bottom:32px; color:#0c6286; }
 .sc-auth-brand > span { display:grid; place-items:center; width:48px; height:48px; background:#eaf1f4; border-radius:12px; }
