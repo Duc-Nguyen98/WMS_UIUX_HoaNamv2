@@ -2129,7 +2129,7 @@ export default function ScannerPreview() {
     setBox('');
     setError('');
   };
-  if (!access.allowed) return <div className="sc-workspace sc-auth-workspace"><ScannerAuthScreen access={access} role={role}/></div>;
+  if (!access.allowed) return <div className="sc-workspace sc-auth-workspace"><ScannerAuthScreen access={access} role={role} warehouse={warehouseStatus(db)} warehouseLoaded={ready} warehouseError={storageError}/></div>;
   return (
     <div className="sc-workspace">
       <aside className="sc-design-panel">

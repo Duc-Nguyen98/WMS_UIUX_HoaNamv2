@@ -29,6 +29,7 @@ await copy('components/scanner-mobile-layout.css');
 await copy('components/scanner-outbound.tsx');
 await copy('lib/agency-demo.ts');
 await copy('components/scanner-auth.tsx');
+await copy('components/scanner-entry-ui.css');
 await copy('components/scanner-account.tsx');
 await copy('components/scanner-account.css');
 await copy('lib/scanner-account-preview.ts');
