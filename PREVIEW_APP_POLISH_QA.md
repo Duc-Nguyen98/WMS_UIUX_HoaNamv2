@@ -22,5 +22,3 @@ Ngày: 08/09/2026. Phạm vi: App Preview trên điện thoại. Giữ nguyên W
 - Header brand link về Home; Tiện ích mở So sánh đúng route; count 3/3 hiển thị đúng.
 
 Ảnh được lưu tại `handoff/preview-app-polish/`: `header-home-390.png`, `utilities-320.png`, `utilities-390.png`, `comparison-320.png`, `comparison-390.png`, `comparison-430.png`.
-
-Public đã cập nhật commit `789eeeb884dd3f552ed715c62e33389414afa5a5`: GitHub Pages `built`, HTTP 200 và HTML khớp export. Runtime public Tiện ích và so sánh hai model đều không có vi phạm màu/gradient hoặc tràn ngang.

@@ -16,5 +16,3 @@ Chỉ thay JSX trong `<header>` của `components/product-preview.tsx`, CSS có 
 Build export, TypeScript và audit 29 file màu: PASS. Mobile 320/390/430px không tràn ngang. Đã bấm thật ba action: menu mở Tiện ích, máy bay giấy mở Request và Bottom Navigation mở Contact; không gửi form hay gọi hotline. Hai icon có tên truy cập và tooltip.
 
 Ảnh và số đo: `handoff/preview-centered-header/header-320.png`, `header-390.png`, `header-430.png`, `geometry.json`.
-
-Public: commit `c97a3160ada9ba65072243ac72ed663548157f15`, GitHub Pages `built`, HTML public khớp export và asset logo trả HTTP 200, khớp byte với file nguồn. Đã xác minh trên public hai action 48×48px, logo 168px và sai lệch tâm bằng 0 ở viewport mặc định.

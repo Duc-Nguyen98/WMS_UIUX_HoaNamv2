@@ -5,6 +5,7 @@ import DashboardPrototype from '@/components/dashboard-prototype';
 import SkuPrototype from '@/components/sku-prototype';
 import CatalogPrototype from '@/components/catalog-prototype';
 import AgencyPrototype from '@/components/agency-prototype';
+import DefectPrototype from '@/components/defect-prototype';
 import { MasterDataDemoProvider } from '@/components/master-data-demo';
 import PrototypeHistory from '@/components/prototype-history';
 import {
@@ -158,9 +159,9 @@ export default function Home() {
           <span className="nav-label">PROTOTYPE</span>
           <a href="#login-prototype"><LockKeyhole /> Đăng nhập</a><a href="#forgot-prototype"><Mail /> Quên mật khẩu</a>
           <a href="#dashboard-prototype"><LayoutDashboard /> Tổng quan vận hành</a>
-          <details className="hn-sku-nav" open><summary><Boxes /> Danh mục</summary><a href="#sku-prototype"><span aria-hidden="true">•</span> Danh sách SKU</a><a href="#catalog-prototype"><span aria-hidden="true">•</span> Danh mục sản phẩm</a><a href="#agency-prototype"><span aria-hidden="true">•</span> Đại lý / nơi nhận</a></details>
-          <span className="nav-label">APP PREVIEW</span>
-          <a href="preview"><Eye /> Xem sản phẩm công khai</a>
+            <details className="hn-sku-nav" open><summary><Boxes /> Danh mục</summary><a href="#sku-prototype"><span aria-hidden="true">•</span> Danh sách SKU</a><a href="#catalog-prototype"><span aria-hidden="true">•</span> Danh mục sản phẩm</a><a href="#agency-prototype"><span aria-hidden="true">•</span> Đại lý / nơi nhận</a><a href="#defect-prototype"><span aria-hidden="true">•</span> Bệnh / lỗi</a></details>
+            <span className="nav-label">APP PREVIEW</span>
+            <a href="preview"><Eye /> Xem sản phẩm công khai</a>
           <span className="nav-label">HANDOFF</span>
           <a href="#dev-spec"><Boxes /> DEV Specification</a><a href="#acceptance"><CheckCircle2 /> Acceptance Criteria</a>
         </nav>
@@ -214,6 +215,7 @@ export default function Home() {
           <SkuPrototype />
           <CatalogPrototype />
           <AgencyPrototype />
+          <DefectPrototype />
         </MasterDataDemoProvider>
 
         <section id="dev-spec" className="content-section">

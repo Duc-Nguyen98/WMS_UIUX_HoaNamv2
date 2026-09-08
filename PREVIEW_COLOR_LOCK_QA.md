@@ -50,6 +50,4 @@ Kích thước mobile chỉ được coi là xác nhận khi giá trị viewport
 
 ## Final gate
 
-Public deployment đã xác minh: commit `c9f4f2007735b8bea2498f3317f43ce69c02abb4`, GitHub Pages trạng thái `built`, HTML public khớp bản export, toàn bộ 38 file export trả HTTP 200. Runtime public trên Home, Contact, Catalog và dialog Filter đều `failures: []`; xem `handoff/color-lock-v1/runtime-public.json`.
-
 **PASS cho phạm vi App Preview.** Không còn màn hình/component Preview dùng brand color ngoài source-of-truth. Các màu trong prototype WMS hoặc bitmap/tài liệu ngoài Preview không được dùng trong export Preview và không thuộc phạm vi thay đổi này.

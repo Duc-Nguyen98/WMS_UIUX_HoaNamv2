@@ -58,7 +58,3 @@ TanStack Virtual được kiểm tra riêng với 120 dòng QA tại localhost, 
 - CSS/JS tôn trọng `prefers-reduced-motion`; giữ native buttons/links, aria, live status và focus khi bấm tải thêm. Không animation transform trên wrapper của thanh CTA fixed.
 - Dependency audit báo 11 advisory trong stack cũ (vinext/vite/Cloudflare/RSC/transitive); không thuộc motion/gsap/locomotive/tanstack mới thêm. Không tự chạy nâng cấp major hoặc audit fix force ngoài phạm vi. Bản Pages chỉ gồm static client output.
 - Giữ nguyên yêu cầu không xác nhận tiếp nhận sale giả, OA chưa có URL và không gọi hotline/nhắn OA trong QA.
-
-## Xác nhận HTTPS
-
-Pages báo `built` cho commit `e09d48e3569d3d70bbcf0a538a2945f76a50c48d`; HTML HTTPS khớp bản build cuối và cả 36 tài nguyên kiểm tra trả 200. Trình duyệt HTTPS có bộ lọc bên trái (x=16px), tải 4/7 rồi đủ 7/7. Bấm trực tiếp sản phẩm đang nhìn thấy rồi Quay lại giữ scroll 659px và 7 thẻ. Tìm kiếm `bua` hoạt động, không overflow và console không có error/warning mới trong lượt kiểm tra. Tab audit giữ tại `#view=catalog`.

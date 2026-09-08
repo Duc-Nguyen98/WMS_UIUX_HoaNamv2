@@ -35,9 +35,4 @@ Node 26.5 trên máy đã phát sinh assertion libuv khi kết thúc build; Node
 
 - Build tĩnh riêng Preview và TypeScript đạt.
 - 21 unit test đạt, bao gồm gửi nhiều sản phẩm, từ chối tiếp nhận giả, lịch sử thiết bị và điều hướng.
-- Pages API xác nhận `built` cho commit `41d4904946ced5376f1931d72bd2a958ee63dc31`; URL HTTPS trả 200 và HTML trùng bản build đã kiểm tra. Cả 32 tài nguyên kiểm tra đều trả 200.
-- Kiểm tra trình duyệt HTTPS: Trang chủ → Danh sách → Chi tiết → Form yêu cầu; tải lại deep link form giữ đúng sản phẩm. Kiểm tra Back/Forward ở bản tĩnh trước xuất bản. Đã sửa vùng tóm tắt sản phẩm trên mobile dùng đủ chiều rộng, không tràn ngang trang.
-
-## Trạng thái checkout sau triển khai
-
-Commit được tạo tại worktree `work/preview-staging-publish`, nhánh `codex/preview-staging`, dựa trên `origin/main` mới nhất lúc triển khai (`3624b55`), rồi push fast-forward tới `main`. Checkout làm việc ban đầu giữ các chỉnh sửa đang có của người dùng; không reset, không ghi đè các thay đổi WMS mới hơn trên remote. Trước lần cập nhật tiếp theo, đối chiếu với remote mới nhất và chỉ đưa phần Preview đã duyệt vào bản xuất bản.
+- Tiếp tục xác nhận trạng thái Pages và kiểm tra HTTPS sau khi xuất bản; không suy ra thành công chỉ từ lệnh push.

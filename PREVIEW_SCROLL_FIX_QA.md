@@ -27,5 +27,3 @@ Trước sửa: ở scrollY 1688px, header.top = -1688px; search.top = 0 và for
 - Menu mở khi cuộn: dialog z-index 81, topbar 30; body khóa cuộn, Escape đóng được. Header không đè dialog.
 
 Ảnh và số đo trong `handoff/preview-scroll-fix/`: before-scrolled.png, after-home-scrolled-390.png, after-one-result.png, after-empty-320.png, after-short-viewport.png, after-catalog-scrolled-430.png, geometry.json. Log có các mẫu trung gian trước bản sửa khôi phục scroll; mẫu `final-return-restoration` là lần xác minh sau sửa.
-
-Public: commit `86079f965f2fcb43a7e3efbbc9467d119b47921f` đã `built`, HTTP 200 và HTML khớp export. Sau cuộn 1825px trên public mobile 390px: header.top=0, search.top=68, form.top=76, nền khối đầu trang trắng. Bằng chứng bổ sung: public-scrolled.png.
