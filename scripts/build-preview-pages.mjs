@@ -6,6 +6,7 @@ import { preparePreviewPages } from './prepare-preview-pages.mjs';
 
 // Build a separate static entry point, preserving the WMS deployment at /docs.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+execFileSync(process.execPath, [join(root, 'scripts/audit-preview-colors.mjs')], { cwd: root, stdio: 'inherit' });
 const buildRoot = join(root, 'work', `preview-pages-${Date.now()}`);
 const base = '/WMS_UIUX_HoaNamv2/preview';
 await mkdir(buildRoot, { recursive: true });
@@ -23,10 +24,11 @@ for (const folder of ['components', 'lib']) {
   }
 }
 for (const file of [
-  'components/ui/button.tsx', 'components/ui/tabs.tsx', 'lib/utils.ts',
-  'app/globals.css', 'app/layout.tsx', 'next.config.ts', 'tsconfig.json',
+  'lib/utils.ts',
+  'styles', 'app/layout.tsx', 'next.config.ts', 'tsconfig.json',
   'package.json', 'public/preview',
 ]) await copy(file);
+await copy('styles/preview-base.css', 'app/globals.css');
 await copy('app/preview/page.tsx', 'app/page.tsx');
 // Use Preview's customer-facing metadata for the isolated layout too.
 const page = await readFile(join(buildRoot, 'app/page.tsx'), 'utf8');

@@ -19,7 +19,7 @@ import {
   Wrench,
   Zap,
 } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/preview-primitives';
 import {
   PREVIEW_GROUPS,
   previewCategoriesForGroup,

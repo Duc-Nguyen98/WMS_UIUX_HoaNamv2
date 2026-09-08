@@ -68,6 +68,7 @@ import './preview-screens.css';
 import './preview-library.css';
 import './preview-contact.css';
 import './preview-motion.css';
+import '../styles/preview-theme.css';
 
 const PreviewDetail = lazy(() => import('@/components/preview-detail'));
 const PreviewContact = lazy(() => import('@/components/preview-contact'));

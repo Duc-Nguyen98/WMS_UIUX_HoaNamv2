@@ -1,9 +1,9 @@
 .pv-theme .pv-library-menu-button {
   flex: 0 0 44px;
-  color: var(--pv-primary, var(--primary-text));
+  color: var(--primary-text);
   border: 1px solid var(--border);
   border-radius: var(--pv-radius);
-  background: white;
+  background: var(--hn-surface);
 }
 .pv-theme .pv-library-menu {
   display: grid;
@@ -19,7 +19,7 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   color: var(--foreground);
-  background: #fff;
+  background: var(--hn-surface);
   text-align: left;
 }
 .pv-library-menu button > span {
@@ -115,7 +115,7 @@
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: white;
+  background: var(--hn-surface);
   text-align: left;
   font-size: 15px;
   color: var(--foreground);
@@ -181,7 +181,7 @@
 }
 .pv-library-screen .pv-empty {
   padding: 44px 20px;
-  background: #fff;
+  background: var(--hn-surface);
   border: 1px solid var(--border);
   border-radius: 16px;
 }
@@ -195,7 +195,7 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  background: #fff;
+  background: var(--hn-surface);
   border: 1px solid var(--border);
   padding: 10px 14px;
   border-radius: 12px;
@@ -227,7 +227,7 @@
   border: 1px solid var(--border);
   min-height: 44px;
   padding: 8px 12px;
-  background: white;
+  background: var(--hn-surface);
   font-size: 14px;
   color: var(--primary-text);
 }
@@ -249,7 +249,7 @@
   gap: 14px;
   padding: 12px;
   min-width: 0;
-  background: #fff;
+  background: var(--hn-surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   cursor: pointer;
@@ -292,7 +292,7 @@
   cursor: pointer;
 }
 .pv-selection-summary {
-  background: #fff;
+  background: var(--hn-surface);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 22px;
@@ -370,7 +370,7 @@
   border: 1px solid var(--border);
   border-radius: 10px;
   min-height: 48px;
-  background: white;
+  background: var(--hn-surface);
   color: var(--foreground);
   padding: 10px;
   font-size: 16px;
@@ -378,7 +378,7 @@
 }
 .pv-compare-picker {
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--hn-surface);
   border-radius: 14px;
   padding: 20px;
   margin-bottom: 20px;
@@ -431,7 +431,7 @@
   max-width: 100%;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: white;
+  background: var(--hn-surface);
 }
 .pv-comparison-table {
   width: 100%;
@@ -519,7 +519,7 @@
   flex: 0 0 32px;
   display: grid;
   place-content: center;
-  background: white;
+  background: var(--hn-surface);
   color: var(--primary-text);
   border-radius: 9px;
   font-weight: 700;
@@ -531,7 +531,7 @@
 .pv-faq details {
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: white;
+  background: var(--hn-surface);
 }
 .pv-faq summary {
   display: flex;
@@ -605,7 +605,7 @@
   padding: 20px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: white;
+  background: var(--hn-surface);
   text-align: left;
 }
 .pv-sent-list > button > span:nth-child(2) {
@@ -624,8 +624,8 @@
   font-size: 14px;
 }
 .pv-sent-icon {
-  background: #e8f6ef;
-  color: #17734f;
+  background: var(--hn-surface);
+  color: var(--hn-text-primary);
   width: 44px;
   height: 44px;
   border-radius: 12px;

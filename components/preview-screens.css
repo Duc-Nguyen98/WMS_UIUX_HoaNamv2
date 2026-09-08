@@ -25,7 +25,7 @@ html:has(.pv-app) {
   padding: 0.65rem;
   border: 1px solid var(--border);
   border-radius: 0.65rem;
-  background: white;
+  background: var(--hn-surface);
   color: var(--primary-text);
 }
 .pv-theme .pv-icon-button:hover {
@@ -51,7 +51,7 @@ html:has(.pv-app) {
 }
 .pv-search:focus-within {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--pv-focus-halo);
+  box-shadow: var(--hn-card-shadow);
 }
 .pv-search input::-webkit-search-cancel-button {
   display: none;
@@ -105,7 +105,7 @@ html:has(.pv-app) {
   padding: 0.4rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: 0.5rem;
-  background: white;
+  background: var(--hn-surface);
   color: var(--muted-foreground);
   font-size: 0.8125rem;
 }
@@ -130,7 +130,7 @@ html:has(.pv-app) {
 }
 .pv-skeleton {
   display: block;
-  background: linear-gradient(100deg, var(--muted) 20%, var(--pv-surface-tint) 40%, var(--muted) 60%);
+  background: var(--hn-gradient-card-tint);
   background-size: 200% 100%;
   animation: pv-shimmer 1.6s ease-in-out infinite;
   border-radius: 0.6rem;
@@ -164,7 +164,7 @@ html:has(.pv-app) {
 .pv-loading-card {
   padding: 1rem;
   border: 1px solid var(--border);
-  background: white;
+  background: var(--hn-surface);
   border-radius: 0.875rem;
 }
 .pv-loading-image {
@@ -194,7 +194,7 @@ html:has(.pv-app) {
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 1rem;
-  background: white;
+  background: var(--hn-surface);
 }
 .pv-suggestion-list > button {
   display: flex;
@@ -202,7 +202,7 @@ html:has(.pv-app) {
   width: 100%;
   gap: 1.25rem;
   padding: 1rem 1.25rem;
-  background: white;
+  background: var(--hn-surface);
   border: 0;
   text-align: left;
   color: var(--foreground);
@@ -256,11 +256,11 @@ html:has(.pv-app) {
   max-height: calc(100dvh - 2rem);
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: #fff;
+  background: var(--hn-surface);
   color: var(--foreground);
   border: 1px solid var(--border);
   border-radius: 1.1rem;
-  box-shadow: 0 20px 70px var(--pv-shadow-color);
+  box-shadow: var(--hn-card-shadow);
   font-family: var(--font-public-sans), 'Segoe UI', sans-serif;
   outline: none;
   line-height: 1.6;
@@ -309,7 +309,7 @@ html:has(.pv-app) {
   min-height: 48px;
   border: 1px solid var(--input);
   border-radius: 0.625rem;
-  background: #fff;
+  background: var(--hn-surface);
   color: var(--foreground);
   font: inherit;
   font-size: 16px;
@@ -321,7 +321,7 @@ html:has(.pv-app) {
   gap: 0.75rem;
   justify-content: space-between;
   padding: 1.1rem 1.5rem;
-  background: white;
+  background: var(--hn-surface);
   border-top: 1px solid var(--border);
   position: sticky;
   bottom: 0;
@@ -342,7 +342,7 @@ html:has(.pv-app) {
   display: grid;
   align-items: center;
   min-width: 0;
-  background: white;
+  background: var(--hn-surface);
   border: 1px solid var(--border);
   border-radius: 1.1rem;
 }
@@ -435,7 +435,7 @@ html:has(.pv-app) {
 .pv-receipt {
   border: 1px solid var(--border);
   border-radius: 1rem;
-  background: white;
+  background: var(--hn-surface);
   padding: 1.5rem;
   min-width: 0;
 }
@@ -494,9 +494,9 @@ html:has(.pv-app) {
   justify-content: flex-end;
   padding: 1rem max(2rem, calc((100vw - 1216px) /2))
     calc(1rem + env(safe-area-inset-bottom));
-  background: white;
+  background: var(--hn-surface);
   border-top: 1px solid var(--border);
-  box-shadow: 0 -6px 22px var(--pv-shadow-color);
+  box-shadow: var(--hn-card-shadow);
 }
 .pv-detail-cta > div {
   flex: 1;
@@ -516,7 +516,7 @@ html:has(.pv-app) {
 .pv-image-stage {
   height: min(55dvh, 500px);
   overflow: auto;
-  background: white;
+  background: var(--hn-surface);
   overscroll-behavior: contain;
   border-block: 1px solid var(--border);
 }
@@ -582,7 +582,7 @@ html:has(.pv-app) {
   min-width: 0;
   border: 1px solid var(--border);
   border-radius: 1rem;
-  background: white;
+  background: var(--hn-surface);
   padding: 1.75rem;
 }
 .pv-request-fields h2,
@@ -619,11 +619,11 @@ html:has(.pv-app) {
   margin-top: 0.4rem;
 }
 .pv-request-fields [aria-invalid='true'] {
-  border-color: #b74635 !important;
+  border-color: var(--hn-danger) !important;
 }
 .pv-field-error {
   display: block;
-  color: #a23726;
+  color: var(--hn-text-primary);
   font-size: 0.8125rem;
   margin-top: 0.4rem;
   font-weight: 400;
@@ -679,10 +679,10 @@ html:has(.pv-app) {
   margin-top: 1.5rem;
 }
 .pv-submit-error {
-  background: #fff4ef;
-  color: #843e29;
+  background: var(--hn-surface);
+  color: var(--hn-text-primary);
   padding: 1rem;
-  border: 1px solid #f4d2c4;
+  border: 1px solid var(--hn-danger);
   border-radius: 0.75rem;
   margin-bottom: 1rem;
   font-size: 0.875rem;
@@ -715,8 +715,8 @@ html:has(.pv-app) {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #eaf7f1;
-  color: #216447;
+  background: var(--hn-surface);
+  color: var(--hn-text-primary);
 }
 .pv-success-icon > svg {
   width: 42px;

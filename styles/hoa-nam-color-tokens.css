@@ -1,0 +1,39 @@
+/* Hoa Nam WMS — LOCKED COLOR TOKENS v1
+   Do not edit values without explicit design approval.
+*/
+:root {
+  --hn-primary: #0C6286;
+  --hn-primary-dark: #0C5D7D;
+  --hn-support-blue: #5E93A7;
+  --hn-near-white: #FAFCFC;
+
+  --hn-text-primary: #1D2939;
+  --hn-text-secondary: #475467;
+  --hn-text-muted: #667085;
+  --hn-border: #E4ECEF;
+  --hn-surface: #FFFFFF;
+
+  --hn-success: #28C76F;
+  --hn-warning: #FF9F43;
+  --hn-danger: #EA5455;
+  --hn-info: #00CFE8;
+
+  --hn-primary-a06: rgba(12, 98, 134, 0.06);
+  --hn-primary-a10: rgba(12, 98, 134, 0.10);
+  --hn-primary-a14: rgba(12, 98, 134, 0.14);
+  --hn-primary-a20: rgba(12, 98, 134, 0.20);
+  --hn-primary-a28: rgba(12, 98, 134, 0.28);
+  --hn-support-a08: rgba(94, 147, 167, 0.08);
+  --hn-support-a12: rgba(94, 147, 167, 0.12);
+  --hn-support-a18: rgba(94, 147, 167, 0.18);
+  --hn-dark-a12: rgba(12, 93, 125, 0.12);
+
+  --hn-gradient-primary: linear-gradient(135deg, #0C5D7D 0%, #0C6286 52%, #5E93A7 100%);
+  --hn-gradient-sidebar-active: linear-gradient(135deg, #0C5D7D 0%, #0C6286 65%, #5E93A7 100%);
+  --hn-gradient-hero: linear-gradient(135deg, rgba(12, 98, 134, 0.10) 0%, rgba(94, 147, 167, 0.18) 48%, rgba(250, 252, 252, 0.96) 100%);
+  --hn-gradient-card-tint: linear-gradient(180deg, #FAFCFC 0%, rgba(94, 147, 167, 0.08) 100%);
+  --hn-gradient-headline: linear-gradient(90deg, #0C5D7D 0%, #0C6286 55%, #5E93A7 100%);
+
+  --hn-focus-ring: 0 0 0 3px rgba(12, 98, 134, 0.28);
+  --hn-card-shadow: 0 8px 28px rgba(12, 93, 125, 0.12);
+}

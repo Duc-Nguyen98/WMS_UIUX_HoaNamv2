@@ -10,7 +10,7 @@ import {
   ChevronRight,
   ArrowRight,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@base-ui/react/button';
 import { ProductPhoto } from '@/components/preview-products';
 import {
   PREVIEW_PRODUCTS,

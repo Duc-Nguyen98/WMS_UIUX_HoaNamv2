@@ -1,0 +1,39 @@
+{
+  "brand": {
+    "primary": "#0C6286",
+    "primaryDark": "#0C5D7D",
+    "supportBlue": "#5E93A7",
+    "nearWhite": "#FAFCFC"
+  },
+  "neutral": {
+    "textPrimary": "#1D2939",
+    "textSecondary": "#475467",
+    "textMuted": "#667085",
+    "border": "#E4ECEF",
+    "surface": "#FFFFFF"
+  },
+  "semantic": {
+    "success": "#28C76F",
+    "warning": "#FF9F43",
+    "danger": "#EA5455",
+    "info": "#00CFE8"
+  },
+  "alpha": {
+    "primary06": "rgba(12, 98, 134, 0.06)",
+    "primary10": "rgba(12, 98, 134, 0.10)",
+    "primary14": "rgba(12, 98, 134, 0.14)",
+    "primary20": "rgba(12, 98, 134, 0.20)",
+    "primary28": "rgba(12, 98, 134, 0.28)",
+    "support08": "rgba(94, 147, 167, 0.08)",
+    "support12": "rgba(94, 147, 167, 0.12)",
+    "support18": "rgba(94, 147, 167, 0.18)",
+    "dark12": "rgba(12, 93, 125, 0.12)"
+  },
+  "gradients": {
+    "primary": "linear-gradient(135deg, #0C5D7D 0%, #0C6286 52%, #5E93A7 100%)",
+    "sidebarActive": "linear-gradient(135deg, #0C5D7D 0%, #0C6286 65%, #5E93A7 100%)",
+    "heroSurface": "linear-gradient(135deg, rgba(12, 98, 134, 0.10) 0%, rgba(94, 147, 167, 0.18) 48%, rgba(250, 252, 252, 0.96) 100%)",
+    "cardTint": "linear-gradient(180deg, #FAFCFC 0%, rgba(94, 147, 167, 0.08) 100%)",
+    "headlineAccent": "linear-gradient(90deg, #0C5D7D 0%, #0C6286 55%, #5E93A7 100%)"
+  }
+}

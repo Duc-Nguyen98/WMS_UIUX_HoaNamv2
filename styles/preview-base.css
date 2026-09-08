@@ -1,0 +1,18 @@
+/* Standalone Preview export does not bundle the unrelated WMS stylesheet. */
+@import 'tailwindcss';
+@import 'tw-animate-css';
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: var(--font-public-sans), 'Segoe UI', sans-serif;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button,
+input {
+  font: inherit;
+}
