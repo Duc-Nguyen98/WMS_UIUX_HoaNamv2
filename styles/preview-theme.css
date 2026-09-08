@@ -168,15 +168,154 @@ body:has(.pv-app) {
   box-shadow: none;
   opacity: 1;
 }
-.pv-theme .pv-hero,
 .pv-theme .pv-group-overview {
   background: var(--hn-gradient-hero);
 }
+.pv-theme .pv-hero {
+  position: relative;
+  isolation: isolate;
+  background: var(--hn-surface);
+}
+.pv-theme .pv-hero-copy,
+.pv-theme .pv-hero-product {
+  position: relative;
+  z-index: 1;
+}
+.pv-theme .pv-hero-product {
+  background: transparent;
+  mix-blend-mode: multiply;
+}
+.pv-hero-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.pv-hero-sweep {
+  position: absolute;
+  width: 78%;
+  height: 115%;
+  right: -38%;
+  top: -8%;
+  border-radius: 50%;
+  transform: rotate(-24deg);
+  background: var(--hn-gradient-hero);
+}
+.pv-hero-arc {
+  position: absolute;
+  width: 88%;
+  height: 150%;
+  right: -33%;
+  top: -5%;
+  border: 44px solid var(--hn-primary-a06);
+  border-radius: 50%;
+  transform: rotate(-32deg);
+}
+.pv-hero-arc-inner {
+  width: 78%;
+  height: 126%;
+  right: -31%;
+  top: 15%;
+  border: 12px solid var(--hn-support-a12);
+}
+.pv-theme .pv-hero h1 {
+  font-size: clamp(1.875rem, 3.4vw, 2.875rem);
+  font-weight: 800;
+  line-height: 1.13;
+  letter-spacing: -0.045em;
+}
 .pv-theme .pv-hero h1 span {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  padding-bottom: 0.1em;
   background: var(--hn-gradient-headline);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+}
+/* Keep white surfaces crisp; reserve the approved shadow for raised actions. */
+.pv-theme :is(.pv-search, .pv-group, .pv-product-card) {
+  box-shadow: none;
+}
+.pv-theme .pv-search:focus-within {
+  box-shadow: var(--hn-focus-ring);
+}
+@media (max-width: 700px) {
+  .pv-theme .pv-hero {
+    grid-template-columns: minmax(0, 1fr) 112px;
+    gap: 0 10px;
+    padding: 24px 20px 12px;
+  }
+  .pv-theme .pv-hero-copy {
+    display: contents;
+  }
+  .pv-theme .pv-hero-copy > :is(.pv-eyebrow, h1, p) {
+    grid-column: 1 / -1;
+    position: relative;
+    z-index: 1;
+  }
+  .pv-theme .pv-hero .pv-eyebrow {
+    max-width: none;
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+  }
+  .pv-theme .pv-hero h1 {
+    margin-top: 12px;
+    font-size: clamp(1.625rem, 7.9vw, 2.625rem);
+  }
+  .pv-theme .pv-hero p {
+    max-width: 31ch;
+    margin-top: 12px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .pv-theme .pv-hero .pv-button {
+    position: relative;
+    z-index: 1;
+    justify-self: start;
+    margin-top: 12px;
+    padding: 12px;
+    font-size: 0.8125rem;
+    min-height: 48px;
+  }
+  .pv-theme .pv-hero-product {
+    display: flex;
+    grid-column: 2;
+    align-self: center;
+    padding: 12px 0 0;
+  }
+  .pv-theme .pv-hero-product .pv-photo {
+    width: 112px;
+    padding: 0;
+  }
+  .pv-hero-arc {
+    width: 125%;
+    height: 110%;
+    right: -88%;
+    top: -4%;
+    border-width: 32px;
+  }
+  .pv-hero-arc-inner {
+    right: -97%;
+    top: 13%;
+    border-width: 10px;
+  }
+}
+@media (max-width: 359px) {
+  .pv-theme .pv-hero {
+    grid-template-columns: minmax(0, 1fr) 82px;
+    padding: 20px 16px 12px;
+    column-gap: 8px;
+  }
+  .pv-theme .pv-hero-product .pv-photo {
+    width: 82px;
+  }
+  .pv-theme .pv-hero .pv-button {
+    padding-inline: 10px;
+    font-size: 0.75rem;
+  }
 }
 .pv-theme .pv-skeleton {
   background: var(--hn-gradient-card-tint);

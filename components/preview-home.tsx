@@ -41,12 +41,16 @@ export default function PreviewHome({
   return (
     <>
       <section className="pv-hero" aria-labelledby="pv-home-title">
+        <div className="pv-hero-art" aria-hidden="true">
+          <span className="pv-hero-sweep" />
+          <span className="pv-hero-arc" />
+          <span className="pv-hero-arc pv-hero-arc-inner" />
+        </div>
         <div className="pv-hero-copy">
           <span className="pv-eyebrow">DỤNG CỤ CHO MỌI CÔNG VIỆC</span>
           <h1 id="pv-home-title" ref={headingRef} tabIndex={-1}>
             Tìm đúng dụng cụ.
-            <br />
-            <span>Làm tốt công việc.</span>
+            <span className="pv-hero-headline">Làm tốt công việc.</span>
           </h1>
           <p>
             Khám phá sản phẩm phù hợp và xem tình trạng hàng trước khi liên hệ
