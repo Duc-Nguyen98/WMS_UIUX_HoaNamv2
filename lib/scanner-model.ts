@@ -199,7 +199,7 @@ export function validateLine(
   const item = store.items.find((i) => i.code === line.code);
   if (!item) return 'Không tìm thấy mã. Kiểm tra tem hoặc nhập lại mã.';
   if (existing.some((l) => l.code === line.code))
-    return 'Mã đã có trong danh sách. Không cộng thêm lần thứ hai.';
+    return 'Mã này đã có trong danh sách. Không cộng thêm lần thứ hai.';
   if (!Number.isSafeInteger(line.qty) || line.qty < 1)
     return 'Số lượng phải là số nguyên lớn hơn 0.';
   if (item.type !== 'box' && line.qty !== 1)

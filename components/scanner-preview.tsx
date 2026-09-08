@@ -51,11 +51,16 @@ import ScannerOutbound from './scanner-outbound';
 import {useScannerMobileLayout} from './scanner-mobile-layout';
 import './scanner-mobile-layout.css';
 import {actionPermission,assertWrite,authorizeCommit,changeWarehouse,documentPermission,permitted,profiles,warehouseMessage,warehouseStatus,type WarehouseStatus} from '@/lib/scanner-policy';
+import {assertLaunch,resolveScan,type GlobalIntent} from '@/lib/scanner-intent';
+import ScannerLauncher from './scanner-launcher';
+import IntentScanner from './scanner-intent-scan';
+import './scanner-global.css';
 
 type View =
   | 'home'
   | 'lookup'
   | 'product'
+  | 'scan-lookup' | 'scan-warranty' | 'warranty-product'
   | 'create'
   | 'scan'
   | 'review'
@@ -122,6 +127,7 @@ const titles: Record<View, string> = {
   home: 'Ca làm việc của bạn',
   lookup: 'Tra cứu sản phẩm',
   product: 'Chi tiết sản phẩm',
+  'scan-lookup':'Quét tra cứu sản phẩm', 'scan-warranty':'Quét bảo hành', 'warranty-product':'Kết quả kiểm tra bảo hành',
   create: 'Thông tin phiếu',
   scan: 'Quét mã',
   review: 'Kiểm tra phiếu',
@@ -179,6 +185,10 @@ const Row = ({ label, children }: { label: string; children: ReactNode }) => (
 );
 export default function ScannerPreview() {
   const access = useScannerAccess();
+  const [qa,setQa]=useState(false),[launcher,setLauncher]=useState(false);
+  const [matches,setMatches]=useState<Store['items']>([]);
+  const launcherReturn=useRef<View>('home');
+  useEffect(()=>{queueMicrotask(()=>setQa(new URLSearchParams(window.location.search).get('qa')==='1'));},[]);
   const [db, setDb] = useState<Store>(seedStore);
   const dbRef = useRef(db);
   const [ready, setReady] = useState(false);
@@ -220,7 +230,8 @@ export default function ScannerPreview() {
   const setRole = (value:string) => access.changePreviewRole(value);
   const paused=warehouseStatus(db)==='paused';
   const routePermission=actionPermission(view,draft.kind);
-  const actionDenied=!!routePermission && (!permitted(access.session,routePermission)||paused);
+  const readPermission=view==='scan-lookup'?'inventory.view':['scan-warranty','warranty-product'].includes(view)?'warranty.view':null;
+  const actionDenied=(!!routePermission && (!permitted(access.session,routePermission)||paused))|| (!!readPermission&&!permitted(access.session,readPermission));
   const [warehouseTarget,setWarehouseTarget]=useState<WarehouseStatus|null>(null);
   const [warehouseReason,setWarehouseReason]=useState('');
   const warehouseDialogRef=useRef<HTMLDialogElement>(null);
@@ -351,6 +362,23 @@ export default function ScannerPreview() {
   const currentStore=()=>{
     try {const saved=localStorage.getItem(storageKey);if(saved){const next=JSON.parse(saved) as Store;if(next.version===1&&Array.isArray(next.docs))dbRef.current=next;}}catch{}
     return dbRef.current;
+  };
+  const hasDraft=!!(draft.name.trim()||draft.recipient.trim()||draft.note.trim()||draft.lines.length||intake.customer.trim()||intake.code.trim()||intake.fault.trim());
+  const launchReason=(intent:GlobalIntent)=>{try{assertLaunch(currentStore(),access.actor(),intent);return '';}catch{return (intent==='INBOUND'||intent==='OUTBOUND')&&warehouseStatus(db)==='paused'?'Kho đang tạm dừng hoạt động':'Bạn không có quyền thực hiện tác vụ này.';}};
+  const launch=(intent:GlobalIntent,discard:boolean)=>{
+    try{assertLaunch(currentStore(),access.actor(),intent);}catch(e){setError((e as Error).message);return;}
+    if(discard){setDraft(fresh('in'));setIntake({code:'',missing:false,customer:'',phone:'',address:'',fault:'',product:'',reason:'',accessories:''});}
+    setScanCode('');setError('');setNotice('');setMatches([]);
+    if(intent==='INBOUND'||intent==='OUTBOUND'){setDraft(fresh(intent==='INBOUND'?'in':'out'));access.navigate('create');}
+    else access.navigate(intent==='LOOKUP'?'scan-lookup':'scan-warranty');
+  };
+  const intentScan=(code:string)=>{
+    if(mode==='offline'||!navigator.onLine){setError('Đang ngoại tuyến. Chưa thể kiểm tra mã; vui lòng thử lại khi có kết nối.');return;}
+    try{const result=resolveScan(currentStore(),access.actor(),view==='scan-warranty'?'WARRANTY':'LOOKUP',code);setError('');
+      if(result.type==='choose'){setMatches(result.items);return;}
+      setMatches([]);if(result.type==='case')access.navigate('case',{id:result.caseId});
+      else access.navigate(view==='scan-warranty'?'warranty-product':'product',{product:result.item.code});
+    }catch(e){setError((e as Error).message);}
   };
   const save = (next: Store) => {
     if(storageError)throw new Error(storageError);
@@ -783,6 +811,9 @@ export default function ScannerPreview() {
             {btn('Tra cứu bằng thẻ NFC', () => go('nfc'), false, true)}
           </>
         );
+      case 'scan-lookup': case 'scan-warranty':
+        return <><IntentScanner intent={view==='scan-lookup'?'LOOKUP':'WARRANTY'} onScan={intentScan} error={error}/>{!!matches.length&&<Card><h2>Chọn hiện vật cần kiểm tra</h2><p>SKU có nhiều hiện vật. Chọn đúng mã; không tự suy đoán máy.</p>{matches.map(i=><button className="sc-list-card" key={i.code} onClick={()=>intentScan(i.code)}>{i.name} · {i.code} · {i.status}</button>)}</Card>}</>;
+      case 'warranty-product':
       case 'product':
         return !item ? (
           <>
@@ -818,6 +849,7 @@ export default function ScannerPreview() {
             </Card>
             <Card>
               <h3>Chứng từ liên quan</h3>
+              {view==='warranty-product'&&<section><h3>Điều kiện bảo hành</h3>{db.cases.some(c=>c.code===item.code&&!['Đã trả','Đã huỷ'].includes(c.status))?<button className="sc-btn" onClick={()=>openCase(db.cases.find(c=>c.code===item.code&&!['Đã trả','Đã huỷ'].includes(c.status))!.id)}>Mở hồ sơ bảo hành hiện tại</button>:item.status!=='Đã xuất'?<p role="alert">Sản phẩm hiện chưa ở trạng thái đã xuất nên chưa đủ điều kiện tiếp nhận bảo hành.</p>:<><p>Sản phẩm đã xuất và chưa có hồ sơ đang xử lý.</p><button className="sc-btn" disabled={!can('warranty.manage')} onClick={()=>{try{assertWrite(currentStore(),access.actor(),'warranty.manage');}catch(e){setError((e as Error).message);return;}setIntake({code:item.code,missing:false,customer:'',phone:'',address:'',fault:'',product:item.name,reason:'',accessories:''});go('intake');}}>Tiếp nhận bảo hành</button>{!can('warranty.manage')&&<p>{paused?'Kho đang tạm dừng hoạt động':'Bạn không có quyền tiếp nhận bảo hành.'}</p>}</>}</section>}
               {db.docs
                 .filter((d) => d.lines.some((l) => l.code === item.code))
                 .map((d) => (
@@ -924,8 +956,10 @@ export default function ScannerPreview() {
           </>
         );
       case 'scan':
+        if(draft.kind==='parts'?!draft.caseId:!draft.name.trim()||(draft.kind==='out'&&(!draft.recipient.trim()||!draft.phone||!draft.address||!Number.isSafeInteger(Number(draft.target))||Number(draft.target)<1)))return <Card><h2>Hoàn tất thông tin trước khi quét</h2><p>Chọn nghiệp vụ và hoàn tất phiếu trước khi quét mã. Chưa có thay đổi tồn kho.</p><button className="sc-btn" onClick={()=>draft.kind==='parts'?go('warranty'):go('create')}>Bổ sung thông tin phiếu</button></Card>;
         return (
           <>
+            <div className="sg-context" data-scan-context={draft.kind==='in'?'INBOUND':draft.kind==='out'?'OUTBOUND':'WARRANTY_PARTS'}><ScanQrCode aria-hidden="true"/><strong>{kindLabel(draft.kind)}{draft.caseId?` · ${draft.caseId}`:''}</strong></div>
             <div className="sc-stepper">
               <span>1 Thông tin</span>
               <b>2 Quét mã</b>
@@ -996,7 +1030,7 @@ export default function ScannerPreview() {
                 () => addCode(scanCode),
                 !scanCode.trim() || readOnly,
               )}
-              {scanExamples}
+              {qa&&scanExamples}
             </Card>
             {notice && (
               <output className="sc-success">
@@ -1032,6 +1066,7 @@ export default function ScannerPreview() {
           </>
         );
       case 'review':
+        if(!draft.lines.length)return <Card><h2>Chưa có mã để kiểm tra</h2><p>Tiếp tục phiếu đang soạn hoặc chọn tác vụ quét phù hợp.</p><button className="sc-btn" onClick={()=>go('create')}>Về thông tin phiếu</button></Card>;
         return (
           <>
             <div className="sc-stepper">
@@ -2132,7 +2167,7 @@ export default function ScannerPreview() {
   if (!access.allowed) return <div className="sc-workspace sc-auth-workspace"><ScannerAuthScreen access={access} role={role} warehouse={warehouseStatus(db)} warehouseLoaded={ready} warehouseError={storageError}/></div>;
   return (
     <div className="sc-workspace">
-      <aside className="sc-design-panel">
+      {qa&&<aside className="sc-design-panel">
         <div className="sc-panel-brand">
           <ScanLine />
           <strong>HOA NAM / SCANNER</strong>
@@ -2181,7 +2216,7 @@ export default function ScannerPreview() {
           tử của xuất linh kiện.
         </small>
         <button onClick={()=>access.expire()}>Kiểm thử hết hạn phiên</button>
-      </aside>
+      </aside>}
       <div className="sc-phone" ref={phoneRef}>
         <div className="sc-preview-note">
           Môi trường xem thiết kế • không ghi dữ liệu thật
@@ -2224,7 +2259,7 @@ export default function ScannerPreview() {
           ) : (
             actionDenied ? <Card><h2>Thao tác đang bị khóa</h2><p>{paused?warehouseMessage:'Bạn không có quyền mở thao tác tạo, sửa hoặc gửi dữ liệu.'}</p><p>Nội dung đang soạn được giữ trong lần mở này; chưa có thay đổi nào được gửi.</p><button className="sc-btn secondary" onClick={()=>access.navigate('home',{},true)}>Về trang chủ</button></Card> : body()
           )}
-          {error && !modalOpen && (
+          {error && !modalOpen && !['scan-lookup','scan-warranty'].includes(view) && (
             <div className="sc-error" role="alert">
               <AlertTriangle />
               {error}
@@ -2237,14 +2272,17 @@ export default function ScannerPreview() {
           </svg>
           {nav.map((v, i) => {
             const Icon = icons[i];
-            const active = view === v || (v === 'profile'&&view.startsWith('profile-')) || (v === 'lookup' && view === 'product') || (v === 'docs' && ['doc','create','scan','review','result'].includes(view));
+            const active = i!==2&&(view === v || (v === 'profile'&&view.startsWith('profile-')) || (v === 'docs' && view==='doc'));
             return (
               <button
                 key={v}
                 aria-current={active ? 'page' : undefined}
+                aria-haspopup={i===2?'dialog':undefined}
+                aria-expanded={i===2?launcher:undefined}
+                data-context-active={i===2&&(launcher||['create','scan','review','scan-lookup','scan-warranty','warranty-product'].includes(view))?true:undefined}
                 aria-label={i === 2 ? 'Quét mã — Hoa Nam Tool' : navLabels[i]}
                 className={`${active ? 'active' : ''} ${i === 2 ? 'sc-nav-center' : ''}`}
-                onClick={() => tab(v)}
+                onClick={() => {if(i===2){launcherReturn.current=view;setLauncher(true);}else tab(v);}}
               >
                 {i === 2 ? <span className="sc-nav-orb" aria-hidden="true"><ScanQrCode className="sc-nav-qr" strokeWidth={2} /></span> : <Icon aria-hidden="true" />}
                 <span>{navLabels[i]}</span>
@@ -2252,7 +2290,7 @@ export default function ScannerPreview() {
             );
           })}
         </nav>
-        <details className="sc-mobile-controls">
+        {qa&&<details className="sc-mobile-controls">
           <summary>Điều khiển xem thiết kế</summary>
           <p>Dữ liệu mock • không kết nối hệ thống thật.</p>
           <label className="sc-feedback-setting"><input type="checkbox" checked={haptic} onChange={e=>setHaptic(e.target.checked)}/>Rung nhẹ khi quét thành công</label>
@@ -2276,9 +2314,10 @@ export default function ScannerPreview() {
             </select>
           </Field>
           <Field label="Kịch bản thiết bị"><select value={deviceState} onChange={e=>setDeviceState(e.target.value)}><option value="normal">Luồng thiết bị mô phỏng</option><option value="unsupported">Thiết bị không hỗ trợ</option><option value="denied">Quyền thiết bị bị từ chối</option></select></Field>
-        </details>
+        </details>}
       </div>
       <dialog ref={warehouseDialogRef} className="sc-warehouse-modal" aria-labelledby="sc-warehouse-title" onCancel={()=>setWarehouseTarget(null)}><div className="sc-card"><h2 id="sc-warehouse-title">{warehouseTarget==='paused'?'Tạm dừng Kho Hoa Nam?':'Kích hoạt lại Kho Hoa Nam?'}</h2><p>{warehouseTarget==='paused'?'Toàn bộ thao tác ghi sẽ bị chặn. Nhân viên vẫn xem và tra cứu được.':'Nhân viên có quyền sẽ được tiếp tục thao tác ghi.'}</p><p>Người xác nhận: {access.session?.name} • Super Admin</p><Field label="Lý do thay đổi trạng thái"><input autoFocus value={warehouseReason} onChange={e=>setWarehouseReason(e.target.value)}/></Field><button className="sc-btn" disabled={warehouseReason.trim().length<5} onClick={()=>{try{if(!warehouseTarget)return;const next=changeWarehouse(currentStore(),access.actor(),warehouseTarget,warehouseReason,true);localStorage.setItem(storageKey,JSON.stringify(next));dbRef.current=next;setDb(next);setWarehouseTarget(null);setNotice('Trạng thái kho đã được cập nhật.');}catch(e){setError((e as Error).message);setWarehouseTarget(null);}}}>Xác nhận thay đổi</button><button className="sc-btn secondary" onClick={()=>setWarehouseTarget(null)}>Hủy, giữ nguyên trạng thái</button></div></dialog>
+      {launcher&&<ScannerLauncher hasDraft={hasDraft} reason={launchReason} onSelect={launch} onClose={()=>setLauncher(false)} onResume={()=>access.navigate(['create','scan','review','intake'].includes(launcherReturn.current)?launcherReturn.current:intake.code||intake.customer?'intake':draft.lines.length?'scan':'create')}/>}
       <dialog
         ref={dialogRef}
         className="sc-dialog"
