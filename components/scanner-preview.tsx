@@ -45,6 +45,7 @@ import {
 } from '@/lib/scanner-model';
 import './scanner-preview.css';
 import { ScannerAuthScreen, useScannerAccess } from './scanner-auth';
+import ScannerAccount from './scanner-account';
 import {actionPermission,assertWrite,authorizeCommit,changeWarehouse,documentPermission,permitted,profiles,warehouseMessage,warehouseStatus,type WarehouseStatus} from '@/lib/scanner-policy';
 
 type View =
@@ -64,6 +65,7 @@ type View =
   | 'nfc-bind'
   | 'history'
   | 'profile'
+  | 'profile-edit' | 'profile-avatar' | 'profile-work' | 'profile-security' | 'profile-password' | 'profile-help' | 'profile-support'
   | 'login';
 type Draft = {
   kind: Kind;
@@ -129,6 +131,7 @@ const titles: Record<View, string> = {
   'nfc-bind': 'Liên kết thẻ NFC',
   history: 'Lịch sử thao tác',
   profile: 'Cá nhân',
+  'profile-edit':'Chỉnh sửa hồ sơ', 'profile-avatar':'Ảnh đại diện', 'profile-work':'Công việc và quyền', 'profile-security':'Tài khoản và bảo mật', 'profile-password':'Đổi mật khẩu', 'profile-help':'Hướng dẫn sử dụng', 'profile-support':'Liên hệ hỗ trợ',
   login: 'Đăng nhập',
 };
 const Card = ({
@@ -2107,33 +2110,11 @@ export default function ScannerPreview() {
       case 'profile':
         return (
           <>
+            <ScannerAccount access={access} mode={mode} onPasswordChanged={passwordChanged}/>
             <Card>
               <h3>Trạng thái Kho Hoa Nam</h3><Badge>{paused?'Tạm dừng':'Hoạt động'}</Badge>
               {permitted(access.session,'warehouse.manage')&&access.session?.roleCode==='SUPER_ADMIN' ? <button className="sc-btn secondary" onClick={()=>{setWarehouseReason('');setWarehouseTarget(paused?'active':'paused');}}>{paused?'Kích hoạt lại kho':'Tạm dừng kho'}</button>:<p>Chỉ Super Admin được thay đổi trạng thái kho.</p>}
               <p>Xem lịch sử thay đổi tại Lịch sử thao tác.</p>
-            </Card>
-            <Card>
-              <div className="sc-profile">
-                <span className="sc-avatar">MA</span>
-                <h2>Minh Anh</h2>
-                <Badge>{role}</Badge>
-              </div>
-              <Row label="Kho làm việc">Kho Hoa Nam</Row>
-              <Row label="Phạm vi">Nhập • Xuất • Bảo hành • NFC</Row>
-              <Row label="Quyền ghi sổ">
-                {approver ? 'Được phép' : 'Không có quyền'}
-              </Row>
-            </Card>
-            <Card>
-              <h3>Hướng dẫn sử dụng</h3>
-              {[
-                'Nhập kho: lập phiếu → quét → kiểm tra → gửi duyệt.',
-                'Xuất kho: thông tin giao hàng → quét đủ số lượng → gửi duyệt.',
-                'Bảo hành: chọn hồ sơ đang kiểm tra / sửa chữa để xuất linh kiện.',
-                'Tồn kho chỉ thay đổi khi chứng từ được ghi sổ.',
-              ].map((t) => (
-                <p key={t}>{t}</p>
-              ))}
             </Card>
             {btn(
               'Đăng xuất',
@@ -2158,7 +2139,14 @@ export default function ScannerPreview() {
         );
       case 'login':
         return null;
+      case 'profile-edit': case 'profile-avatar': case 'profile-work': case 'profile-security': case 'profile-password': case 'profile-help': case 'profile-support':
+        return <ScannerAccount access={access} mode={mode} onPasswordChanged={passwordChanged}/>;
     }
+  };
+  const passwordChanged = () => {
+    setDraft(fresh('in'));setIntake({code:'',missing:false,customer:'',phone:'',address:'',fault:'',product:'',reason:'',accessories:''});
+    setScanCode('');setCaseNote('');setNfcStage(0);setNfcReason('');setPopup(null);pendingContext.current={id:'',product:''};
+    access.logout('Đã đổi mật khẩu. Phiên trên thiết bị này đã kết thúc; vui lòng đăng nhập bằng mật khẩu mới.');
   };
   const closeDialog = () => {
     if (busy) return;
@@ -2238,9 +2226,9 @@ export default function ScannerPreview() {
             <small>HOA NAM SCANNER</small>
             <h1>{titles[view]}</h1>
           </div>
-          <button aria-label="Mở cá nhân" onClick={() => go('profile')}>
+          {!view.startsWith('profile')&&<button aria-label="Mở cá nhân" onClick={() => go('profile')}>
             <UserRound />
-          </button>
+          </button>}
         </header>
         {paused&&<output className="sc-warehouse-banner"><AlertTriangle aria-hidden="true"/><span>{warehouseMessage}. Nội dung đang soạn được giữ trong lần mở này.</span></output>}
         {!paused&&readOnly&&<p className="sc-permission-note">Các thao tác không thuộc quyền được cấp sẽ bị khóa.</p>}
@@ -2273,7 +2261,7 @@ export default function ScannerPreview() {
           </svg>
           {nav.map((v, i) => {
             const Icon = icons[i];
-            const active = view === v || (v === 'lookup' && view === 'product') || (v === 'docs' && ['doc','create','scan','review','result'].includes(view));
+            const active = view === v || (v === 'profile'&&view.startsWith('profile-')) || (v === 'lookup' && view === 'product') || (v === 'docs' && ['doc','create','scan','review','result'].includes(view));
             return (
               <button
                 key={v}
@@ -2291,6 +2279,7 @@ export default function ScannerPreview() {
         <details className="sc-mobile-controls">
           <summary>Điều khiển xem thiết kế</summary>
           <p>Dữ liệu mock • không kết nối hệ thống thật.</p>
+          <p>Hồ sơ: mã xác minh giả 123456; số 0900000001 kiểm thử trùng. Không nhập tài khoản thật. Thay mật khẩu chỉ áp dụng phiên tab này.</p>
           <button className="sc-btn secondary" onClick={()=>access.expire()}>Kiểm thử hết hạn phiên</button>
           <Field label="Vai trò">
             <select value={role} onChange={(e) => setRole(e.target.value)}>
@@ -2304,6 +2293,8 @@ export default function ScannerPreview() {
               <option value="normal">Bình thường</option>
               <option value="offline">Ngoại tuyến</option>
               <option value="error">Lỗi xử lý</option>
+              <option value="conflict">Hồ sơ xung đột</option>
+              <option value="duplicate">Số điện thoại trùng</option>
             </select>
           </Field>
         </details>

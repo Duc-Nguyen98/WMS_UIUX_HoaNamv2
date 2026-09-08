@@ -1,7 +1,7 @@
 /** Preview-only contract. Never use client-side claims as production authorization. */
 import type {Actor} from './scanner-policy';
 export type ScannerSession = Actor & { role: string };
-export const privateViews = ['home','lookup','product','create','scan','review','result','docs','doc','warranty','case','intake','nfc','nfc-bind','history','profile'] as const;
+export const privateViews = ['home','lookup','product','create','scan','review','result','docs','doc','warranty','case','intake','nfc','nfc-bind','history','profile','profile-edit','profile-avatar','profile-work','profile-security','profile-password','profile-help','profile-support'] as const;
 export type PrivateView = typeof privateViews[number];
 export type ScannerView = PrivateView | 'login' | 'shift' | 'forgot';
 export type ScannerRoute = { view: ScannerView; id: string; product: string };

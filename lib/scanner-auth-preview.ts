@@ -1,5 +1,6 @@
 import { authErrors, validSession, type ScannerAuthAdapter, type ScannerSession } from './scanner-auth.ts';
 import {profiles} from './scanner-policy.ts';
+import {readPreviewProfile,verifyPreviewPassword,recordPreviewLogin} from './scanner-account-preview.ts';
 
 // Only imported by the Scanner preview. No credential/token is persisted.
 // sessionStorage contains synthetic UI-session claims, not authentication proof.
@@ -17,10 +18,11 @@ export function createPreviewAuth(storage: Pick<Storage,'getItem'|'setItem'|'rem
       await new Promise(resolve => setTimeout(resolve,450));
       if (authErrors[scenario]) throw new Error(authErrors[scenario]);
       // Public synthetic fixtures for design review only. Never enter real credentials.
-      if (!['minhanh','minhanh@example.test','0900000000'].includes(identifier.trim().toLowerCase()) || password !== 'Scanner@2026') throw new Error(authErrors.invalid);
+      if (!['minhanh','minhanh@example.test',readPreviewProfile(storage).phone].includes(identifier.trim().toLowerCase()) || !await verifyPreviewPassword(storage,password)) throw new Error(authErrors.invalid);
       const profile=profiles[role];if(!profile)throw new Error('Vai trò không hợp lệ.');
       const s: ScannerSession = {userId:'preview-minhanh',name:'Minh Anh',role,roleCode:profile.code,permissions:[...profile.permissions],expiresAt:Date.now()+30*60*1000,shiftStarted:false};
       storage.setItem(key,JSON.stringify(s));
+      recordPreviewLogin(storage);
       return s;
     },
     startShift() {

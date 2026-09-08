@@ -14,15 +14,19 @@ export function useScannerAccess() {
   const sync=useRef<() => void>(()=>{});
   const trail=useRef<ScannerRoute[]>([]);
   const sessionId=useRef<string|null>(null);
+  const leaveGuard=useRef<null|(()=>boolean)>(null);
+  const lastHash=useRef('#login');
   useEffect(()=>{
     try { adapter.current=createPreviewAuth(window.sessionStorage); }
     catch { queueMicrotask(()=>{setMessage('Không thể mở phiên trên thiết bị này. Vui lòng cho phép lưu trữ phiên rồi tải lại.'); setLoaded(true);}); return; }
     const update=()=>{
       const next=adapter.current!.read();
       const requested=parseRoute(window.location.hash);
+      if(next && window.location.hash!==lastHash.current && leaveGuard.current && !leaveGuard.current()){window.history.replaceState(null,'',lastHash.current);return;}
       const guarded=guardRoute(requested,next);
       if (routeHash(guarded)!==window.location.hash) window.history.replaceState(null,'',routeHash(guarded));
       sessionId.current=next?.userId||null;
+      lastHash.current=routeHash(guarded);
       setSession(next); setRoute(guarded); setLoaded(true);
     };
     sync.current=update;
@@ -42,14 +46,18 @@ export function useScannerAccess() {
   },[]);
   const navigate=(view:ScannerView, context:Partial<ScannerRoute>={},replace=false)=>{
     const next=guardRoute({view,id:context.id||'',product:context.product||''},adapter.current?.read()||null);
+    if(adapter.current?.read()&&routeHash(next)!==window.location.hash&&leaveGuard.current&&!leaveGuard.current())return false;
+    lastHash.current=routeHash(next);
     if(!replace) trail.current.push(parseRoute(window.location.hash));
     window.history[replace?'replaceState':'pushState'](null,'',routeHash(next));
     sync.current();
+    return true;
   };
   return {route,session,loaded,message, navigate,
+    setLeaveGuard(fn:null|(()=>boolean)) {leaveGuard.current=fn;},
     actor:()=>adapter.current?.read()||null,
     changePreviewRole(role:string) {adapter.current?.changePreviewRole(role);sync.current();},
-    back() { const dest=trail.current.pop(); navigate(dest?.view||'home',dest||{},true); },
+    back() { const dest=trail.current.at(-1); if(navigate(dest?.view||'home',dest||{},true))trail.current.pop(); },
     allowed:loaded && validSession(session) && session.shiftStarted && !['login','forgot','shift'].includes(route.view),
     check:()=>validSession(adapter.current?.read()||null) && !!adapter.current?.read()?.shiftStarted,
     async login(id:string,password:string,scenario:string,role:string) {
@@ -61,7 +69,7 @@ export function useScannerAccess() {
       const dest=resume.current; resume.current=null; setMessage('');
       navigate(dest?.view||'home',dest||{},true);
     },
-    logout() {adapter.current?.logout();resume.current=null;trail.current=[];setMessage('Bạn đã đăng xuất an toàn.');navigate('login',{},true);},
+    logout(message='Bạn đã đăng xuất an toàn.') {adapter.current?.logout();resume.current=null;trail.current=[];setMessage(message);navigate('login',{},true);},
     expire() {adapter.current?.logout();resume.current=route;setMessage('Phiên làm việc đã hết hạn. Nội dung đang soạn được giữ trong lần mở này. Đăng nhập lại để tiếp tục; tải lại trang sẽ bỏ bản đang soạn.');navigate('login',{},true);},
   };
 }
