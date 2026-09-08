@@ -1,0 +1,138 @@
+[
+  {
+    "requested": [
+      320,
+      568
+    ],
+    "actual": [
+      320,
+      568
+    ],
+    "count": 351,
+    "failures": [],
+    "height": 568,
+    "overflow": false,
+    "tokenPrimary": "#0c6286",
+    "view": "#view=home",
+    "width": 320
+  },
+  {
+    "requested": [
+      360,
+      800
+    ],
+    "actual": [
+      360,
+      800
+    ],
+    "count": 361,
+    "failures": [],
+    "height": 800,
+    "overflow": false,
+    "tokenPrimary": "#0c6286",
+    "view": "#view=home",
+    "width": 360
+  },
+  {
+    "requested": [
+      375,
+      812
+    ],
+    "actual": [
+      375,
+      812
+    ],
+    "count": 361,
+    "failures": [],
+    "height": 812,
+    "overflow": false,
+    "tokenPrimary": "#0c6286",
+    "view": "#view=home",
+    "width": 375
+  },
+  {
+    "requested": [
+      390,
+      844
+    ],
+    "actual": [
+      390,
+      844
+    ],
+    "count": 361,
+    "failures": [],
+    "height": 844,
+    "overflow": false,
+    "tokenPrimary": "#0c6286",
+    "view": "#view=home",
+    "width": 390
+  },
+  {
+    "requested": [
+      393,
+      852
+    ],
+    "actual": [
+      394,
+      852
+    ],
+    "count": 361,
+    "failures": [],
+    "height": 852,
+    "overflow": false,
+    "tokenPrimary": "#0c6286",
+    "view": "#view=home",
+    "width": 394
+  },
+  {
+    "requested": [
+      412,
+      915
+    ],
+    "actual": [
+      412,
+      915
+    ],
+    "count": 361,
+    "failures": [],
+    "height": 852,
+    "overflow": false,
+    "tokenPrimary": "#0c6286",
+    "view": "#view=home",
+    "width": 394
+  },
+  {
+    "requested": [
+      430,
+      932
+    ],
+    "actual": [
+      430,
+      932
+    ],
+    "count": 361,
+    "failures": [],
+    "height": 932,
+    "overflow": false,
+    "tokenPrimary": "#0c6286",
+    "view": "#view=home",
+    "width": 430
+  },
+  {
+    "requested": [
+      440,
+      956
+    ],
+    "actual": [
+      430,
+      932
+    ],
+    "count": 361,
+    "failures": [],
+    "height": 932,
+    "overflow": false,
+    "tokenPrimary": "#0c6286",
+    "view": "#view=home",
+    "width": 430
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "count": 333,
+    "failures": [],
+    "overflow": false,
+    "primary": "#0c6286",
+    "url": "https://duc-nguyen98.github.io/WMS_UIUX_HoaNamv2/preview/#view=home",
+    "width": 561
+  },
+  {
+    "count": 90,
+    "failures": [],
+    "overflow": false,
+    "primary": "#0c6286",
+    "url": "https://duc-nguyen98.github.io/WMS_UIUX_HoaNamv2/preview/#view=contact",
+    "width": 561
+  },
+  {
+    "count": 188,
+    "failures": [],
+    "overflow": false,
+    "primary": "#0c6286",
+    "url": "https://duc-nguyen98.github.io/WMS_UIUX_HoaNamv2/preview/#view=catalog",
+    "width": 561
+  },
+  {
+    "count": 221,
+    "failures": [],
+    "overflow": false,
+    "primary": "#0c6286",
+    "url": "https://duc-nguyen98.github.io/WMS_UIUX_HoaNamv2/preview/#view=catalog",
+    "width": 561
+  }
+]

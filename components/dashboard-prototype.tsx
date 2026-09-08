@@ -82,6 +82,7 @@ import {
   type Stock,
 } from '@/lib/dashboard-demo';
 import DashboardDataSurface from '@/components/dashboard-visuals';
+import WarrantyComponentIssue from '@/components/warranty-component-issue';
 import './dashboard-prototype.css';
 
 type Navigate = (route: DemoRoute) => void;
@@ -1667,6 +1668,9 @@ function DemoActionForm({
     onDirty(true);
     setResult('');
   };
+  if (route.action === 'components') {
+    return <WarrantyComponentIssue warrantyId={w?.id || route.id || '—'} onBack={() => navigate({ ...route, action: '' })} />;
+  }
   if (route.action === 'print')
     return (
       <>

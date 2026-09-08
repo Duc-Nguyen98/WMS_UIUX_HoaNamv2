@@ -1,0 +1,43 @@
+{
+  "scope": "App Preview only; unrelated WMS code, bitmap colors and non-rendered documents excluded",
+  "tokenFile": "styles/hoa-nam-color-tokens.css",
+  "sourceFiles": [
+    "components/preview-catalog.tsx",
+    "components/preview-contact.css",
+    "components/preview-contact.tsx",
+    "components/preview-detail.tsx",
+    "components/preview-home.tsx",
+    "components/preview-library-screens.tsx",
+    "components/preview-library-state.tsx",
+    "components/preview-library.css",
+    "components/preview-motion.css",
+    "components/preview-motion.tsx",
+    "components/preview-primitives.tsx",
+    "components/preview-products.tsx",
+    "components/preview-progressive.tsx",
+    "components/preview-request.tsx",
+    "components/preview-screen-boundary.tsx",
+    "components/preview-screens.css",
+    "components/preview-virtual-products.tsx",
+    "components/product-group-browser.css",
+    "components/product-group-browser.tsx",
+    "components/product-preview.css",
+    "components/product-preview.tsx",
+    "lib/preview-clipboard.ts",
+    "lib/preview-library.ts",
+    "lib/preview-progressive.ts",
+    "lib/preview-request.ts",
+    "lib/product-preview.ts",
+    "app/preview/page.tsx",
+    "styles/preview-theme.css",
+    "styles/preview-base.css"
+  ],
+  "sharedComponents": [
+    "lib/utils.ts"
+  ],
+  "checks": {
+    "exactTokens": true,
+    "noRuntimeColorLiterals": true
+  },
+  "failures": []
+}
