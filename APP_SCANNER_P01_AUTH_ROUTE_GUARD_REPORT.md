@@ -2,7 +2,7 @@
 
 ## Kết luận
 
-**PASS** cho preview adapter và luồng UI đã kiểm thử trực tiếp. Đây là kết luận cho prototype chạy cục bộ; xác thực, token, timeout và phân quyền máy chủ vẫn phải được tích hợp bởi service production trước khi phát hành.
+**BLOCKED**. Luồng và guard đã triển khai, nhưng chưa đủ bộ ảnh runtime tại cả ba viewport bắt buộc `360×800`, `390×844`, `430×932` trong phiên này để tuyên bố PASS theo quality gate. Đây là kết luận cho prototype chạy cục bộ; xác thực, token, timeout và phân quyền máy chủ vẫn phải được tích hợp bởi service production trước khi phát hành.
 
 ## Hiện trạng trước sửa và bằng chứng
 
@@ -45,7 +45,7 @@ Preview fixture để QA: định danh `minhanh`, mật khẩu `Scanner@2026`; c
 | AC-P01-07 | PASS | `parseRoute`, `guardRoute`, `routeHash` drive URL/header/content; navigation uses one access router. |
 | AC-P01-08 | PASS | No password persistence; adapter stores only synthetic session claims in sessionStorage. |
 | AC-P01-09 | PASS | Scanner TypeScript, scoped lint, build and domain tests pass (see below). |
-| AC-P01-10 | PASS | Responsive auth CSS covers 320–430px; verified local mobile render at 430px and CSS media contract for 320/390/430. |
+| AC-P01-10 | NOT VERIFIED | Responsive auth CSS covers 320–430px and 430px was checked in Cloud Browser; runtime captures at 360×800 and 390×844 remain required before PASS. |
 
 ## Verification
 
