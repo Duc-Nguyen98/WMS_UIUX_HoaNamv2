@@ -2,7 +2,7 @@ import { chromium } from 'file:///C:/Users/Admin/.cache/codex-runtimes/codex-pri
 import { mkdir, writeFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const base=process.env.SCANNER_QA_URL || 'http://127.0.0.1:3000/scanner';
-const out='artifacts/scanner-p01/verified';await mkdir(out,{recursive:true});
+const out=process.env.SCANNER_QA_OUTPUT||'artifacts/scanner-p01/verified';await mkdir(out,{recursive:true});
 const browser=await chromium.launch({headless:true});const log=[];
 const routes=['home','lookup','product','create','scan','review','result','docs','doc','warranty','case','intake','nfc','nfc-bind','history','profile','unknown'];
 try {

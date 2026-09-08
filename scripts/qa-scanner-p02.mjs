@@ -1,7 +1,7 @@
 import {chromium} from 'file:///C:/Users/Admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
 import {mkdir,writeFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
-const base=process.env.SCANNER_QA_URL||'http://127.0.0.1:3000/scanner',out='artifacts/scanner-p02/verified';await mkdir(out,{recursive:true});
+const base=process.env.SCANNER_QA_URL||'http://127.0.0.1:3000/scanner',out=process.env.SCANNER_QA_OUTPUT||'artifacts/scanner-p02/verified';await mkdir(out,{recursive:true});
 const browser=await chromium.launch();const log=[];
 const route=async(p,h)=>{await p.evaluate(h=>{location.hash=h;},h);await p.waitForTimeout(150);};
 const login=async p=>{await p.goto(base+'#home');await p.locator('#sc-auth-id').fill('minhanh');await p.locator('#sc-auth-password').fill('Scanner@2026');await p.getByRole('button',{name:'Đăng nhập',exact:true}).click();await p.getByRole('button',{name:'Bắt đầu ca làm việc',exact:true}).click();await p.waitForURL(/#home/);};

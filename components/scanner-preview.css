@@ -8,7 +8,7 @@
 .sc-auth { min-height: 680px; background: #fafcfc; padding: 32px 24px; border-radius: 16px; }
 .sc-auth-brand { display:flex; align-items:center; gap:12px; margin-bottom:32px; color:#0c6286; }
 .sc-auth-brand > span { display:grid; place-items:center; width:48px; height:48px; background:#eaf1f4; border-radius:12px; }
-.sc-auth-brand small { display:block; font-size:11px; letter-spacing:3px; }
+.sc-auth-brand small { display:block; font-size: 12px; letter-spacing:3px; }
 .sc-auth h1 { font-size:26px; line-height:1.25; letter-spacing:-.5px; margin:0 0 12px; color:#193b49; }
 .sc-auth p { font-size:15px; line-height:1.6; }
 .sc-auth form { display:flex; flex-direction:column; margin-top:28px; }
@@ -130,7 +130,7 @@
 .sc-preview-note {
   background: #e7f1f5;
   color: #426875;
-  font-size: 10px;
+  font-size: 12px;
   text-align: center;
   padding: 8px;
 }
@@ -152,7 +152,7 @@
   margin: 4px 0 0;
 }
 .sc-header small {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.12em;
   color: #5e93a7;
 }
@@ -201,7 +201,7 @@
   margin: 6px 0 12px;
 }
 .sc-content small {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.6;
   color: #607680;
 }
@@ -227,12 +227,12 @@
   margin: 5px 0;
 }
 .sc-welcome small {
-  font-size: 10px;
+  font-size: 12px;
   color: #0c6286;
   letter-spacing: 0.08em;
 }
 .sc-welcome p {
-  font-size: 11px;
+  font-size: 12px;
   margin: 0;
 }
 .sc-avatar {
@@ -275,7 +275,7 @@
   line-height: 1.4;
 }
 .sc-stats span {
-  font-size: 11px;
+  font-size: 12px;
   color: #607680;
 }
 .sc-section-title {
@@ -289,7 +289,7 @@
   margin: 0;
 }
 .sc-section-title > small {
-  font-size: 10px;
+  font-size: 12px;
 }
 .sc-section-title > span {
   font-size: 12px;
@@ -326,7 +326,7 @@
   font-size: 14px;
 }
 .sc-task-grid p {
-  font-size: 10px;
+  font-size: 12px;
   margin: 3px 0 0;
   line-height: 1.5;
 }
@@ -366,7 +366,7 @@
   font-size: 14px;
 }
 .sc-wide-callout span {
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 4px;
   color: #d9ecf3;
 }
@@ -393,7 +393,7 @@
 }
 .sc-list-card p {
   margin: 3px 0;
-  font-size: 11px;
+  font-size: 12px;
 }
 .sc-list-card svg {
   width: 19px;
@@ -407,7 +407,7 @@
   border-radius: 6px;
   color: #22734e;
   background: #e8f5ee;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.5;
   font-weight: 650;
   white-space: normal;
@@ -463,7 +463,7 @@
   border: 0;
   background: transparent;
   color: #72858e;
-  font-size: 9px;
+  font-size: 12px;
   min-height: 45px;
   padding: 4px 0;
 }
@@ -505,7 +505,7 @@
   transition: transform .16s ease, box-shadow .16s ease;
 }
 .sc-nav-monogram { font-size: 22px; line-height: 24px; font-weight: 800; letter-spacing: -1.2px; }
-.sc-nav-orb-caption { font-size: 6px; line-height: 10px; font-weight: 650; letter-spacing: 2px; padding-left: 2px; opacity: .85; }
+.sc-nav-orb-caption { font-size: 12px; line-height: 10px; font-weight: 650; letter-spacing: 2px; padding-left: 2px; opacity: .85; }
 .sc-nav-center:active .sc-nav-orb { transform: translateX(-50%) scale(.95); }
 .sc-nav-center.active .sc-nav-orb { box-shadow: 0 0 0 3px #5E93A733, 0 4px 10px #0C62862e; }
 .sc-nav-center:focus-visible { border-radius: 8px; }
@@ -545,7 +545,7 @@
   background: none;
   padding: 5px 0;
   color: #0c6286;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 650;
   min-height: 36px;
 }
@@ -636,7 +636,7 @@
   padding: 7px 12px;
   background: #fff;
   color: #607680;
-  font-size: 11px;
+  font-size: 12px;
 }
 .sc-chips button.active {
   border-color: #0c6286;
@@ -698,7 +698,7 @@
   color: #8a5a17;
 }
 .sc-help {
-  font-size: 11px !important;
+  font-size: 12px !important;
 }
 .sc-stepper {
   display: flex;
@@ -706,7 +706,7 @@
   gap: 8px;
   color: #758b95;
   justify-content: space-between;
-  font-size: 10px;
+  font-size: 12px;
   border-bottom: 1px solid #dbe7eb;
   padding: 0 0 16px;
 }
@@ -775,7 +775,7 @@
 }
 .sc-code-help small {
   display: block;
-  font-size: 10px;
+  font-size: 12px;
 }
 .sc-code {
   font-family: monospace;
@@ -833,7 +833,7 @@
   border-top: 3px solid #dfe9ed;
   padding-top: 7px;
   color: #69818b;
-  font-size: 9px;
+  font-size: 12px;
 }
 .sc-progress span.active {
   border-color: #0c6286;
@@ -930,7 +930,7 @@
   display: none;
   background: #eaf2f5;
   padding: 12px;
-  font-size: 11px;
+  font-size: 12px;
   color: #456776;
 }
 .sc-skeleton {
@@ -1012,7 +1012,7 @@
     padding: 12px 10px;
   }
   .sc-task-grid p {
-    font-size: 9px;
+    font-size: 12px;
   }
   .sc-welcome h2 {
     font-size: 19px;
@@ -1024,7 +1024,7 @@
     padding: 13px;
   }
   .sc-nav button {
-    font-size: 8px;
+    font-size: 12px;
   }
   .sc-list-card {
     flex-wrap: wrap;

@@ -46,6 +46,9 @@ import {
 import './scanner-preview.css';
 import { ScannerAuthScreen, useScannerAccess } from './scanner-auth';
 import ScannerAccount from './scanner-account';
+import ScannerOutbound from './scanner-outbound';
+import {useScannerMobileLayout} from './scanner-mobile-layout';
+import './scanner-mobile-layout.css';
 import {actionPermission,assertWrite,authorizeCommit,changeWarehouse,documentPermission,permitted,profiles,warehouseMessage,warehouseStatus,type WarehouseStatus} from '@/lib/scanner-policy';
 
 type View =
@@ -179,7 +182,14 @@ export default function ScannerPreview() {
   const dbRef = useRef(db);
   const [ready, setReady] = useState(false);
   const view = access.route.view as View;
+  const phoneRef=useScannerMobileLayout(`${view}-${access.allowed}-${ready}`);
+  const [haptic,setHaptic]=useState(false);
+  const [sound,setSound]=useState(false);
   const [draft, setDraft] = useState<Draft>(() => fresh('in'));
+  useEffect(()=>{
+    const warn=(event:BeforeUnloadEvent)=>{if(['create','scan','review'].includes(view)&&(draft.name.trim()||draft.lines.length)){event.preventDefault();}};
+    window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);
+  },[view,draft]);
   const selectedId = access.route.id;
   const productCode = access.route.product;
   const pendingContext = useRef({id:'',product:''});
@@ -306,7 +316,7 @@ export default function ScannerPreview() {
     setError('');
   };
   const tab = (next: View) => {
-    if (['scan', 'review', 'create'].includes(view) && draft.lines.length) {
+    if (['scan', 'review', 'create'].includes(view) && (draft.lines.length || draft.name.trim() || draft.recipient.trim())) {
       setPopup({
         title: 'Rời phiếu đang soạn?',
         body: 'Các mã đã quét được giữ trong lần mở này. Bạn có thể tiếp tục từ trang chủ.',
@@ -324,6 +334,7 @@ export default function ScannerPreview() {
   };
   const start = (kind: Kind, caseId?: string) => {
     if(!can(documentPermission(kind,'create'))){setError(paused?warehouseMessage:'Bạn không có quyền lập phiếu.');return;}
+    if((draft.lines.length||draft.name.trim()||draft.recipient.trim())&&!window.confirm('Bạn còn phiếu đang soạn. Bỏ nội dung phiếu cũ để tạo phiếu mới?'))return;
     setDraft(fresh(kind, caseId));
     setScanCode('');
     go(kind === 'parts' ? 'scan' : 'create');
@@ -383,6 +394,7 @@ export default function ScannerPreview() {
     go('product');
   };
   const addCode = (raw: string, qty?: number) => {
+    if(mode==='offline'){setError('Đang ngoại tuyến. Chưa xác minh được mã; nội dung đang soạn vẫn được giữ.');return;}
     try{assertWrite(currentStore(),access.actor(),documentPermission(draft.kind,'scan'));}catch(e){setError((e as Error).message);return;}
     const code = raw.trim().toUpperCase();
     const found = db.items.find((i) => i.code === code);
@@ -405,11 +417,13 @@ export default function ScannerPreview() {
       );
       return;
     }
-    setDraft((d) => ({ ...d, lines: [...d.lines, line] }));
+    setDraft((d) => d.lines.some(l=>l.code===line.code)?d:({ ...d, lines: [...d.lines, line] }));
     setBox('');
     setInputSheet(false);
     setScanCode('');
     setNotice(`Đã thêm ${found?.name} • ${line.qty} cái`);
+    if(haptic&&navigator.vibrate)navigator.vibrate(25);
+    if(sound){try{const audio=new AudioContext();const oscillator=audio.createOscillator(),gain=audio.createGain();gain.gain.value=.025;oscillator.frequency.value=740;oscillator.connect(gain);gain.connect(audio.destination);oscillator.start();oscillator.stop(audio.currentTime+.07);oscillator.onended=()=>{void audio.close();};}catch{/* Silent fallback when device disallows audio. */}}
   };
   const candidates = db.items.filter((i) =>
     draft.kind === 'in'
@@ -547,7 +561,7 @@ export default function ScannerPreview() {
     current: string,
     change: (v: string) => void,
   ) => (
-    <div className="sc-chips">
+    <div className="sc-filter-region"><div className="sc-chips" aria-label="Lựa chọn bộ lọc hoặc thẻ nội dung">
       {values.map((v) => (
         <button
           key={v}
@@ -558,7 +572,7 @@ export default function ScannerPreview() {
           {v}
         </button>
       ))}
-    </div>
+    </div>{values.includes('Tất cả')&&<button className="sc-text sc-filter-reset" onClick={()=>{change('Tất cả');setQuery('');}}>Xóa bộ lọc{current!=='Tất cả'?' (1)':''}</button>}</div>
   );
   const scanExamples = (
     <details className="sc-code-help">
@@ -836,6 +850,7 @@ export default function ScannerPreview() {
           </>
         );
       case 'create':
+        if(draft.kind==='out')return <ScannerOutbound draft={draft} update={values=>setDraft(d=>({...d,...values}))} onScan={()=>go('scan')} disabled={readOnly} manual={permitted(access.session,'outbound.request.manual_create')}/>;
         return (
           <>
             <div className="sc-stepper">
@@ -862,56 +877,6 @@ export default function ScannerPreview() {
                 />
               </Field>
               <Row label="Kho thực hiện">Kho Hoa Nam</Row>
-              {draft.kind === 'out' && (
-                <>
-                  <Field label="Nhóm đối tượng *">
-                    <select
-                      value={draft.group}
-                      onChange={(e) => setD('group', e.target.value)}
-                    >
-                      {[
-                        'Đại lý',
-                        'Nhà phân phối',
-                        'Khách công trường',
-                        'Khách lẻ',
-                      ].map((x) => (
-                        <option key={x}>{x}</option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Tên người nhận / đơn vị *">
-                    <input
-                      value={draft.recipient}
-                      onChange={(e) => setD('recipient', e.target.value)}
-                      placeholder="Nhập tên người nhận"
-                    />
-                  </Field>
-                  <Field label="Số điện thoại *">
-                    <input
-                      inputMode="tel"
-                      value={draft.phone}
-                      onChange={(e) => setD('phone', e.target.value)}
-                      placeholder="10 chữ số"
-                    />
-                  </Field>
-                  <Field label="Địa chỉ giao hàng *">
-                    <textarea
-                      value={draft.address}
-                      onChange={(e) => setD('address', e.target.value)}
-                      placeholder="Tỉnh/thành, phường/xã, số nhà, đường"
-                    />
-                  </Field>
-                  <Field label="Tổng số lượng cần quét *">
-                    <input
-                      type="number"
-                      min="1"
-                      step="1"
-                      value={draft.target}
-                      onChange={(e) => setD('target', e.target.value)}
-                    />
-                  </Field>
-                </>
-              )}
               <Field label="Ghi chú">
                 <textarea
                   value={draft.note}
@@ -1044,6 +1009,7 @@ export default function ScannerPreview() {
               lineCards(draft.lines, true)
             )}
             <div className="sc-sticky-actions">
+              <strong className="sc-live-count" aria-live="polite">{draft.lines.length} mã · {total} cái{draft.kind==='out'?` / ${draft.target}`:''}</strong>
               {btn(
                 `Kiểm tra phiếu • ${total} cái`,
                 () => go('review'),
@@ -2208,7 +2174,7 @@ export default function ScannerPreview() {
         </small>
         <button onClick={()=>access.expire()}>Kiểm thử hết hạn phiên</button>
       </aside>
-      <div className="sc-phone">
+      <div className="sc-phone" ref={phoneRef}>
         <div className="sc-preview-note">
           Môi trường xem thiết kế • không ghi dữ liệu thật
         </div>
@@ -2279,6 +2245,8 @@ export default function ScannerPreview() {
         <details className="sc-mobile-controls">
           <summary>Điều khiển xem thiết kế</summary>
           <p>Dữ liệu mock • không kết nối hệ thống thật.</p>
+          <label className="sc-feedback-setting"><input type="checkbox" checked={haptic} onChange={e=>setHaptic(e.target.checked)}/>Rung nhẹ khi quét thành công</label>
+          <label className="sc-feedback-setting"><input type="checkbox" checked={sound} onChange={e=>setSound(e.target.checked)}/>Âm báo khi quét thành công</label>
           <p>Hồ sơ: mã xác minh giả 123456; số 0900000001 kiểm thử trùng. Không nhập tài khoản thật. Thay mật khẩu chỉ áp dụng phiên tab này.</p>
           <button className="sc-btn secondary" onClick={()=>access.expire()}>Kiểm thử hết hạn phiên</button>
           <Field label="Vai trò">
