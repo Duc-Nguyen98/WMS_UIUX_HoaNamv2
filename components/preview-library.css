@@ -5,41 +5,118 @@
   border-radius: var(--pv-radius);
   background: var(--hn-surface);
 }
+.pv-theme.pv-utilities-sheet {
+  top: auto;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, 100%);
+  max-height: calc(100dvh - 16px);
+  border-radius: 20px 20px 0 0;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+.pv-utilities-sheet .pv-modal-heading {
+  padding: 18px 16px 4px;
+}
+.pv-utilities-sheet .pv-modal-heading h2 {
+  font-size: 20px;
+  font-weight: 750;
+}
+.pv-utilities-sheet .pv-modal-description {
+  padding: 0 16px 16px;
+  font-size: 13px;
+}
 .pv-theme .pv-library-menu {
   display: grid;
-  gap: 8px;
-  padding: 8px 0;
+  gap: 18px;
+  padding: 0 16px;
+}
+.pv-utility-group > h3 {
+  font-size: 12px;
+  color: var(--hn-text-muted);
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.pv-utility-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 .pv-library-menu button {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px;
-  min-height: 58px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--foreground);
+  position: relative;
+  border: 1px solid var(--hn-border);
+  border-radius: var(--pv-radius);
+  color: var(--hn-text-primary);
   background: var(--hn-surface);
   text-align: left;
+  min-width: 0;
+  font: inherit;
 }
-.pv-library-menu button > span {
+.pv-utility-grid > button {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 110px;
+  padding: 14px;
+}
+.pv-utility-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--hn-primary-a06);
+  color: var(--hn-primary);
+}
+.pv-utility-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.pv-utility-grid .pv-utility-arrow {
+  display: none;
+}
+.pv-utility-count {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  min-width: 24px;
+  padding: 2px 6px;
+  text-align: center;
+  background: var(--hn-primary-a06);
+  color: var(--hn-primary);
+  border-radius: 6px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.pv-utility-rows {
+  display: grid;
+  gap: 8px;
+}
+.pv-utility-rows > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  min-height: 56px;
+}
+.pv-utility-rows .pv-utility-label {
   flex: 1;
 }
-.pv-library-menu button > svg {
-  width: 21px;
-  height: 21px;
-  flex-shrink: 0;
-  color: var(--primary-text);
+.pv-utility-rows .pv-utility-count {
+  position: static;
 }
-.pv-library-menu button small {
-  padding: 3px 8px;
-  background: var(--secondary);
-  border-radius: 6px;
+.pv-utility-arrow {
+  color: var(--hn-primary);
 }
-.pv-library-menu button[aria-current='page'],
+.pv-library-menu
+  button[aria-current='page']
+  :is(.pv-utility-icon, .pv-utility-count) {
+  background: transparent;
+  color: inherit;
+}
 .pv-library-menu button:hover {
-  border-color: var(--primary-text);
-  background: var(--pv-surface-tint);
+  border-color: var(--hn-primary);
 }
 .pv-library-notice {
   display: flex;
@@ -421,76 +498,177 @@
   flex-shrink: 0;
   color: var(--primary-text);
 }
-.pv-table-hint {
-  font-size: 14px;
-  color: var(--muted-foreground);
-  margin: 12px 0;
+/* App comparison uses vertical model/value groups, with no frozen columns. */
+.pv-compare-screen {
+  max-width: 640px;
+  margin-inline: auto;
 }
-.pv-comparison-scroll {
-  overflow-x: auto;
-  max-width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 14px;
+.pv-compare-screen .pv-library-heading {
+  margin-bottom: 12px;
+}
+.pv-compare-screen .pv-library-heading p {
+  font-size: 14px;
+}
+.pv-compare-toolbar {
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.pv-compare-toolbar output {
+  color: var(--hn-text-secondary);
+}
+.pv-compare-category-name {
+  font-size: 13px;
+  margin-bottom: 14px !important;
+}
+.pv-compare-roster {
+  display: grid;
+  gap: 10px;
+}
+.pv-compare-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  border: 1px solid var(--hn-border);
+  border-radius: var(--pv-radius);
   background: var(--hn-surface);
-}
-.pv-comparison-table {
-  width: 100%;
-  min-width: 670px;
-  border-collapse: separate;
-  border-spacing: 0;
-  color: var(--foreground);
-}
-.pv-comparison-table th,
-.pv-comparison-table td {
-  padding: 18px;
-  border-bottom: 1px solid var(--border);
-  border-right: 1px solid var(--border);
-  text-align: left;
-  vertical-align: top;
-  font-size: 14px;
-  line-height: 1.6;
-  min-width: 180px;
-}
-.pv-comparison-table th:first-child {
-  width: 160px;
-  min-width: 140px;
-  background: var(--pv-surface-tint);
-  position: sticky;
-  left: 0;
-  z-index: 1;
-  font-weight: 600;
-}
-.pv-comparison-table th:not(:first-child) {
-  width: 27%;
-}
-.pv-comparison-table tr:last-child > * {
-  border-bottom: 0;
-}
-.pv-comparison-table tr > *:last-child {
-  border-right: 0;
-}
-.pv-comparison-table .pv-stock {
-  white-space: nowrap;
+  padding: 10px;
+  align-items: start;
 }
 .pv-compare-open {
   border: 0;
   background: transparent;
-  display: grid;
-  gap: 8px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
   text-align: left;
-  width: 100%;
-  font-weight: 400;
-}
-.pv-compare-open strong {
-  color: var(--primary-text);
+  min-width: 0;
+  padding: 0;
+  color: var(--hn-text-primary);
 }
 .pv-compare-open .pv-photo {
-  height: 140px;
+  width: 64px;
+  height: 76px;
+  flex: 0 0 64px;
+  padding: 0;
+}
+.pv-compare-card-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.pv-compare-card-copy > strong {
+  color: var(--hn-primary);
+  font-size: 15px;
+}
+.pv-compare-card-copy > span:not(.pv-stock) {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.pv-compare-card-copy .pv-stock {
+  position: static;
+  font-size: 12px;
+  width: fit-content;
+}
+.pv-theme .pv-compare-remove {
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border-color: transparent;
+}
+.pv-theme .pv-compare-one-request {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-left: 76px;
+  min-height: 44px;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.pv-compare-add {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
   width: 100%;
+  min-height: 48px;
+  margin-block: 12px;
+  border: 1px dashed var(--hn-primary);
+  color: var(--hn-primary);
+  background: var(--hn-surface);
+  border-radius: var(--pv-radius);
+  font: inherit;
+  font-size: 14px;
 }
-.pv-compare-open + .pv-text-button {
-  margin-top: 12px;
+.pv-compare-features {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
 }
+.pv-compare-feature {
+  border: 1px solid var(--hn-border);
+  border-radius: var(--pv-radius);
+  background: var(--hn-surface);
+  overflow: hidden;
+}
+.pv-compare-feature > h2 {
+  padding: 14px 16px;
+  font-size: 16px;
+  border-bottom: 1px solid var(--hn-border);
+}
+.pv-compare-feature dl {
+  margin: 0;
+}
+.pv-compare-value {
+  display: grid;
+  grid-template-columns: minmax(80px, 0.85fr) minmax(0, 1.6fr);
+  gap: 12px;
+  padding: 12px 16px;
+}
+.pv-compare-value + .pv-compare-value {
+  border-top: 1px solid var(--hn-border);
+}
+.pv-compare-value dt,
+.pv-compare-value dd {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.pv-compare-value dt {
+  color: var(--hn-primary);
+  font-weight: 650;
+}
+.pv-compare-value dd {
+  color: var(--hn-text-secondary);
+}
+.pv-compare-spec > h3 {
+  padding: 10px 16px;
+  background: var(--hn-near-white);
+  font-size: 14px;
+}
+.pv-compare-spec + .pv-compare-spec {
+  border-top: 1px solid var(--hn-border);
+}
+.pv-compare-missing {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.pv-compare-actions {
+  position: sticky;
+  bottom: var(--pv-nav-clearance);
+  padding: 12px 0;
+  margin-top: 16px;
+  background: var(--hn-near-white);
+  z-index: 4;
+}
+.pv-compare-actions .pv-button {
+  width: 100%;
+  min-height: 48px;
+}
+.pv-theme.pv-compare-picker-sheet .pv-compare-options {
+  padding: 0 16px 20px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .pv-help-screen {
   max-width: 900px;
   margin-inline: auto;
@@ -756,16 +934,6 @@
   }
   .pv-help-steps li {
     padding: 12px 16px;
-  }
-  .pv-comparison-table th:first-child {
-    min-width: 106px;
-    width: 106px;
-    padding: 12px;
-    font-size: 13px;
-  }
-  .pv-comparison-table th,
-  .pv-comparison-table td {
-    padding: 14px;
   }
   .pv-request-summary-products {
     max-height: 360px;

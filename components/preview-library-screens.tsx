@@ -63,6 +63,83 @@ export const LIBRARY_LINKS = [
   },
 ] as const;
 type Navigate = (view: PreviewView) => void;
+export function ProductUtilities({
+  activeView,
+  navigate,
+  requestCount,
+}: {
+  activeView: PreviewView;
+  navigate: Navigate;
+  requestCount: number;
+}) {
+  const library = usePreviewLibrary();
+  const groups = [
+    { title: 'Xem lại', views: ['recent', 'saved'] },
+    { title: 'Lựa chọn & tư vấn', views: ['compare', 'selection'] },
+    { title: 'Hỗ trợ', views: ['requests', 'help'] },
+  ];
+  return (
+    <nav className="pv-library-menu" aria-label="Tiện ích sản phẩm">
+      {groups.map((group) => (
+        <section
+          className="pv-utility-group"
+          key={group.title}
+          aria-label={group.title}
+        >
+          <h3>{group.title}</h3>
+          <div
+            className={
+              group.title === 'Hỗ trợ' ? 'pv-utility-rows' : 'pv-utility-grid'
+            }
+          >
+            {group.views.map((target) => {
+              const item = LIBRARY_LINKS.find((link) => link.view === target)!;
+              const Icon = item.icon;
+              const count =
+                target === 'saved'
+                  ? library.saved.length
+                  : target === 'recent'
+                    ? library.recent.length
+                    : target === 'compare'
+                      ? library.compared.length
+                      : target === 'requests'
+                        ? requestCount
+                        : 0;
+              return (
+                <button
+                  key={target}
+                  aria-label={item.label}
+                  aria-current={activeView === target ? 'page' : undefined}
+                  onClick={() => navigate(item.view)}
+                >
+                  <span className="pv-utility-icon">
+                    <Icon aria-hidden="true" />
+                  </span>
+                  <span className="pv-utility-label">
+                    {target === 'selection'
+                      ? 'Yêu cầu nhiều sản phẩm'
+                      : item.short}
+                  </span>
+                  {count > 0 && (
+                    <small className="pv-utility-count">
+                      {count}
+                      {target === 'compare' ? '/3' : ''}
+                    </small>
+                  )}
+                  <ChevronRight
+                    className="pv-utility-arrow"
+                    aria-hidden="true"
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+    </nav>
+  );
+}
+
 function ScreenHeading({
   title,
   description,
@@ -207,7 +284,11 @@ export function ProductCollection({
       {!library.ready ? (
         <output>Đang mở danh sách…</output>
       ) : products.length ? (
-        <ProgressiveProducts products={products} scope={`library:${kind}`} onOpen={onOpen} />
+        <ProgressiveProducts
+          products={products}
+          scope={`library:${kind}`}
+          onOpen={onOpen}
+        />
       ) : (
         <EmptyCollection
           title={
@@ -398,6 +479,7 @@ export function ComparisonScreen({
 }) {
   const library = usePreviewLibrary();
   const products = resolveProducts(library.compared);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [category, setCategory] = useState(
     PREVIEW_CATEGORIES.find(
       (item) =>
@@ -406,6 +488,9 @@ export function ComparisonScreen({
     )?.id ?? PREVIEW_PRODUCTS[0].category,
   );
   const activeCategory = products[0]?.category ?? category;
+  const categoryName = PREVIEW_CATEGORIES.find(
+    (item) => item.id === activeCategory,
+  )?.name;
   const candidates = PREVIEW_PRODUCTS.filter(
     (item) =>
       item.category === activeCategory && !library.compared.includes(item.id),
@@ -417,197 +502,199 @@ export function ComparisonScreen({
       ),
     ),
   ];
+  const picker = (
+    <div className="pv-compare-options">
+      {candidates.map((product) => (
+        <button
+          key={product.id}
+          aria-label={`Thêm ${product.model} vào so sánh`}
+          onClick={() => {
+            library.compare(product.id);
+            setPickerOpen(false);
+          }}
+        >
+          <ProductPhoto crop={product.image} label={product.name} />
+          <span>
+            <strong>{product.model}</strong>
+            {product.name}
+          </span>
+          <ListPlus aria-hidden="true" />
+        </button>
+      ))}
+      {!candidates.length && (
+        <p className="pv-device-note">
+          Chưa có model khác trong danh mục này để so sánh.
+        </p>
+      )}
+    </div>
+  );
   return (
-    <section className="pv-library-screen">
+    <section className="pv-library-screen pv-compare-screen">
       <ScreenHeading
         title="So sánh sản phẩm"
-        description="Đặt 2–3 model cùng danh mục cạnh nhau để chọn sản phẩm phù hợp."
+        description="Chọn 2–3 model cùng danh mục. Xem từng tiêu chí để tìm sản phẩm phù hợp."
         navigate={navigate}
       />
-      <div className="pv-library-toolbar">
-        <span>{products.length}/3 sản phẩm đã chọn</span>
+      <div className="pv-library-toolbar pv-compare-toolbar">
+        <output>{products.length}/3 sản phẩm đã chọn</output>
         {products.length > 0 && (
           <button className="pv-text-button" onClick={library.clearComparison}>
-            <Trash2 aria-hidden="true" />
-            Xóa lựa chọn
+            <Trash2 aria-hidden="true" /> Xóa lựa chọn
           </button>
         )}
       </div>
-      {!products.length && (
-        <label className="pv-compare-category">
-          Danh mục so sánh
-          <select
-            value={activeCategory}
-            onChange={(event) =>
-              setCategory(event.target.value as typeof category)
-            }
-          >
-            {PREVIEW_CATEGORIES.filter((item) =>
-              PREVIEW_PRODUCTS.some((product) => product.category === item.id),
-            ).map((item) => (
-              <option value={item.id} key={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
-      {products.length < 3 && (
+      {!products.length ? (
         <div className="pv-compare-picker">
-          <h2>
-            {products.length
-              ? 'Thêm sản phẩm cùng danh mục'
-              : 'Chọn sản phẩm bắt đầu'}
-          </h2>
-          <div className="pv-compare-options">
-            {candidates.map((product) => (
-              <button
-                key={product.id}
-                onClick={() => library.compare(product.id)}
-              >
-                <ProductPhoto crop={product.image} label={product.name} />
-                <span>
-                  <strong>{product.model}</strong>
-                  {product.name}
-                </span>
-                <ListPlus aria-hidden="true" />
-              </button>
+          <label className="pv-compare-category">
+            Danh mục so sánh
+            <select
+              value={activeCategory}
+              onChange={(event) =>
+                setCategory(event.target.value as typeof category)
+              }
+            >
+              {PREVIEW_CATEGORIES.filter((item) =>
+                PREVIEW_PRODUCTS.some(
+                  (product) => product.category === item.id,
+                ),
+              ).map((item) => (
+                <option value={item.id} key={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <h2>Chọn model đầu tiên</h2>
+          {picker}
+        </div>
+      ) : (
+        <>
+          <p className="pv-compare-category-name">{categoryName}</p>
+          <div className="pv-compare-roster" aria-label="Sản phẩm đang so sánh">
+            {products.map((product) => (
+              <article className="pv-compare-card" key={product.id}>
+                <button
+                  className="pv-compare-open"
+                  aria-label={`Xem chi tiết ${product.model}`}
+                  onClick={() => onOpen(product.id)}
+                >
+                  <ProductPhoto crop={product.image} label={product.name} />
+                  <span className="pv-compare-card-copy">
+                    <strong>{product.model}</strong>
+                    <span>{product.name}</span>
+                    <AvailabilityBadge value={product.availability} />
+                  </span>
+                </button>
+                <button
+                  className="pv-icon-button pv-compare-remove"
+                  aria-label={`Bỏ ${product.model} khỏi so sánh`}
+                  onClick={() => library.compare(product.id)}
+                >
+                  <X aria-hidden="true" />
+                </button>
+                <button
+                  className="pv-text-button pv-compare-one-request"
+                  aria-label={`Gửi yêu cầu cho ${product.model}`}
+                  onClick={() => onRequest([product.id])}
+                >
+                  Tư vấn model này <ArrowRight aria-hidden="true" />
+                </button>
+              </article>
             ))}
           </div>
-          {!candidates.length && (
-            <p>
-              Chưa có sản phẩm khác trong danh mục này. Bạn có thể xóa lựa chọn
-              để đổi danh mục.
-            </p>
+          {products.length < 3 && (
+            <button
+              className="pv-compare-add"
+              onClick={() => setPickerOpen(true)}
+            >
+              <ListPlus aria-hidden="true" />
+              {products.length === 1
+                ? 'Chọn model thứ hai'
+                : 'Thêm model thứ ba'}
+            </button>
           )}
-        </div>
-      )}
-      {products.length === 1 && (
-        <p className="pv-device-note">
-          Chọn thêm một sản phẩm để bắt đầu so sánh.
-        </p>
-      )}
-      {products.length >= 2 && (
-        <>
-          <p className="pv-table-hint">
-            Trên điện thoại, vuốt ngang bảng để xem các model.
-          </p>
-          {/* Keyboard users need a focusable scroll container to reach off-screen comparison columns. */}
-          {/* eslint-disable jsx-a11y/no-noninteractive-tabindex */}
-          <section
-            className="pv-comparison-scroll"
-            aria-label="Bảng so sánh sản phẩm, có thể cuộn ngang"
-            tabIndex={0}
-          >
-            <table className="pv-comparison-table">
-              <caption className="sr-only">
-                So sánh {products.map((item) => item.model).join(', ')}
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">Sản phẩm</th>
-                  {products.map((product) => (
-                    <th scope="col" key={product.id}>
-                      <button
-                        className="pv-compare-open"
-                        onClick={() => onOpen(product.id)}
-                      >
-                        <ProductPhoto
-                          crop={product.image}
-                          label={product.name}
-                        />
-                        <strong>{product.model}</strong>
-                        <span>{product.name}</span>
-                      </button>
-                      <button
-                        className="pv-text-button"
-                        onClick={() => library.compare(product.id)}
-                        aria-label={`Bỏ ${product.model} khỏi bảng so sánh`}
-                      >
-                        <X aria-hidden="true" />
-                        Bỏ chọn
-                      </button>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Tình trạng</th>
-                  {products.map((product) => (
-                    <td key={product.id}>
-                      <AvailabilityBadge value={product.availability} />
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <th scope="row">Danh mục</th>
-                  {products.map((product) => (
-                    <td key={product.id}>
-                      {
-                        PREVIEW_CATEGORIES.find(
-                          (item) => item.id === product.category,
-                        )?.name
-                      }
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <th scope="row">Công dụng & đặc điểm</th>
-                  {products.map((product) => (
-                    <td key={product.id}>
-                      {product.description ||
-                        'Liên hệ để được tư vấn công dụng phù hợp.'}
-                    </td>
-                  ))}
-                </tr>
+          {products.length === 1 ? (
+            <p className="pv-device-note">
+              Chọn thêm một model cùng danh mục để đối chiếu.
+            </p>
+          ) : (
+            <div className="pv-compare-features">
+              <section
+                className="pv-compare-feature"
+                aria-labelledby="pv-compare-use"
+              >
+                <h2 id="pv-compare-use">Công dụng & đặc điểm</h2>
+                {products.some((product) => product.description) ? (
+                  <dl>
+                    {products.map((product) => (
+                      <div className="pv-compare-value" key={product.id}>
+                        <dt>{product.model}</dt>
+                        <dd>
+                          {product.description ||
+                            'Chưa có thông tin công dụng.'}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : (
+                  <p className="pv-compare-missing">
+                    Chưa có thông tin công dụng để đối chiếu. Hoa Nam sẽ tư vấn
+                    theo nhu cầu của bạn.
+                  </p>
+                )}
+              </section>
+              <section
+                className="pv-compare-feature"
+                aria-labelledby="pv-compare-specs"
+              >
+                <h2 id="pv-compare-specs">Thông số kỹ thuật</h2>
                 {specLabels.length ? (
                   specLabels.map((label) => (
-                    <tr key={label}>
-                      <th scope="row">{label}</th>
-                      {products.map((product) => (
-                        <td key={product.id}>
-                          {product.specifications?.find(
-                            (spec) => spec.label === label,
-                          )?.value ?? 'Chưa có thông tin'}
-                        </td>
-                      ))}
-                    </tr>
+                    <div className="pv-compare-spec" key={label}>
+                      <h3>{label}</h3>
+                      <dl>
+                        {products.map((product) => (
+                          <div className="pv-compare-value" key={product.id}>
+                            <dt>{product.model}</dt>
+                            <dd>
+                              {product.specifications?.find(
+                                (spec) => spec.label === label,
+                              )?.value ?? 'Chưa có thông tin'}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
                   ))
                 ) : (
-                  <tr>
-                    <th scope="row">Thông số kỹ thuật</th>
-                    {products.map((product) => (
-                      <td key={product.id}>Liên hệ để được tư vấn thông số.</td>
-                    ))}
-                  </tr>
+                  <p className="pv-compare-missing">
+                    Chưa có thông số để đối chiếu giữa các model. Gửi yêu cầu để
+                    được tư vấn chi tiết.
+                  </p>
                 )}
-                <tr>
-                  <th scope="row">Tư vấn sản phẩm</th>
-                  {products.map((product) => (
-                    <td key={product.id}>
-                      <button
-                        className="pv-button pv-button-outline"
-                        onClick={() => onRequest([product.id])}
-                      >
-                        Gửi yêu cầu
-                      </button>
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
-          </section>
-          {/* eslint-enable jsx-a11y/no-noninteractive-tabindex */}
-          <div className="pv-library-actions">
+              </section>
+            </div>
+          )}
+          <div className="pv-compare-actions">
             <button
               className="pv-button"
               onClick={() => onRequest(products.map((item) => item.id))}
             >
-              Nhờ tư vấn các sản phẩm này <ArrowRight aria-hidden="true" />
+              Tư vấn {products.length} sản phẩm{' '}
+              <ArrowRight aria-hidden="true" />
             </button>
           </div>
         </>
+      )}
+      {pickerOpen && products.length > 0 && products.length < 3 && (
+        <PreviewModal
+          className="pv-compare-picker-sheet"
+          title="Thêm sản phẩm so sánh"
+          description={`Các model thuộc ${categoryName?.toLowerCase() ?? 'cùng danh mục'}.`}
+          onClose={() => setPickerOpen(false)}
+        >
+          {picker}
+        </PreviewModal>
       )}
     </section>
   );

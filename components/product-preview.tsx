@@ -47,7 +47,7 @@ import {
   usePreviewLibrary,
 } from '@/components/preview-library-state';
 import {
-  LIBRARY_LINKS,
+  ProductUtilities,
   LibraryHome,
   ProductCollection,
   SelectionScreen,
@@ -315,16 +315,14 @@ function PreviewApp() {
           <a
             href="#view=home"
             className="pv-wordmark"
-            aria-label="Xem sản phẩm — về trang chủ"
+            aria-label="Hoa Nam — về trang chủ"
             onClick={(event) => {
               event.preventDefault();
               navigate('home', DEFAULT_PREVIEW_FILTERS);
             }}
           >
-            <span>HOA NAM</span>
-            <strong>
-              Xem sản phẩm<span className="pv-wordmark-dot">.</span>
-            </strong>
+            <strong className="pv-brand-name">HOA NAM</strong>
+            <span className="pv-brand-caption">Dụng cụ & thiết bị</span>
           </a>
           <nav className="pv-desktop-nav" aria-label="Điều hướng chính">
             {navigation.map(({ id, label, icon: Icon }) => (
@@ -375,7 +373,7 @@ function PreviewApp() {
         </div>
       </header>
       <main className="pv-main" id="pv-main" ref={mainRef} tabIndex={-1}>
-        {library.notice && (
+        {library.notice && view !== 'compare' && (
           <div className="pv-library-notice">
             <output>{library.notice}</output>
             <button
@@ -642,29 +640,16 @@ function PreviewApp() {
       </main>
       {menu && (
         <PreviewModal
+          className="pv-utilities-sheet"
           title="Tiện ích sản phẩm"
-          description="Tiếp tục xem, lựa chọn và kết nối với Hoa Nam."
+          description="Tìm lại sản phẩm và chọn cách nhận tư vấn."
           onClose={() => setMenu(false)}
         >
-          <nav className="pv-library-menu" aria-label="Tiện ích sản phẩm">
-            {LIBRARY_LINKS.map(({ view: target, label, icon: Icon }) => (
-              <button
-                key={target}
-                aria-current={view === target ? 'page' : undefined}
-                onClick={() => libraryNavigate(target)}
-              >
-                <Icon aria-hidden="true" />
-                <span>{label}</span>
-                {target === 'saved' && library.saved.length > 0 && (
-                  <small>{library.saved.length}</small>
-                )}
-                {target === 'compare' && library.compared.length > 0 && (
-                  <small>{library.compared.length}/3</small>
-                )}
-                <ArrowRight aria-hidden="true" />
-              </button>
-            ))}
-          </nav>
+          <ProductUtilities
+            activeView={view}
+            navigate={libraryNavigate}
+            requestCount={sentRequests.length}
+          />
         </PreviewModal>
       )}
       {view !== 'detail' && (
