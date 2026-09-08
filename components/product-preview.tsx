@@ -312,17 +312,41 @@ function PreviewApp() {
       </a>
       <header className="pv-header">
         <div className="pv-header-inner">
+          <button
+            className="pv-icon-button pv-library-menu-button pv-header-action"
+            aria-label="Mở tiện ích sản phẩm"
+            title="Tiện ích sản phẩm"
+            aria-expanded={menu}
+            onClick={() => setMenu(true)}
+          >
+            <Menu aria-hidden="true" />
+          </button>
           <a
             href="#view=home"
             className="pv-wordmark"
-            aria-label="Hoa Nam — về trang chủ"
+            aria-label="Hoa Nam Tools — về trang chủ"
             onClick={(event) => {
               event.preventDefault();
               navigate('home', DEFAULT_PREVIEW_FILTERS);
             }}
           >
-            <strong className="pv-brand-name">HOA NAM</strong>
-            <span className="pv-brand-caption">Dụng cụ & thiết bị</span>
+            <svg
+              className="pv-brand-symbol"
+              viewBox="130 20 1188 740"
+              fill="none"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <image
+                href={`${process.env.NEXT_PUBLIC_PREVIEW_ASSET_BASE ?? ''}/preview/hoa-nam-brand-source.jpg`}
+                width="1448"
+                height="1086"
+              />
+            </svg>
+            <span className="pv-brand-text">
+              <strong className="pv-brand-name">HOA NAM</strong>
+              <span className="pv-brand-caption">TOOLS</span>
+            </span>
           </a>
           <nav className="pv-desktop-nav" aria-label="Điều hướng chính">
             {navigation.map(({ id, label, icon: Icon }) => (
@@ -350,17 +374,11 @@ function PreviewApp() {
               </a>
             ))}
           </nav>
-          <button
-            className="pv-icon-button pv-library-menu-button"
-            aria-label="Mở tiện ích sản phẩm"
-            aria-expanded={menu}
-            onClick={() => setMenu(true)}
-          >
-            <Menu aria-hidden="true" />
-          </button>
           <a
-            className="pv-header-support"
+            className="pv-header-support pv-header-action"
             href="#view=request"
+            aria-label="Gửi yêu cầu"
+            title="Gửi yêu cầu"
             aria-current={view === 'request' ? 'page' : undefined}
             onClick={(event) => {
               event.preventDefault();
@@ -368,7 +386,6 @@ function PreviewApp() {
             }}
           >
             <Send aria-hidden="true" />
-            <span>Gửi yêu cầu</span>
           </a>
         </div>
       </header>

@@ -1,0 +1,68 @@
+[
+  {
+    "actions": [
+      {
+        "height": 48,
+        "name": "Mở tiện ích sản phẩm",
+        "width": 48
+      },
+      {
+        "height": 48,
+        "name": "Gửi yêu cầu",
+        "width": 48
+      }
+    ],
+    "centerDelta": 0.0078125,
+    "contact": "#view=contact",
+    "grid": "48px 231px 48px",
+    "headerHeight": 68,
+    "logoWidth": 163.796875,
+    "overflow": false,
+    "request": "#view=request",
+    "width": 390
+  },
+  {
+    "actions": [
+      {
+        "height": 48,
+        "name": "Mở tiện ích sản phẩm",
+        "width": 48
+      },
+      {
+        "height": 48,
+        "name": "Gửi yêu cầu",
+        "width": 48
+      }
+    ],
+    "centerDelta": 0,
+    "contact": "#view=contact",
+    "grid": "48px 169px 48px",
+    "headerHeight": 68,
+    "logoWidth": 160,
+    "overflow": false,
+    "request": "#view=request",
+    "width": 320
+  },
+  {
+    "actions": [
+      {
+        "height": 48,
+        "name": "Mở tiện ích sản phẩm",
+        "width": 48
+      },
+      {
+        "height": 48,
+        "name": "Gửi yêu cầu",
+        "width": 48
+      }
+    ],
+    "centerDelta": 0,
+    "contact": "#view=contact",
+    "grid": "48px 271px 48px",
+    "headerHeight": 68,
+    "logoWidth": 168,
+    "overflow": false,
+    "request": "#view=request",
+    "width": 430
+  }
+]

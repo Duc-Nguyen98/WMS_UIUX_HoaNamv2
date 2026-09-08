@@ -56,35 +56,100 @@ body:has(.pv-app) {
 
 /* State contract shared by every Preview screen, including portalled dialogs. */
 .pv-theme .pv-header-inner {
-  gap: 10px;
-  padding-block: 12px;
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
 }
-.pv-theme .pv-wordmark {
+.pv-theme .pv-header-inner .pv-wordmark {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  align-items: center;
+  gap: 8px;
+  width: clamp(160px, 42vw, 168px);
+  min-height: 48px;
   min-width: 0;
-  flex-shrink: 1;
-  gap: 2px;
 }
-.pv-theme .pv-wordmark .pv-brand-name {
+.pv-theme .pv-header-inner .pv-brand-symbol {
+  display: block;
+  width: 60px;
+  height: 38px;
+  overflow: hidden;
+}
+.pv-theme .pv-wordmark > .pv-brand-text {
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  min-width: 0;
+  text-align: center;
+  letter-spacing: 0;
+  margin: 0;
+}
+.pv-theme .pv-header-inner .pv-wordmark .pv-brand-name {
   color: var(--hn-primary);
-  font-size: 21px;
+  font-size: 17px;
   line-height: 1.15;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.015em;
   white-space: nowrap;
 }
-.pv-theme .pv-wordmark .pv-brand-caption {
-  color: var(--hn-text-muted);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0;
+.pv-theme .pv-header-inner .pv-wordmark .pv-brand-caption {
+  color: var(--hn-primary);
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: 0.32em;
+  padding-left: 0.32em;
   margin: 0;
   white-space: nowrap;
 }
-.pv-theme .pv-header-support {
-  min-height: 44px;
-  padding-inline: 12px;
-  font-size: 12px;
+.pv-theme .pv-header-inner .pv-header-action {
+  display: grid;
+  place-items: center;
+  grid-row: 1;
+  width: 48px;
+  min-width: 48px;
+  height: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  color: var(--hn-primary);
+  background: var(--hn-surface);
+  border: 1px solid var(--hn-border);
   border-radius: var(--pv-radius);
+}
+.pv-theme .pv-header-inner .pv-library-menu-button {
+  grid-column: 1;
+}
+.pv-theme .pv-header-inner .pv-header-support {
+  grid-column: 3;
+}
+.pv-theme .pv-header-inner .pv-header-action svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+.pv-theme .pv-header-inner .pv-header-action:hover,
+.pv-theme .pv-header-inner .pv-header-action[aria-current='page'] {
+  background: var(--hn-primary-a06);
+  border-color: var(--hn-primary);
+}
+.pv-theme .pv-header-inner .pv-header-action:active {
+  transform: none;
+}
+.pv-theme .pv-header-inner .pv-desktop-nav {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-content: center;
+}
+@media (max-width: 359px) {
+  .pv-theme .pv-header-inner {
+    padding-inline: 12px;
+  }
 }
 .pv-app {
   color: var(--hn-text-secondary);
