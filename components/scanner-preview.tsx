@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   ArrowRight,
   ScanLine,
+  ScanQrCode,
   Search,
   Wrench,
   Radio,
@@ -2232,7 +2233,7 @@ export default function ScannerPreview() {
         </main>
         <nav className="sc-nav" aria-label="Điều hướng chính">
           <svg className="sc-nav-surface" viewBox="0 0 430 106" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0 24H145C177 24 173 64 215 64S253 24 285 24H430V106H0Z" />
+            <path d="M0 18H151C175 18 178 44 215 44S255 18 279 18H430V106H0Z" />
           </svg>
           {nav.map((v, i) => {
             const Icon = icons[i];
@@ -2245,7 +2246,7 @@ export default function ScannerPreview() {
                 className={`${active ? 'active' : ''} ${i === 2 ? 'sc-nav-center' : ''}`}
                 onClick={() => tab(v)}
               >
-                {i === 2 ? <span className="sc-nav-orb" aria-hidden="true"><span className="sc-nav-monogram">HN</span><span className="sc-nav-orb-caption">TOOL</span></span> : <Icon aria-hidden="true" />}
+                {i === 2 ? <span className="sc-nav-orb" aria-hidden="true"><ScanQrCode className="sc-nav-qr" strokeWidth={2} /></span> : <Icon aria-hidden="true" />}
                 <span>{navLabels[i]}</span>
               </button>
             );
