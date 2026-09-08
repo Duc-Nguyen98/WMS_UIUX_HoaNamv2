@@ -9,6 +9,7 @@
     "dev": "vinext dev",
     "dev:local": "vite --config vite.local.config.ts",
     "build": "vinext build",
+    "build:scanner": "node scripts/build-scanner-pages.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
     "format": "oxfmt"

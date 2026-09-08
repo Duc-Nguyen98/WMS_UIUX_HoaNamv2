@@ -1,0 +1,80 @@
+import { cp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { preparePreviewPages } from './prepare-preview-pages.mjs';
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const base = '/WMS_UIUX_HoaNamv2/app-scanner';
+const buildRoot = join(root, 'work', 'scanner-build-latest');
+const output = join(root, 'work', 'scanner-pages');
+
+await rm(buildRoot, { recursive: true, force: true });
+await rm(output, { recursive: true, force: true });
+await mkdir(join(buildRoot, 'app'), { recursive: true });
+
+async function copy(source, destination = source) {
+  const target = join(buildRoot, destination);
+  await mkdir(dirname(target), { recursive: true });
+  await cp(join(root, source), target, { recursive: true });
+}
+
+await copy('app/layout.tsx');
+await copy('app/globals.css');
+await copy('app/scanner/page.tsx', 'app/page.tsx');
+await copy('components/scanner-preview.tsx');
+await copy('components/scanner-preview.css');
+await copy('components/warranty-scanner-app.tsx');
+await copy('lib/scanner-model.ts');
+await copy('lib/utils.ts');
+await copy('next-env.d.ts');
+await copy('next.config.ts');
+await copy('tsconfig.json');
+await copy('package.json');
+await symlink(join(root, 'node_modules'), join(buildRoot, 'node_modules'), 'junction');
+
+await writeFile(join(buildRoot, 'vite.config.ts'), `
+import tailwindcss from '@tailwindcss/postcss';
+import vinext from 'vinext';
+import { defineConfig } from 'vite';
+export default defineConfig({
+  css: { postcss: { plugins: [tailwindcss()] } },
+  environments: { client: { define: {
+    'process.env.__NEXT_ROUTER_BASEPATH': ${JSON.stringify(JSON.stringify(base))}
+  } } },
+  plugins: [vinext()],
+});
+`);
+
+try {
+  execFileSync(process.execPath, [join(root, 'node_modules/vinext/dist/cli.js'), 'build'], {
+    cwd: buildRoot,
+    stdio: 'inherit',
+  });
+} catch (error) {
+  // On some Windows Node builds vinext can finish the export and then exit
+  // with a libuv assertion while closing its prerender server. Continue only
+  // when the complete client export is present; CI/Linux still fails normally.
+  if (!error || !error.status) throw error;
+  console.warn('vinext exited after prerender; validating the generated client export.');
+}
+
+const client = join(buildRoot, 'dist', 'client');
+await preparePreviewPages(client, base);
+await mkdir(join(output, 'app-scanner'), { recursive: true });
+await cp(join(client, 'index.html'), join(output, 'app-scanner', 'index.html'));
+await cp(join(client, '_next'), join(output, 'app-scanner', '_next'), { recursive: true });
+try {
+  await cp(join(client, 'favicon.svg'), join(output, 'app-scanner', 'favicon.svg'));
+} catch {
+  // Optional asset.
+}
+await writeFile(join(output, '.nojekyll'), '');
+await writeFile(
+  join(output, 'README.txt'),
+  'Hoa Nam Scanner preview. The app is served from /WMS_UIUX_HoaNamv2/app-scanner/.\n',
+);
+
+const html = await readFile(join(output, 'app-scanner', 'index.html'), 'utf8');
+if (!html.includes(base)) throw new Error(`Scanner export does not contain router base ${base}`);
+console.log(`Standalone Scanner Pages artifact ready: ${output}`);
