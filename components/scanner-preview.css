@@ -1,3 +1,28 @@
+.sc-auth-wrap { width: 430px; max-width: 100%; }
+.sc-auth { min-height: 680px; background: #fafcfc; padding: 32px 24px; border-radius: 16px; }
+.sc-auth-brand { display:flex; align-items:center; gap:12px; margin-bottom:32px; color:#0c6286; }
+.sc-auth-brand > span { display:grid; place-items:center; width:48px; height:48px; background:#eaf1f4; border-radius:12px; }
+.sc-auth-brand small { display:block; font-size:11px; letter-spacing:3px; }
+.sc-auth h1 { font-size:26px; line-height:1.25; letter-spacing:-.5px; margin:0 0 12px; color:#193b49; }
+.sc-auth p { font-size:15px; line-height:1.6; }
+.sc-auth form { display:flex; flex-direction:column; margin-top:28px; }
+.sc-auth label { font-size:14px; font-weight:600; margin:16px 0 8px; }
+.sc-auth input { width:100%; min-height:48px; border:1px solid #9ebac6; border-radius:8px; background:white; padding:12px; font-size:16px; color:#193b49; }
+.sc-auth input[aria-invalid=true] { border-color:#a12f35; }
+.sc-auth-password { position:relative; }
+.sc-auth-password input { padding-right:52px; }
+.sc-auth-password button { position:absolute; right:2px; top:2px; width:44px; height:44px; display:grid; place-items:center; border:0; background:transparent; color:#0c6286; }
+.sc-auth-forgot { align-self:flex-end; min-height:44px; border:0; color:#0c6286; background:transparent; margin:6px 0 20px; }
+.sc-auth .sc-auth-error { color:#a12f35; font-size:14px; margin:8px 0; }
+.sc-auth-message { background:#eaf1f4; padding:12px; border-left:3px solid #0c6286; border-radius:8px; }
+.sc-auth .sc-btn { width:100%; min-height:48px; margin-top:12px; }
+.sc-auth dl { border:1px solid #ccdce2; border-radius:8px; padding:16px; margin:24px 0; }
+.sc-auth dt { font-size:13px; color:#607680; margin-top:12px; }
+.sc-auth dd { margin:4px 0 16px; font-weight:600; }
+.sc-auth-harness { padding:16px; font-size:13px; margin-top:24px; border:1px dashed #9ebac6; border-radius:8px; }
+.sc-auth-harness summary { min-height:44px; cursor:pointer; }
+.sc-auth-harness select { display:block; width:100%; min-height:44px; }
+@media(max-width:600px) { .sc-workspace.sc-auth-workspace { padding:0; } .sc-auth { border-radius:0; min-height:100svh; padding:28px 20px; } }
 .sc-workspace {
   --sc-primary: #0c6286;
   --sc-ink: #193b49;

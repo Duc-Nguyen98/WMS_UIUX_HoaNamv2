@@ -24,6 +24,9 @@ await copy('app/globals.css');
 await copy('app/scanner/page.tsx', 'app/page.tsx');
 await copy('components/scanner-preview.tsx');
 await copy('components/scanner-preview.css');
+await copy('components/scanner-auth.tsx');
+await copy('lib/scanner-auth.ts');
+await copy('lib/scanner-auth-preview.ts');
 await copy('components/warranty-scanner-app.tsx');
 await copy('lib/scanner-model.ts');
 await copy('lib/utils.ts');
@@ -55,7 +58,7 @@ try {
   // On some Windows Node builds vinext can finish the export and then exit
   // with a libuv assertion while closing its prerender server. Continue only
   // when the complete client export is present; CI/Linux still fails normally.
-  if (!error || !error.status) throw error;
+  if (process.platform !== 'win32' || error?.status !== 3221226505) throw error;
   console.warn('vinext exited after prerender; validating the generated client export.');
 }
 

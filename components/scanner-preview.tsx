@@ -45,6 +45,7 @@ import {
   type CaseStatus,
 } from '@/lib/scanner-model';
 import './scanner-preview.css';
+import { ScannerAuthScreen, useScannerAccess } from './scanner-auth';
 
 type View =
   | 'home'
@@ -170,15 +171,17 @@ const Row = ({ label, children }: { label: string; children: ReactNode }) => (
   </div>
 );
 export default function ScannerPreview() {
+  const access = useScannerAccess();
   const [db, setDb] = useState<Store>(seedStore);
   const dbRef = useRef(db);
   const [ready, setReady] = useState(false);
-  const [view, setView] = useState<View>('home');
-  const stack = useRef<{view:View;id:string;product:string;scroll:number}[]>([]);
-  const restoreScroll = useRef(0);
+  const view = access.route.view as View;
   const [draft, setDraft] = useState<Draft>(() => fresh('in'));
-  const [selectedId, setSelectedId] = useState('');
-  const [productCode, setProductCode] = useState('');
+  const selectedId = access.route.id;
+  const productCode = access.route.product;
+  const pendingContext = useRef({id:'',product:''});
+  const setSelectedId = (id:string) => { pendingContext.current.id=id; };
+  const setProductCode = (product:string) => { pendingContext.current.product=product; };
   const [query, setQuery] = useState('');
   const [docFilter, setDocFilter] = useState('Tất cả');
   const [caseFilter, setCaseFilter] = useState('Tất cả');
@@ -253,7 +256,7 @@ export default function ScannerPreview() {
         localStorage.setItem(storageKey, JSON.stringify(db));
       } catch {}
   }, [db, ready]);
-  const modalOpen = !!popup || inputSheet || !!box;
+  const modalOpen = access.allowed && (!!popup || inputSheet || !!box);
   useEffect(() => {
     const el = dialogRef.current;
     if (!el) return;
@@ -266,37 +269,21 @@ export default function ScannerPreview() {
     }
   }, [modalOpen]);
   useEffect(() => {
-    const onBack = () => {
       setPopup(null);
       setInputSheet(false);
       setBox('');
       setError('');
-      const last = stack.current.pop();
-      restoreScroll.current = last?.scroll || 0;
-      setSelectedId(last?.id || '');
-      setProductCode(last?.product || '');
-      setView(last?.view || 'home');
-    };
-    window.addEventListener('popstate', onBack);
-    return () => window.removeEventListener('popstate', onBack);
-  }, []);
-  useEffect(() => {
-    window.scrollTo({top:restoreScroll.current,behavior:'instant'});
-    restoreScroll.current = 0;
-  }, [view]);
+      window.scrollTo({top:0,behavior:'instant'});
+  }, [view, selectedId, productCode]);
   const go = (next: View) => {
-    stack.current.push({view,id:selectedId,product:productCode,scroll:window.scrollY});
-    window.history.pushState({ scanner: true }, '', `#${next}`);
-    setView(next);
+    access.navigate(next,{id:pendingContext.current.id || selectedId,product:pendingContext.current.product || productCode});
+    pendingContext.current={id:'',product:''};
     setError('');
     setNotice('');
   };
   const back = () => {
-    if (stack.current.length) window.history.back();
-    else {
-      setView('home');
-      setError('');
-    }
+    access.navigate('home',{},true);
+    setError('');
   };
   const tab = (next: View) => {
     if (['scan', 'review', 'create'].includes(view) && draft.lines.length) {
@@ -305,14 +292,12 @@ export default function ScannerPreview() {
         body: 'Các mã đã quét được giữ trong lần mở này. Bạn có thể tiếp tục từ trang chủ.',
         label: 'Về trang chủ',
         action: () => {
-          setView('home');
+          access.navigate('home',{},true);
           setPopup(null);
         },
       });
     } else {
-      stack.current = [];
-      window.history.replaceState({scanner:true},'',`#${next}`);
-      setView(next);
+      access.navigate(next,{},true);
       setQuery('');
       setError('');
     }
@@ -329,12 +314,14 @@ export default function ScannerPreview() {
     setDb(next);
   };
   const run = async (fn: () => void) => {
+    if (!access.check()) { access.expire(); return; }
     if (lock.current) return;
     lock.current = true;
     setBusy(true);
     setError('');
     await new Promise((r) => setTimeout(r, 500));
     try {
+      if (!access.check()) { access.expire(); return; }
       if (readOnly) throw new Error('Tài khoản chỉ xem không được thực hiện thay đổi.');
       if (mode === 'offline')
         throw new Error(
@@ -2120,11 +2107,15 @@ export default function ScannerPreview() {
               () =>
                 setPopup({
                   title: 'Đăng xuất khỏi ca làm việc?',
-                  body: 'Dữ liệu đã ghi nhận vẫn được giữ. Bạn có thể mở lại ca làm việc.',
+                  body: 'Phiên làm việc sẽ kết thúc. Nội dung chưa hoàn tất sẽ bị bỏ; chứng từ đã ghi nhận vẫn được giữ.',
                   label: 'Đăng xuất',
                   action: () => {
                     setPopup(null);
-                    go('login');
+                    setDraft(fresh('in'));
+                    setIntake({code:'',missing:false,customer:'',phone:'',address:'',fault:'',product:'',reason:'',accessories:''});
+                    setScanCode(''); setCaseNote(''); setNfcStage(0); setNfcReason('');
+                    pendingContext.current={id:'',product:''};
+                    access.logout();
                   },
                 }),
               false,
@@ -2133,16 +2124,7 @@ export default function ScannerPreview() {
           </>
         );
       case 'login':
-        return (
-          <Card>
-            <div className="sc-feature-icon">
-              <ShieldCheck />
-            </div>
-            <h2>Bắt đầu ca làm việc</h2>
-            <p>Minh Anh • Kho Hoa Nam</p>
-            {btn('Vào ca làm việc', () => tab('home'))}
-          </Card>
-        );
+        return null;
     }
   };
   const closeDialog = () => {
@@ -2152,6 +2134,7 @@ export default function ScannerPreview() {
     setBox('');
     setError('');
   };
+  if (!access.allowed) return <div className="sc-workspace sc-auth-workspace"><ScannerAuthScreen access={access} role={role}/></div>;
   return (
     <div className="sc-workspace">
       <aside className="sc-design-panel">
@@ -2208,7 +2191,7 @@ export default function ScannerPreview() {
                 setDraft(fresh('in'));
                 setMode('normal');
                 setPopup(null);
-                setView('home');
+                access.navigate('home',{},true);
                 setQuery('');
               },
             })
@@ -2220,6 +2203,7 @@ export default function ScannerPreview() {
           BA cần duyệt: chính sách Post, quyền xác nhận, giữ chỗ và tính nguyên
           tử của xuất linh kiện.
         </small>
+        <button onClick={access.expire}>Kiểm thử hết hạn phiên</button>
       </aside>
       <div className="sc-phone">
         <div className="sc-preview-note">
@@ -2290,6 +2274,7 @@ export default function ScannerPreview() {
         <details className="sc-mobile-controls">
           <summary>Điều khiển xem thiết kế</summary>
           <p>Dữ liệu mock • không kết nối hệ thống thật.</p>
+          <button className="sc-btn secondary" onClick={access.expire}>Kiểm thử hết hạn phiên</button>
           <Field label="Vai trò">
             <select value={role} onChange={(e) => setRole(e.target.value)}>
               {['Nhân viên kho', 'Người duyệt kho', 'Chỉ xem'].map((v) => (
