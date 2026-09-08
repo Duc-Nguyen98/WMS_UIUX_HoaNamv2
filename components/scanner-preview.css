@@ -476,15 +476,6 @@
   font-weight: 700;
 }
 .sc-nav button { position: relative; justify-content: center; }
-.sc-nav button.active:not(.sc-nav-center)::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #0C6286;
-}
 .sc-nav .sc-nav-center { padding-top: 32px; color: #0C6286; font-weight: 650; }
 .sc-nav-orb {
   position: absolute;
